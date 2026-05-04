@@ -1,0 +1,59 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Update Courier Info{% endblock  %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Update Pathao Courier Info</h5>
+    </div>
+
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.api_key|as_crispy_field }}
+                </div>
+                 <div class="col-md-4">
+                    {{ form.secret_key|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.base_url|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.username|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.password|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.store_id|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.city_id|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.zone_id|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.area_id|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.status|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="text-center pt-3 pb-4">
+                <button type="submit" class="btn btn-sm add-btn">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

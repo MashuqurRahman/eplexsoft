@@ -1,0 +1,63 @@
+{% extends "admin_base.html" %}
+{% block title %}Slider List{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="fw-bold">Slider List</h5>
+        {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+        <a href="{% url 'slider_create' %}" class="btn add-btn btn-sm">+ Add Slider</a>
+        {% endif %}
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>SL No.</th>
+                    <th>Slider Name</th>
+                    <th>Image</th>
+                    <th>Status</th>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for slider in sliders %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ slider.name }}</td>
+                    <td>
+                        <img src="{{ slider.image.url }}" width="80">
+                    </td>
+                    <td>
+                        {% if slider.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <td>
+                        <a href="{% url 'slider_update' slider.id %}" class="btn btn-sm add-btn">Edit</a>
+                        <a href="{% url 'slider_delete' slider.id %}"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Are you sure?')">
+                           Delete
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No sliders found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

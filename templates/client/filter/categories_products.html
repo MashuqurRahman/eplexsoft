@@ -1,0 +1,875 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %} {% if page_title %}
+{{page_title}}
+{% else %}
+Products
+{% endif %} {% endblock %}
+
+{% block content %}
+
+
+<section class="products-area">
+<div class="container-fluid">
+
+<div class="row view_all_container">
+
+    <!-- FILTER SIDEBAR -->
+    <div class="col-lg-3" id="filterSidebarCol">
+        <div class="filter-drawer-header">
+            <h4>Filters</h4>
+            <button class="filter-close-btn" id="filterCloseBtn" title="Close">&times;</button>
+        </div>
+
+<div class="filter-sidebar">
+
+<form id="filterForm">
+
+<div class="accordion" id="filterAccordion">
+
+{% comment %} <!-- Categories -->
+<div class="accordion-item">
+<h2 class="accordion-header">
+<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#categoriesCollapse">
+Categories
+</button>
+</h2>
+
+<div id="categoriesCollapse" class="accordion-collapse collapse show">
+<div class="accordion-body">
+
+{% for cat in categories %}
+<div class="form-check">
+    <input class="form-check-input filter-input"
+           type="checkbox"
+           name="category"
+           value="{{cat.id}}">
+    <label class="form-check-label">
+        {{cat.name}}
+    </label>
+</div>
+{% endfor %}
+
+</div>
+</div>
+</div> {% endcomment %}
+
+
+<!-- Sub Categories -->
+<div class="accordion-item">
+<h2 class="accordion-header">
+<button class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#subCategoriesCollapse">
+Sub Categories
+</button>
+</h2>
+
+<div id="subCategoriesCollapse" class="accordion-collapse collapse show">
+<div class="accordion-body">
+
+<div id="subcategory-container">
+
+{% for sub_cat in sub_categories %}
+<div class="form-check">
+    <input class="form-check-input filter-input"
+           type="checkbox"
+           name="sub_category"
+           value="{{sub_cat.id}}" {% if sub_cat.id|stringformat:"s" in selected_sub_categories %}checked{% endif %}>
+    <label class="form-check-label">
+        {{sub_cat.sub_cat_name}}
+    </label>
+</div>
+{% endfor %}
+
+</div>
+
+</div>
+</div>
+</div>
+
+
+<!-- Sub Sub Categories -->
+<div class="accordion-item">
+<h2 class="accordion-header">
+<button class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#subSubCategoriesCollapse">
+Sub Sub Categories
+</button>
+</h2>
+
+<div id="subSubCategoriesCollapse" class="accordion-collapse collapse">
+<div class="accordion-body">
+<div id="subsubcategory-container">
+
+{% for sub_sub_cat in sub_sub_categories %}
+<div class="form-check">
+    <input class="form-check-input filter-input"
+           type="checkbox"
+           name="sub_sub_category"
+           value="{{sub_sub_cat.id}}" {% if sub_sub_cat.id|stringformat:"s" in selected_sub_sub_categories %}checked{% endif %}>
+    <label class="form-check-label">
+        {{sub_sub_cat.sub_sub_cat_name}}
+    </label>
+</div>
+{% endfor %}
+
+</div>
+
+</div>
+</div>
+</div>
+
+
+<!-- Brands -->
+<div class="accordion-item">
+<h2 class="accordion-header">
+<button class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#brandsCollapse">
+Brands
+</button>
+</h2>
+
+<div id="brandsCollapse" class="accordion-collapse collapse">
+<div class="accordion-body">
+<div id="brand-container">
+{% for brand in brands %}
+<div class="form-check">
+    <input class="form-check-input filter-input"
+           type="checkbox"
+           name="brand"
+           value="{{brand.id}}" {% if brand.id|stringformat:"s" in selected_brands %}checked{% endif %}>
+    <label class="form-check-label">
+        {{brand.name}}
+    </label>
+</div>
+{% endfor %}
+</div>
+
+</div>
+</div>
+</div>
+
+
+<!-- Colors -->
+<div class="accordion-item">
+<h2 class="accordion-header">
+<button class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#colorsCollapse">
+Colors
+</button>
+</h2>
+
+<div id="colorsCollapse" class="accordion-collapse collapse">
+<div class="accordion-body">
+<div id="color-container">
+{% for color in colors %}
+<div class="form-check">
+    <input class="form-check-input filter-input"
+           type="checkbox"
+           name="color"
+           value="{{color.id}}" {% if color.id|stringformat:"s" in selected_colors %}checked{% endif %}>
+    <label class="form-check-label">
+        {{color.name}}
+    </label>
+</div>
+{% endfor %}
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Sizes -->
+<div class="accordion-item">
+<h2 class="accordion-header">
+<button class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#sizesCollapse">
+Sizes
+</button>
+</h2>
+
+<div id="sizesCollapse" class="accordion-collapse collapse">
+<div class="accordion-body">
+<div id="size-container">
+{% for size in sizes %}
+<div class="form-check">
+    <input class="form-check-input filter-input"
+           type="checkbox"
+           name="size"
+           value="{{size.id}}" {% if size.id|stringformat:"s" in selected_sizes %}checked{% endif %}>
+    <label class="form-check-label">
+        {{size.value}}
+    </label>
+</div>
+{% endfor %}
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Price -->
+<div class="accordion-item">
+<h2 class="accordion-header">
+<button class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#priceCollapse">
+Price
+</button>
+</h2>
+
+<div id="priceCollapse" class="accordion-collapse collapse">
+<div class="accordion-body">
+
+<input type="number"
+       class="form-control mb-2 filter-input"
+       name="min_price"
+       value="{{request.GET.min_price}}"
+       placeholder="Min Price">
+
+<input type="number"
+       class="form-control filter-input"
+       name="max_price"
+       value="{{request.GET.max_price}}"
+       placeholder="Max Price">
+
+</div>
+</div>
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+    </div>
+
+
+    <!-- PRODUCT LIST -->
+    <div class="col-lg-9">
+
+    <!-- sort start -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <button class="mobile-filter-btn" id="mobileFilterBtn" title="Open Filters">
+                <span>&#9776;</span> Filter
+            </button>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0 text-muted small fw-semibold">Sort by:</label>
+            <select id="sortSelect" class="form-select form-select-sm" style="width: auto; min-width: 180px;">
+                <option value="default"           {% if sort_by == 'default' %}selected{% endif %}>Default</option>
+                <option value="most_recent"       {% if sort_by == 'most_recent' %}selected{% endif %}>Most Recent</option>
+                <option value="price_high_to_low" {% if sort_by == 'price_high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                <option value="price_low_to_high" {% if sort_by == 'price_low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                <option value="name_a_to_z"       {% if sort_by == 'name_a_to_z' %}selected{% endif %}>Product A → Z</option>
+                <option value="name_z_to_a"       {% if sort_by == 'name_z_to_a' %}selected{% endif %}>Product Z → A</option>
+            </select>
+        </div>
+    </div>
+    <!-- sort end -->
+
+
+    <div id="product-loading" style="display:none;">
+        <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-4">
+
+            {% for i in "12345678" %}
+            <div class="col">
+                <div class="product-skeleton">
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text small"></div>
+                    <div class="skeleton-btn"></div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+    <div id="product-container" class="products-show">
+        {% include "client/filter/common.html" %}
+    </div>
+
+    </div>
+
+
+</div>
+</div>
+</section>
+{% endblock %}
+
+{% block JS %}
+
+<script>
+
+$(document).ready(function(){
+    let currentRequest = null;
+
+    $('#filterForm')[0].reset();
+    $('.filter-input[type="checkbox"]').prop('checked', false);
+    $('input[name="min_price"], input[name="max_price"]').val('');
+
+    window.history.replaceState({}, document.title, window.location.pathname);
+    loadProducts();
+
+    // Mobile filter drawer toggle
+    const $filterCol = $('#filterSidebarCol');
+    const $overlay   = $('#filterOverlay');
+    const $openBtn   = $('#mobileFilterBtn');
+    const $closeBtn  = $('#filterCloseBtn');
+
+    function openFilter() {
+        $filterCol.addClass('filter-open');
+        $overlay.addClass('open');
+        $('body').css('overflow', 'hidden');
+    }
+
+    function closeFilter() {
+        $filterCol.removeClass('filter-open');
+        $overlay.removeClass('open');
+        $('body').css('overflow', '');
+    }
+
+    $openBtn.on('click', openFilter);
+    $closeBtn.on('click', closeFilter);
+    $overlay.on('click', closeFilter);
+
+    function loadProducts(){
+        let formData = $('#filterForm').serialize();
+
+
+        let sortVal = $('#sortSelect').val();
+        if(sortVal && sortVal !== 'default'){
+            formData += '&sort_by=' + sortVal;
+        }
+
+
+        let newUrl = window.location.pathname + "?" + formData;
+        window.history.pushState(null, null, newUrl);
+
+        $('#product-container').hide();
+        $('#product-loading').show();
+
+        if(currentRequest){
+            currentRequest.abort();
+        }
+
+        currentRequest = $.ajax({
+            url: newUrl,
+            success: function(response){
+
+                $('#product-loading').hide();
+                $('#product-container').html(response).fadeIn(200);
+
+            },
+            error:function(xhr,status,error){
+                if(status !== "abort"){
+                    console.error(error);
+                }
+            }
+        });
+
+    }
+    
+    $('#sortSelect').on('change', function(){
+        loadProducts();
+    });
+
+    $(document).on('change keyup', '.filter-input', function(){
+        loadProducts();
+    });
+
+    // Load sub-categories when categories change
+    $(document).on('change','input[name="category"]', function(){
+
+        let categories = [];
+        $('input[name="category"]:checked').each(function(){
+            categories.push($(this).val());
+        });
+
+        $.ajax({
+            url: "/ajax/get-subcategories/",
+            data: { 'categories[]': categories },
+            success: function(data){
+                let html = "";
+                data.forEach(function(sub){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="sub_category"
+                               value="${sub.id}">
+                        <label class="form-check-label">${sub.sub_cat_name}</label>
+                    </div>`;
+                });
+                $('#subcategory-container').html(html);
+
+                loadProducts(); 
+            }
+        });
+        
+        $.ajax({
+            url: "/ajax/get-subsub-categories-from-category/",
+            data: { 'categories[]': categories },
+            success: function(data){
+                let html = "";
+                data.forEach(function(subsub){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="sub_sub_category"
+                               value="${subsub.id}">
+                        <label class="form-check-label">${subsub.sub_sub_cat_name}</label>
+                    </div>`;
+                });
+                $('#subsubcategory-container').html(html); 
+
+                loadProducts(); 
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-brands-from-category/",
+            data: { 'categories[]': categories },
+            success: function(data){
+                let html = "";
+                data.forEach(function(brand){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="brand"
+                               value="${brand.id}">
+                        <label class="form-check-label">${brand.name}</label>
+                    </div>`;
+                });
+                $('#brand-container').html(html); 
+
+                loadProducts(); 
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-colors-from-category/",
+            data: { 'categories[]': categories },
+            success: function(data){
+                let html = "";
+                data.forEach(function(color){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="color"
+                               value="${color.id}">
+                        <label class="form-check-label">${color.name}</label>
+                    </div>`;
+                });
+                $('#color-container').html(html); 
+
+                loadProducts(); 
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-sizes-from-category/",
+            data: { 'categories[]': categories },
+            success: function(data){
+                let html = "";
+                data.forEach(function(size){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="size"
+                               value="${size.id}">
+                        <label class="form-check-label">${size.value}</label>
+                    </div>`;
+                });
+                $('#size-container').html(html); 
+
+                loadProducts(); 
+            }
+        });
+
+    });
+
+
+    $(document).on('change','input[name="sub_category"]', function(){
+
+        let sub_categories = [];
+        $('input[name="sub_category"]:checked').each(function(){
+            sub_categories.push($(this).val());
+        });
+
+        $.ajax({
+            url: "/ajax/get-subsubcategories/",
+            data: { 'sub_categories[]': sub_categories, 'categories[]': "{{ category }}", 'sub_category_id': "{{ sub_category.id }}" },
+            success: function(data){
+                let html = "";
+                data.forEach(function(subsub){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="sub_sub_category"
+                               value="${subsub.id}">
+                        <label class="form-check-label">${subsub.sub_sub_cat_name}</label>
+                    </div>`;
+                });
+                $('#subsubcategory-container').html(html);
+
+                loadProducts(); 
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-brands-from-sub-category/",
+            data: { 'sub_categories[]': sub_categories, 'categories[]': "{{ category }}" },
+            success: function(data){
+                let html = "";
+                data.forEach(function(brand){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="brand"
+                               value="${brand.id}">
+                        <label class="form-check-label">${brand.name}</label>
+                    </div>`;
+                });
+                $('#brand-container').html(html);
+
+                loadProducts();
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-colors-from-sub-category/",
+            data: { 'sub_categories[]': sub_categories, 'categories[]': "{{ category }}" },
+            success: function(data){
+                let html = "";
+                data.forEach(function(color){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="color"
+                               value="${color.id}">
+                        <label class="form-check-label">${color.name}</label>
+                    </div>`;
+                });
+                $('#color-container').html(html);
+
+                loadProducts();
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-sizes-from-sub-category/",
+            data: { 'sub_categories[]': sub_categories, 'categories[]': "{{ category }}" },
+            success: function(data){
+                let html = "";
+                data.forEach(function(size){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="size"
+                               value="${size.id}">
+                        <label class="form-check-label">${size.value}</label>
+                    </div>`;
+                });
+                $('#size-container').html(html);
+
+                loadProducts();
+            }
+        });
+
+    });
+
+    $(document).on('change','input[name="sub_sub_category"]', function(){
+        // let sub_categories = [];
+        // let sub_sub_categories = [];
+        // $('input[name="sub_category"]:checked').each(function(){
+        //     sub_categories.push($(this).val());
+        // });
+        // $('input[name="sub_sub_category"]:checked').each(function(){
+        //     sub_sub_categories.push($(this).val());
+        // });
+
+        // if (sub_categories.length === 0){
+        //     sub_categories.push("{{ sub_category.id }}");
+        // }
+        // if (sub_sub_categories.length === 0){
+        //     sub_sub_categories.push("{{ sub_sub_category.id }}");
+        // }
+
+        let sub_categories = [];
+        let sub_sub_categories = [];
+
+        $('input[name="sub_category"]:checked').each(function(){
+            sub_categories.push($(this).val());
+        });
+
+        $('input[name="sub_sub_category"]:checked').each(function(){
+            sub_sub_categories.push($(this).val());
+        });
+
+        $.ajax({
+            url: "/ajax/get-brands-from-sub-sub-category/",
+            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': "{{ category }}" },
+            success: function(data){
+                let html = "";
+                data.forEach(function(brand){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="brand"
+                               value="${brand.id}">
+                        <label class="form-check-label">${brand.name}</label>
+                    </div>`;
+                });
+                $('#brand-container').html(html);
+
+                loadProducts();
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-colors-from-sub-sub-category/",
+            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': "{{ category }}" },
+            success: function(data){
+                let html = "";
+                data.forEach(function(color){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="color"
+                               value="${color.id}">
+                        <label class="form-check-label">${color.name}</label>
+                    </div>`;
+                });
+                $('#color-container').html(html);
+
+                loadProducts();
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-sizes-from-sub-sub-category/",
+            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': "{{ category }}" },
+            success: function(data){
+                let html = "";
+                data.forEach(function(size){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="size"
+                               value="${size.id}">
+                        <label class="form-check-label">${size.value}</label>
+                    </div>`;
+                });
+                $('#size-container').html(html);
+
+                loadProducts();
+            }
+        });
+    });
+
+
+    $(document).on('change','input[name="brand"]', function(){
+
+        let brands = [];
+        let categories = [];
+        let sub_categories = [];
+        let sub_sub_categories = [];
+        $('input[name="brand"]:checked').each(function(){
+            brands.push($(this).val());
+        });
+        $('input[name="sub_category"]:checked').each(function(){
+            sub_categories.push($(this).val());
+        });
+        $('input[name="sub_sub_category"]:checked').each(function(){
+            sub_sub_categories.push($(this).val());
+        });
+
+        $.ajax({
+            url: "/ajax/get-sizes-from-brand/",
+            data: { 'brand_ids[]': brands, 'categories[]': "{{ category }}", 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
+            success: function(data){
+                let html = "";
+                data.forEach(function(size){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="size"
+                               value="${size.id}">
+                        <label class="form-check-label">${size.value}</label>
+                    </div>`;
+                });
+                $('#size-container').html(html);
+
+                loadProducts();
+            }
+        });
+
+        $.ajax({
+            url: "/ajax/get-colors-from-brand/",
+            data: { 'brand_ids[]': brands, 'categories[]': "{{ category }}", 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
+            success: function(data){
+                let html = "";
+                data.forEach(function(color){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="color"
+                               value="${color.id}">
+                        <label class="form-check-label">${color.name}</label>
+                    </div>`;
+                });
+                $('#color-container').html(html);
+
+                loadProducts();
+            }
+        });
+    
+    });
+
+
+
+    $(document).on('change','input[name="color"]', function(){
+
+        let colors = [];
+        let brands = [];
+        let categories = [];
+        let sub_categories = [];
+        let sub_sub_categories = [];
+
+        $('input[name="color"]:checked').each(function(){
+            colors.push($(this).val());
+        });
+        
+        $('input[name="brand"]:checked').each(function(){
+            brands.push($(this).val());
+        });
+        $('input[name="sub_category"]:checked').each(function(){
+            sub_categories.push($(this).val());
+        });
+        $('input[name="sub_sub_category"]:checked').each(function(){
+            sub_sub_categories.push($(this).val());
+        });
+
+        $.ajax({
+            url: "/ajax/get-sizes-from-color/",
+            data: { 'color_ids[]': colors, 'brand_ids[]': brands, 'categories[]': "{{ category }}", 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
+            success: function(data){
+                let html = "";
+                data.forEach(function(size){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="size"
+                               value="${size.id}">
+                        <label class="form-check-label">${size.value}</label>
+                    </div>`;
+                });
+                $('#size-container').html(html);
+
+                loadProducts();
+            }
+        }); 
+    });
+
+    $(document).on('change','input[name="size"]', function(){
+
+        let sizes = [];
+        $('input[name="size"]:checked').each(function(){
+            sizes.push($(this).val());
+        });
+
+        $.ajax({
+            url: "/ajax/get-colors-from-size/",
+            data: { 'size_ids[]': sizes },
+            success: function(data){
+                let html = "";
+                data.forEach(function(color){
+                    html += `
+                    <div class="form-check">
+                        <input class="form-check-input filter-input"
+                               type="checkbox"
+                               name="color"
+                               value="${color.id}">
+                        <label class="form-check-label">${color.name}</label>
+                    </div>`;
+                });
+                $('#color-container').html(html);
+
+                loadProducts();
+            }
+        });
+        
+    });
+
+    // Handle pagination with AJAX
+    $(document).on('click', '.pagination a', function(e){
+        e.preventDefault();
+
+        let url = $(this).attr('href');
+
+        $('#product-container').hide();
+        $('#product-loading').show();
+
+        $.ajax({
+            url: url,
+            success: function(response){
+                $('#product-loading').hide();
+                $('#product-container').html(response).fadeIn(200);
+            }
+        });
+
+        window.history.pushState(null, null, url);
+    });
+
+    // setTimeout(function(){
+    //     $('.filter-input:checked').each(function(){
+    //         $(this).trigger('change');
+    //     });
+    // }, 100);
+
+    $(document).on('input', 'input[name="min_price"], input[name="max_price"]', function() {
+        if ($(this).val() < 0) {
+            console.log("Negative value not allowed", $(this).val());
+            $(this).val(0);
+        }
+    });
+
+
+
+
+});
+
+
+
+
+
+</script>
+{% endblock %}

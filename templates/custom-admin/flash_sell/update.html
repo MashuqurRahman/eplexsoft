@@ -1,0 +1,101 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Update Product{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Update Product</h5>
+    </div>
+
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.category|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.sub_category|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.sub_sub_category|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.product|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.start_date|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.end_date|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.discount_amount|as_crispy_field }}
+                </div>
+                <div class="col-md-4" style="margin-top: 40px;">
+                    {{ form.is_percentage|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="submit_btn text-center pt-3 pb-4">
+                <button type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+<script>
+    var load_subcategories_url = "{% url 'ajax_load_subcategories' %}"
+    var load_sub_subcategories_url = "{% url 'ajax_load_sub_subcategories' %}"
+    var load_products_url = "{% url 'ajax_load_products' %}"
+
+    $("#id_category").change(function () {
+        var categoryId = $(this).val();  
+        $.ajax({                       
+            url: load_subcategories_url,                 
+            data: {
+                'category': categoryId      
+            },
+            success: function (data) { 
+                $("#id_sub_category").html(data); 
+            }
+        });
+    });
+
+    $("#id_sub_category").change(function () {
+        var sub_categoryId = $(this).val();  
+        $.ajax({                       
+            url: load_sub_subcategories_url,                 
+            data: {
+                'sub_category': sub_categoryId     
+            },
+            success: function (data) { 
+                $("#id_sub_sub_category").html(data); 
+            }
+        });
+    });
+
+    $("#id_sub_sub_category").change(function(){
+        var sub_sub_catId = $(this).val();
+        $.ajax({
+            url: load_products_url,
+            data: {
+                'sub_sub_catId': sub_sub_catId
+            },
+            success: function(data){
+                $("#id_product").html(data);
+            }
+        })
+    })
+</script>
+
+{% endblock  %}

@@ -1,0 +1,206 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="container-fluid mt-4">
+    <ul class="nav nav-pills mb-3 flex-nowrap overflow-auto">
+        {% for key, label in status_list %}
+            <li class="nav-item">
+                <a class="nav-link 
+                    {% if active_status == key or not active_status and key == 'all' %}active{% endif %}"
+                    href="{% if key == 'all' %}{% url 'order_list' %}{% else %}{% url 'order_list_by_status' key %}{% endif %}">
+                    {{ label }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-header mb-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="data-search">
+                            <div class="input-group search">
+                                <input class="form-control" id="search_id" placeholder="Search..." type="search">
+                                <span class="input-group-text" id="searchBtn">
+                                    <i aria-hidden="true" class="fa fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive" id="search_items">
+                {% if active_status == 'confirmed' %}
+                <button id="bulk_action_btn" class="btn btn-success mb-3">
+                    Send to Courier
+                </button>
+                {% endif %}
+                <table class="table align-middle table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            {% if active_status == 'confirmed' %}
+                            <th style="width:40px;">
+                                <input class="custom-checkbox1" type="checkbox" id="select_all" title="Select All">
+                            </th>
+                            {% endif %}
+                            <th class='fw-bold'>Order ID</th>
+                            <th class='fw-bold'>Order Date</th>
+                            <th class='fw-bold'>Customer Name</th>
+                            <th class='fw-bold'>Total</th>
+                            <th class='fw-bold'>Payment Status</th>
+                            <th class='fw-bold'>Order Status</th>
+                            <th class='fw-bold'>Action</th>
+                            {% if active_status != 'pending' and active_status != 'confirmed' %}
+                            <th class='fw-bold text-center'>Courier</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            {% if active_status == 'confirmed' %}
+                            <td>
+                                {% if order.order_status == 'confirmed' and not order.consignment_obj %}
+                                    <input type="checkbox" class="order-checkbox custom-checkbox" style="accent-color: green;" value="{{ order.id }}" data-order-no="{{ order.order_no }}">
+                                {% else %}
+                                    <input type="checkbox" class="custom-checkbox" style="border: 1px solid red;" disabled title="Not eligible for bulk send">
+                                {% endif %}
+                            </td>
+                            {% endif %}
+
+                            <td>{{ order.order_no }}</td>
+                            <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                            <td>{{ order.shipping_address.full_name }}</td>
+                            <td>৳ {{ order.total_payable }}</td>
+                            <td>{{ order.get_payment_status_display }}</td>
+                            <td>
+                                <span class="badge order-status
+                                    {% if order.order_status == 'pending' %}bg-primary
+                                    {% elif order.order_status == 'confirmed' %}bg-info
+                                    {% elif order.order_status == 'cancelled' %}bg-warning
+                                    {% elif order.order_status == 'shipped' %}bg-secondary
+                                    {% elif order.order_status == 'returned' %}bg-dark
+                                    {% elif order.order_status == 'delivered' %}bg-success
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ order.get_order_status_display }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="action-btns text-center">
+                                    <a href="{% url 'order_detail' order.id %}" 
+                                        class="action-btn action-view"
+                                        title="View Order">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if order.order_status == 'confirmed' or order.order_status == 'pending' %}
+                                    <a href="{% url 'order_edit_url' order.id %}" 
+                                        class="action-btn action-edit" title="Edit Order"
+                                        style="color: white;">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+
+                            {% if active_status != 'pending' and active_status != 'confirmed' %}
+                            <td class="text-center">
+                                {% if order.consignment_obj %}
+                                    <span class="badge bg-secondary mb-1 d-block">
+                                        🔖 {{ order.consignment_obj.tracking_code }}
+                                    </span>
+                                    <span class="badge bg-info text-dark mb-1 d-block">
+                                        {{ order.consignment_obj.get_status_display|title }}
+                                    </span>
+
+                                    <a href="{% url 'refresh_consignment' order.id %}" 
+                                        class="btn add-btn btn-sm">
+                                            <i class="bi bi-arrow-clockwise"></i> Track
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">No consignment</span>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{% if active_status == 'confirmed' or active_status == 'shipped' %}9{% else %}9{% endif %}" 
+                                class="text-center">No Orders Found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+<script>
+    $(document).ready(function(){
+        var search_url = "{% url 'search_ordered_product' %}"
+        var redirect_url = "{% url 'order_list' %}"
+
+        $("#search_id").keypress(function (e) { 
+            if (e.keyCode == 13){
+                $("#searchBtn").click();
+            }
+        });
+    
+        $("#searchBtn").click(function () {
+            if($("#search_id").val())
+                $.ajax({                       
+                    url: search_url,                   
+                    data: { 'search_id': $("#search_id").val() },
+                    success: function (data) {   
+                        $("#search_items").html(data);
+                    }
+                });
+            else
+                location.href = redirect_url
+        });
+    });
+
+
+
+    $("#select_all").click(function () {
+        $(".order-checkbox").prop('checked', this.checked);
+    });
+
+    $("#bulk_action_btn").click(function () {
+        let selected = [];
+
+        $(".order-checkbox:checked").each(function () {
+            selected.push($(this).val());
+        });
+
+        if (selected.length === 0) {
+            alert("Please select at least one order.");
+            return;
+        }
+
+        let url = "/admin-dashboard/bulk-courier-form/?ids=" + selected.join(",");
+        window.location.href = url;
+    });
+</script>
+{% endblock %}

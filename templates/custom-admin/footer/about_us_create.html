@@ -1,0 +1,107 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}About Us{% endblock %}
+
+{% block Style %}
+<style>
+    .ql-editor {
+        background: #fff;
+        color: #212529;
+        font-size: 15px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+    }
+    .ql-editor strong {
+        font-weight: bold !important;
+    }
+    .ql-editor em {
+        font-style: italic !important;
+    }
+    .ql-editor u {
+        text-decoration: underline !important;
+    }
+
+    .ql-toolbar button {
+        background: none !important;
+        border: none !important;
+    }
+    #id_description {
+        height: 0;
+        overflow: hidden;
+        position: absolute; 
+        left: -9999px;      
+    }
+</style>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Add About Us</h5>
+    </div>
+
+    <div class="card-body">
+        <form id="submit_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-12 mb-2">
+                    <label for="id_description" class="form-label fw-bold">Description<span style="color: red; font-size: 14px;">*</span></label>
+                    {{ form.description }}
+                    <div id="quill_editor" style="height: 200px; background: #fff;"></div>
+                </div>   
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <button id="submit_btn" type="submit" class="btn add-btn">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var quill = new Quill('#quill_editor', {
+    theme: 'snow',
+    placeholder: 'Type your terms and conditions here...',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'header': 1 }, { 'header': 2 }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['link', 'blockquote', 'code-block'],
+        ['clean']
+      ]
+    }
+  });
+
+  const hiddenField = document.getElementById('id_description');
+  const form = document.getElementById('submit_form');
+  const submitBtn = document.getElementById('submit_btn');
+
+  if (hiddenField.value.trim() !== '') {
+    quill.root.innerHTML = hiddenField.value;
+  }
+
+  form.addEventListener('submit', function(e) {
+    hiddenField.value = quill.root.innerHTML;
+
+    if (!quill.getText().trim()) {
+      alert('Brief Description is required.');
+      e.preventDefault();
+      return;
+    }
+
+    submitBtn.disabled = true;
+  });
+});
+</script>
+
+{% endblock %}

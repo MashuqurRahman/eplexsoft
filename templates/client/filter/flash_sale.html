@@ -1,0 +1,190 @@
+{% load static %}
+<h4 class="mb-3 fw-bold">Flash Sale Products</h4>
+    
+<div id="product-loading" style="display:none;">
+    <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-4">
+
+        {% for i in "12345678" %}
+        <div class="col">
+            <div class="product-skeleton">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text small"></div>
+                <div class="skeleton-btn"></div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-4">
+{% if flash_sell_product %}
+    {% for item in flash_sell_product %}
+        <div class="col">
+            <div class="products">
+
+                <div class="wishlist" data-product-id="{{ item.id }}">
+                    {% if item.cover_product_attribute.final_discount.total_discount%}
+                        <span style="position: relative; display: inline-block; float: right;">
+                            <img style="width: 60px; margin-right: 6px;" src="{% static 'assets/img/red.png' %}" alt="">
+                            <span class="discount_prices">
+                                {{ item.cover_product_attribute.final_discount.total_discount_percentage }}% <br> OFF
+                            </span>
+                        </span>
+                    {% endif %}
+                    {% comment %} <i class="loves bi {% if item.id in user_wishlist_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i> {% endcomment %}
+                </div>
+
+                <div class="productimg">
+                    <a href="{% url 'product_details_page_url' item.id %}">
+                        <img src="{{ item.cover_product_attribute.image.url }}" alt="product img">
+                    </a>
+                </div>
+
+                <div class="productcon">
+                    <a href="{% url 'product_details_page_url' item.id %}">
+                        {{ item.product_name }}
+                    </a>
+
+                    {% if item.cover_product_attribute.final_discount.total_discount %}
+                        <h5>৳ {{ item.cover_product_attribute.product_final_price  }} <del>৳ {{ item.cover_product_attribute.regular_price }}</del></h5>
+                    {% else %}
+                        <h5>৳ {{ item.cover_product_attribute.regular_price }}</h5>
+                    {% endif %}
+
+                    {% comment %} <div class="starsold">
+                        <p><i class="bi bi-star-fill"></i> {{item.reviews_calculation.average_rating|floatformat:"1" }} ({{item.reviews_calculation.total_reviews}})</p>
+                        <div class="vr"></div>
+                        <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                    </div> {% endcomment %}
+
+                    <div class="starsold review-sold">
+                        <ul class="open-review-modal" style="cursor:pointer">
+                            {% for i in item.reviews_calculation.full_stars %}
+                            <li><i style="font-size: 12px;" class="bi bi-star-fill text-warning"></i></li>
+                            {% endfor %}
+
+                            {% if item.reviews_calculation.half_star %}
+                            <li><i style="font-size: 12px;"class="bi bi-star-half text-warning"></i></li>
+                            {% endif %}
+
+                            {% for i in item.reviews_calculation.empty_stars %}
+                            <li><i style="font-size: 12px;"class="bi bi-star text-muted"></i></li>
+                            {% endfor %}
+                            <li style="color: #64748b !important;">({{item.reviews_calculation.total_reviews}})</li>
+                        </ul>
+                        <div class="vr"></div>
+                        <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                    </div>
+
+                    {% comment %} <p class="small">
+                        {% if item.product.product_stock_status.flag %}
+                            <span class="text-success">Stock: {{item.product_stock_status.stock_qty}}</span>
+                        {% else %}
+                            <span class="text-danger">Out of stock</span>
+                        {% endif %}
+                    </p> {% endcomment %}
+                </div>
+
+                <div class="buybtn">
+                    {% comment %} <a href="javascript:void(0)" class="add-to-cart"
+                        data-product-id="{{ item.id }}"
+                        data-variant-id="{{ cover.id }}">
+                        <i class="bi bi-bag-check"></i>
+                    </a>
+                    {% if item.product_stock_status.flag %}
+                    <a href="{% url 'buy_now_product_url' item.id %}">
+                        Buy now
+                    </a>
+                    {% else %}
+                    <a href="javascript:void(0)" diabled>
+                        Buy now
+                    </a>
+                    {% endif %} {% endcomment %}
+
+                    <a href="{% url 'product_details_page_url' item.id %}">
+                        Buy now
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    {% endfor %}
+
+{% else %}
+    <div class="col" style="width: 100%">
+        <div class="products text-center">
+            <h5 style="color: red; text-align: center;">Products not found</h5>
+        </div>
+    </div>
+{% endif %}
+</div>
+
+{% if flash_sell_product.paginator.count > 0 %}
+
+    <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap">
+
+        <p class="mb-0 text-muted small">
+            Showing {{ flash_sell_product.start_index }} to {{ flash_sell_product.end_index }} of {{ flash_sell_product.paginator.count }} results
+        </p>
+
+
+        {% if flash_sell_product.paginator.num_pages > 1 %}
+        <ul class="pagination mb-0">
+
+
+            {% if flash_sell_product.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ flash_sell_product.previous_page_number }}">
+                &laquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+            {% endif %}
+
+
+
+            {% for num in flash_sell_product.paginator.page_range %}
+                {% if num >= flash_sell_product.number|add:'-2' and num <= flash_sell_product.number|add:'2' %}
+
+                    {% if flash_sell_product.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ num }}">
+                        {{ num }}
+                        </a>
+                    </li>
+                    {% endif %}
+
+                {% endif %}
+            {% endfor %}
+
+
+            {% if flash_sell_product.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ flash_sell_product.next_page_number }}">
+                &raquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+            {% endif %}
+
+        </ul>
+        {% endif %}
+
+    </div>
+
+{% endif %}

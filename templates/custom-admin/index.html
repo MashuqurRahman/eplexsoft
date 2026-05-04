@@ -1,0 +1,145 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% block title %}Dashboard{% endblock  %}
+
+{% block content %}
+    <!-- total-count -->
+    <section class="boxs totalcouints">
+        <div class="row">
+            {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'section_admin' or request.user.role == 'employee' %}
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <a href="{% url 'categories_list_url' %}">
+                    <div class="totalcount">
+                        <h3>{{total_category}}</h3>
+                        <p>Total Category <span><img src="{% static 'assets/img/dashboard-shop.svg' %}" alt="icon"></span></p>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'section_admin' or request.user.role == 'employee' %}
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <a href="{% url 'sub_categories_index_url' %}">
+                    <div class="totalcount">
+                        <h3>{{total_sub_category}}</h3>
+                        <p>Total Sub Category <span><img src="{% static 'assets/img/dashboard-product.svg' %}" alt="icon"></span></p>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'section_admin' or request.user.role == 'employee' %}
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <a href="{% url 'products_list_url' %}">
+                    <div class="totalcount">
+                        <h3>{{total_product}}</h3>
+                        <p>Total Products <span><img src="{% static 'assets/img/dashboard-order.svg' %}" alt="icon"></span></p>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'section_admin' or request.user.role == 'employee' %}
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <a href="{% url 'flash_sell_index_url' %}">
+                    <div class="totalcount">
+                        <h3>{{total_flash_sell}}</h3>
+                        <p>Total Flash Sell Products <span><img src="{% static 'assets/img/dashboard-customer.svg' %}" alt="icon"></span></p>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="row order-status-section">
+            <h5 class="fw-bold mb-4">Order Status</h5>
+
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                <a href="{% url 'order_list_by_status' 'pending' %}" class="order-status-card pending">
+                    <div class="order-status-card-body">
+                        <div class="order-status-card-info">
+                            <h3>{{total_pending_order}}</h3>
+                            <p>Pending Orders</p>
+                        </div>
+                        <div class="order-status-card-icon">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                <a href="{% url 'order_list_by_status' 'confirmed' %}" class="order-status-card confirmed">
+                    <div class="order-status-card-body">
+                        <div class="order-status-card-info">
+                            <h3>{{total_confirmed_order}}</h3>
+                            <p>Confirmed Orders</p>
+                        </div>
+                        <div class="order-status-card-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                <a href="{% url 'order_list_by_status' 'shipped' %}" class="order-status-card shipped">
+                    <div class="order-status-card-body">
+                        <div class="order-status-card-info">
+                            <h3>{{total_shipped_order}}</h3>
+                            <p>Shipped Orders</p>
+                        </div>
+                        <div class="order-status-card-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                <a href="{% url 'order_list_by_status' 'delivered' %}" class="order-status-card delivered">
+                    <div class="order-status-card-body">
+                        <div class="order-status-card-info">
+                            <h3>{{total_delivered_order}}</h3>
+                            <p>Delivered Orders</p>
+                        </div>
+                        <div class="order-status-card-icon">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                <a href="{% url 'order_list_by_status' 'cancelled' %}" class="order-status-card cancelled">
+                    <div class="order-status-card-body">
+                        <div class="order-status-card-info">
+                            <h3>{{total_cancelled_order}}</h3>
+                            <p>Cancelled Orders</p>
+                        </div>
+                        <div class="order-status-card-icon">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                <a href="{% url 'order_list_by_status' 'returned' %}" class="order-status-card returned">
+                    <div class="order-status-card-body">
+                        <div class="order-status-card-info">
+                            <h3>{{total_returned_order}}</h3>
+                            <p>Returned Orders</p>
+                        </div>
+                        <div class="order-status-card-icon">
+                            <i class="bi bi-arrow-return-left"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </section>
+    <!-- total-count -->
+
+{% endblock  %}
+
+{% block JS %}
+
+{% endblock  %}

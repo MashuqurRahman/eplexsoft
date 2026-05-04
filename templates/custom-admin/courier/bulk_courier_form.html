@@ -1,0 +1,132 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Courier Dispatch{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="bc-wrap">
+                <p class="bc-title card pb-2">
+                    Courier Dispatch
+                    <span class="bc-pill">{{ orders|length }} Order{{ orders|length|pluralize }}</span>
+                </p>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="ids" value="{{ ids }}">
+
+                    <!-- Orders Card -->
+                    <div class="bc-card">
+                        <div class="bc-card-header">
+                            Selected Orders
+                            <span class="bc-count">Orders: {{ orders|length }}</span>
+                        </div>
+
+                        <!-- Desktop Table -->
+                        <div class="bc-table-wrap">
+                            <table class="bc-tbl">
+                                <thead>
+                                    <tr>
+                                        <th style="width:32px;">SL No.</th>
+                                        <th>Order No</th>
+                                        <th>Order Date</th>
+                                        <th>Customer Name</th>
+                                        <th class="th-num">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td class="idx">{{ forloop.counter }}</td>
+                                        <td><span class="order-badge">{{ order.order_no }}</span></td>
+                                        <td><span class="date-cell">{{ order.created_at|date:"d M Y, h:i A" }}</span></td>
+                                        <td><span class="name-cell">{{ order.shipping_address.full_name }}</span></td>
+                                        <td class="td-num">৳ {{ order.total_payable }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" style="text-align:center; color:#aaa; padding: 20px;">No orders selected.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mobile Cards -->
+                        <div class="mobile-cards">
+                            {% for order in orders %}
+                            <div class="mob-card">
+                                <div class="mob-head">
+                                    <span class="order-badge">{{ order.order_no }}</span>
+                                    <span class="mob-counter">{{ forloop.counter }} of {{ orders|length }}</span>
+                                </div>
+                                <div class="mob-row">
+                                    <span class="mob-lbl">Date</span>
+                                    <span class="mob-val is-date">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+                                </div>
+                                <div class="mob-row">
+                                    <span class="mob-lbl">Customer</span>
+                                    <span class="mob-val is-name">{{ order.shipping_address.full_name }}</span>
+                                </div>
+                                <div class="mob-row">
+                                    <span class="mob-lbl">Total</span>
+                                    <span class="mob-val is-amount">৳ {{ order.total_payable }}</span>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p style="padding:16px; color:#aaa; text-align:center;">No orders selected.</p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="bc-tfoot">
+                            Total orders: <strong>{{ orders|length }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Courier Selection Card -->
+                    <div class="bc-card">
+                        <div class="bc-card-header">Select Courier Partner</div>
+                        <div class="courier-grid">
+                            <div class="courier-opt">
+                                <input type="radio" name="courier" id="courier_steadfast" value="steadfast" checked>
+                                <label class="courier-lbl" for="courier_steadfast">
+                                    <div class="courier-abbr">
+                                        <img src="{% static 'assets/img/steadfast_img.jfif' %}" alt="">
+                                    </div>
+                                    Steadfast
+                                </label>
+                            </div>
+                            <div class="courier-opt">
+                                <input type="radio" name="courier" id="courier_pathao" value="pathao">
+                                <label class="courier-lbl" for="courier_pathao">
+                                    <div class="courier-abbr">
+                                        <img src="{% static 'assets/img/pathao.png' %}" alt="">
+                                    </div>
+                                    Pathao
+                                </label>
+                            </div>
+                            <div class="courier-opt">
+                                <input type="radio" name="courier" id="courier_redx" value="redx">
+                                <label class="courier-lbl" for="courier_redx">
+                                    <div class="courier-abbr">
+                                        <img src="{% static 'assets/img/Redxx.jfif' %}" alt="">
+                                    </div>
+                                    RedX
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bc-actions">
+                            <a href="javascript:history.back()" class="btn-back">← Cancel</a>
+                            <button type="submit" class="btn add-btn">Sent to Courier</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

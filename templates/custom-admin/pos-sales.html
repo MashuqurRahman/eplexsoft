@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Readyecommerce</title>
+    <!-- Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Responsive Website Design, landing page, Portfolio, Business, E-commerce">
+    <meta name="description" content="Responsive Website Design & Development">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="rebots" content="index, archive">
+    <link rel="canonical" href="https://www.example.com">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!--favicon icon-->
+    <link rel="shortcut icon" href="assets/img/favicon.ico">
+
+    <!-- CSS style links-->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+
+</head>
+
+<body>
+
+    <!-- Modal -->
+    <div class="modal fade" id="Customer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Customer</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3">
+                        <div class="col-md-6">
+                            <label for="First" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="First" placeholder="First Name">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="Last" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="Last" placeholder="Last Name">
+                        </div>
+                        <div class="col-md-12">
+                            <label for="Phone" class="form-label">Phone Number *</label>
+                            <input type="number" class="form-control" id="Phone" placeholder="Phone Number">
+                        </div>
+                        <div class="col-12">
+                            <label for="Gender" class="form-label">Gender</label>
+                            <select id="inputState" class="form-select">
+                                <option selected>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="Email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="Email" placeholder="Enter Email Address">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cusbtn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="cusbtn2">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- main-area -->
+    <section class="main-area">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <!-- menu -->
+                    <div class="menu-area fixed-menu">
+                        <div class="closes"><i class="bi bi-x-circle"></i></div>
+
+                        <!-- logo -->
+                        <div class="logo">
+                            <a href="index.html">
+                                <img class="small-logo" src="../assets/img/logo-s.png" alt="logo">
+                                <img class="big-logo" src="../assets/img/logo.png" alt="logo">
+                            </a>
+                        </div>
+                        <!-- logo -->
+                        <nav class="menu">
+                            <ul>
+                                <li>
+                                    <a href="index.html"><i class="bi bi-house-door-fill"></i> <span class="hide-item">Dashboard </span></a>
+                                </li>
+                                <li>
+                                    <a href="orders.html"><i class="bi bi-cart-check-fill"></i> <span class="hide-item"> Order Management </span></a>
+                                </li>
+
+                                <li>
+                                    <a href="#"><i class="bi bi-recycle"></i> <span class="hide-item">POS Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                    <!-- sub-menu -->
+                                    <ul class="sub-menu">
+                                        <li><a href="pos.html">POS</a></li>
+                                        <li><a href="pos-sales.html">POS Sales History</a></li>
+                                        <li><a href="pos-draft.html">POS Draft</a></li>
+                                    </ul>
+                                    <!-- sub-menu -->
+
+                                </li>
+
+                                <li><a href="#"><i class="bi bi-bag-dash"></i> <span class="hide-item"> Refund Management </span> </a>
+                                </li>
+
+                                <li><a href="#"><i class="bi bi-chat-left-dots"></i> <span class="hide-item"> Conversations </span></a>
+
+                                </li>
+
+                                <li>
+                                    <a href="#"><i class="bi bi-columns-gap"></i> <span class="hide-item">Category Management</span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                    <!-- sub-menu -->
+                                    <ul class="sub-menu">
+                                        <li><a href="#">All Category</a></li>
+                                        <li><a href="#">Add Category</a></li>
+                                        <li><a href="#">All Sub Category</a></li>
+                                        <li><a href="#">Add Sub Category</a></li>
+                                    </ul>
+                                    <!-- sub-menu -->
+                                </li>
+                                <li>
+                                    <a href="#"><i class="bi bi-boxes"></i> <span class="hide-item">Product Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                    <!-- sub-menu -->
+                                    <ul class="sub-menu">
+                                        <li><a href="#">All Product</a></li>
+                                        <li><a href="#">Add Product</a></li>
+                                        <li><a href="#">Add Digital Product</a></li>
+                                    </ul>
+                                    <!-- sub-menu -->
+                                </li>
+                                <li>
+                                    <a href="#"><i class="bi bi-diagram-2"></i> <span class="hide-item">Product Variant Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                    <!-- sub-menu -->
+                                    <ul class="sub-menu">
+                                        <li><a href="#">Brand</a></li>
+                                        <li><a href="#">Color</a></li>
+                                        <li><a href="#">Size</a></li>
+                                        <li><a href="#">Unit</a></li>
+                                    </ul>
+                                    <!-- sub-menu -->
+                                </li>
+                                <li>
+                                    <a href="#"><i class="bi bi-megaphone"></i> <span class="hide-item">Promotion Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                    <!-- sub-menu -->
+                                    <ul class="sub-menu">
+                                        <li><a href="#">Brand</a></li>
+                                        <li><a href="#">Color</a></li>
+                                        <li><a href="#">Size</a></li>
+                                        <li><a href="#">Unit</a></li>
+                                    </ul>
+                                    <!-- sub-menu -->
+                                </li>
+
+                                <li><a href="#"><i class="bi bi-gear-wide-connected"></i> <span class="hide-item">Settings </span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- menu -->
+
+
+                    <!-- main-contents -->
+                    <div class="dashboard-content">
+
+                        <!-- header-area -->
+                        <div class="header-con">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <div class="titles">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <span class="mob"><i class="bi bi-layout-sidebar"></i></span>
+                                                <span class="menuwidth"> <i class="bi bi-layout-sidebar"></i></span>
+                                            </div>
+                                            <div class="flex-grow-1 ms-1">
+                                                <h2>POS Sales</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="users">
+                                        <div class="dropdown">
+                                            <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-bell"></i> 
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    9
+                                                    <span class="visually-hidden">unread messages</span>
+                                                </span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+
+                                                <div class="notification">
+                                                    <div class="noti-top">
+                                                        <p>Notifications</p>
+                                                        <a href="#">Marks all as read</a>
+                                                    </div>
+                                                    <div class="noti-body">
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="noti-footer">
+                                                        <a href="#">View All Notifications</a>
+                                                    </div>
+                                                </div>
+                                            </ul>
+                                        </div>
+                                        <div class="dropdown useradmin">
+                                            <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <p>Admin <span>Root</span> </p> 
+                                                <img src="../assets/img/profile.jpg" alt="profile">
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <div class="d-flex mb-2">
+                                                    <div class="flex-shrink-0">
+                                                        <img src="../assets/img/profile.jpg" alt="profile">
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h5>Admin</h5>
+                                                        <p>root@readyecommerce.com</p>
+                                                        <a href="#" class="editpro">Edit Profile</a>
+                                                    </div>
+                                                </div>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle"></i> Profile</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear-wide"></i> Settings</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-unlock"></i> Change Password</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i>  Logout</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- header-area -->
+
+                        <!-- pos sale -->
+                        <div class="boxs">
+                            <p class="subtitle">Orders Summary</p>
+
+                            <div class="table-responsive-xl">
+                                <table class="table mytable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Order ID</th>
+                                            <th scope="col">Order Date</th>
+                                            <th scope="col">Customer</th>
+                                            <th scope="col">Shop</th>
+                                            <th scope="col">Total Amount</th>
+                                            <th scope="col">Payment Method</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>RC000160</td>
+                                            <td>16 Dec 2025, 09:16 PM</td>
+                                            <td>Demo Customer</td>
+                                            <td>Echo Mart</td>
+                                            <td>
+                                                $2522
+                                                <span class="badge text-bg-success">Paid</span>
+                                            </td>
+                                            <td>Cash Payment</td>
+                                            <td class="view"><a href="order-details.html"><i class="bi bi-eye"></i></a> <a href="#"><i class="bi bi-download"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>RC000160</td>
+                                            <td>16 Dec 2025, 09:16 PM</td>
+                                            <td>Demo Customer</td>
+                                            <td>Echo Mart</td>
+                                            <td>
+                                                $2522
+                                                <span class="badge text-bg-success">Paid</span>
+                                            </td>
+                                            <td>Cash Payment</td>
+                                            <td class="view"><a href="order-details.html"><i class="bi bi-eye"></i></a> <a href="#"><i class="bi bi-download"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>RC000160</td>
+                                            <td>16 Dec 2025, 09:16 PM</td>
+                                            <td>Demo Customer</td>
+                                            <td>Echo Mart</td>
+                                            <td>
+                                                $2522
+                                                <span class="badge text-bg-success">Paid</span>
+                                            </td>
+                                            <td>Cash Payment</td>
+                                            <td class="view"><a href="order-details.html"><i class="bi bi-eye"></i></a> <a href="#"><i class="bi bi-download"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>RC000160</td>
+                                            <td>16 Dec 2025, 09:16 PM</td>
+                                            <td>Demo Customer</td>
+                                            <td>Echo Mart</td>
+                                            <td>
+                                                $2522
+                                                <span class="badge text-bg-success">Paid</span>
+                                            </td>
+                                            <td>Cash Payment</td>
+                                            <td class="view"><a href="order-details.html"><i class="bi bi-eye"></i></a> <a href="#"><i class="bi bi-download"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>RC000160</td>
+                                            <td>16 Dec 2025, 09:16 PM</td>
+                                            <td>Demo Customer</td>
+                                            <td>Echo Mart</td>
+                                            <td>
+                                                $2522
+                                                <span class="badge text-bg-success">Paid</span>
+                                            </td>
+                                            <td>Cash Payment</td>
+                                            <td class="view"><a href="order-details.html"><i class="bi bi-eye"></i></a> <a href="#"><i class="bi bi-download"></i></a></td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- pos sale -->
+
+
+
+                    </div>
+                    <!-- main-contents -->
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- main-area -->
+
+
+
+
+
+    <!-- Js script links-->
+    <script src="../assets/js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/slick.min.js"></script>
+    <script src="../assets/js/apexcharts.min.js"></script>
+    <script src="../assets/js/jquery-ui.min.js"></script>
+    <script src="../assets/js/select2.min.js"></script>
+    <script src="../assets/js/script.js"></script>
+
+
+</body>
+
+</html>

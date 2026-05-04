@@ -1,0 +1,142 @@
+{% extends "admin_base.html" %}
+{% block title %}Permission List{% endblock %}
+{% block content %}
+
+{% block Style %}
+<style>
+    .disabled-icon {
+        color: #adb5bd;      
+        opacity: 0.6;         
+        cursor: not-allowed;   
+        pointer-events: none;   
+    }
+
+    .disabled-icon i {
+        color: #adb5bd;
+    }
+</style>
+{% endblock %}
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="fw-bold">Permission List</h5>
+        <a href="{% url 'permission_create' %}" class="btn add-btn btn-sm">+ Add Permission</a>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Permission</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user, perms in grouped_permissions.items %}
+                        {% for perm in perms %}
+                        <tr>
+                            {% if forloop.first %}
+                                <td rowspan="{{ perms|length }}">{{ forloop.parentloop.counter }}</td>
+                                <td rowspan="{{ perms|length }}">{{ user.name|default:"N/A" }}</td>
+                                <td rowspan="{{ perms|length }}">{{ user.email|default:"N/A" }}</td>
+                                <td rowspan="{{ perms|length }}">{{ user.get_role_display|default:"N/A" }}</td>
+                            {% endif %}
+
+                            <td>{{ perm.get_permission_display|default:"N/A" }}</td>
+
+                            <td>
+                                {% if user.id == request.user.id or user.role == request.user.role %}
+                                    <span class="delete_btn disabled-icon" title="You cannot delete your own permission">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </span>
+                                {% else %}
+                                    <a href="{% url 'permission_delete' perm.id %}" 
+                                    class="delete_btn" 
+                                    title="Delete" 
+                                    onclick="SweetDelete(event, this.href)">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="12" class="text-center">Data is not found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="table-footer">
+                {% if obj_list.has_other_pages %}
+                    <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-end">
+                        {% if obj_list.has_previous %}
+                        <li class="page-item" >
+                                <a href="?page={{ obj_list.previous_page_number }}" class="page-link" tabindex="-1">Previous</a>
+                            </li>
+                        {% if obj_list.number > 3 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">1</a>
+                        </li>
+                            {% if obj_list.number > 4 %}
+
+                            <li class="page-item">
+                            <span class="page-link">...</span>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                        {% endif %}
+
+                        {% for num in obj_list.paginator.page_range %}
+                        {% if obj_list.number == num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% elif num > obj_list.number|add:'-3' and num < obj_list.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if obj_list.has_next %}
+                        {% if obj_list.number < obj_list.paginator.num_pages|add:'-3' %}
+                            <li class="page-item">
+                            <span class="page-link">...</span>
+                            </li>
+                            <li class="page-item">
+                            <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                            </li>
+                        {% elif obj_list.number < obj_list.paginator.num_pages|add:'-2' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item">
+                        <a href="?page={{ obj_list.next_page_number }}" class="page-link">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>  
+                </nav> 
+                {% endif %}  
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

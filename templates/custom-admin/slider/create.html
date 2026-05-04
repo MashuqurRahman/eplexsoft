@@ -1,0 +1,36 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Create Slider{% endblock  %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">{{ title }}</h5>
+    </div>
+
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.name|as_crispy_field }}
+                </div>
+                 <div class="col-md-6">
+                    {{ form.slider_url|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                 <div class="col-md-6">
+                    {{ form.image|as_crispy_field }}
+                </div>
+                <div class="col-md-6" style="margin-top: 40px;">
+                    {{ form.is_active|as_crispy_field }}
+                </div>
+            </div>
+
+            <button class="btn add-btn btn-sm">Save</button>
+            <a href="{% url 'slider_list' %}" class="btn btn-secondary btn-sm">Back</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

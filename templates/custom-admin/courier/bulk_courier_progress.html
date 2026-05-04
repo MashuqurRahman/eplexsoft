@@ -1,0 +1,153 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% block title %}Sending Orders...{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 720px;">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light fw-semibold">
+            <i class="bi bi-send me-2"></i>
+            Sending Orders via <span class="text-primary text-capitalize">{{ courier }}</span>
+        </div>
+        <div class="card-body">
+
+            <!-- Overall progress bar -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small class="text-muted">Overall Progress</small>
+                    <small class="text-muted"><span id="done-count">0</span> / {{ orders|length }}</small>
+                </div>
+                <div class="progress" style="height:12px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                         id="overall-bar" role="progressbar"
+                         style="width: 0%;" aria-valuenow="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Per-order status rows -->
+            <div class="list-group" id="order-status-list">
+                {% for order in orders %}
+                <div class="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                     id="order-row-{{ order.id }}">
+                    <!-- spinner / icon -->
+                    <span class="status-icon text-secondary" id="icon-{{ order.id }}">
+                        <i class="bi bi-hourglass fs-5"></i>
+                    </span>
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">{{ order.order_no }}</div>
+                        <small class="text-muted">{{ order.shipping_address.full_name }} &mdash; ৳ {{ order.total_payable }}</small>
+                    </div>
+                    <span class="badge bg-secondary" id="badge-{{ order.id }}">Waiting</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Final message -->
+            <div id="final-message" class="mt-4 d-none">
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    All orders have been processed! 
+                    <a href="{% url 'order_list' %}" class="alert-link ms-2">Back to Orders</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    #order-status-list .list-group-item { transition: background-color 0.3s; }
+    #order-status-list .list-group-item.processing { background-color: #fff8e1; }
+    #order-status-list .list-group-item.done-ok  { background-color: #e8f5e9; }
+    #order-status-list .list-group-item.done-err  { background-color: #fce4ec; }
+</style>
+{% endblock %}
+
+{% block JS %}
+<script>
+$(document).ready(function () {
+    // Data injected from Django
+    var orders  = {{ order_data|safe }};   // [{id, order_no}, ...]
+    var courier = "{{ courier }}";
+    var sendUrl = "{% url 'bulk_courier_send_one' %}";
+    var csrfToken = "{{ csrf_token }}";
+
+    var total   = orders.length;
+    var current = 0;
+
+    function setIcon(orderId, state) {
+        var icons = {
+            processing : '<span class="spinner-border spinner-border-sm text-warning"></span>',
+            ok         : '<i class="bi bi-check-circle-fill text-success fs-5"></i>',
+            error      : '<i class="bi bi-x-circle-fill text-danger fs-5"></i>',
+        };
+        $("#icon-" + orderId).html(icons[state] || '');
+    }
+
+    function setBadge(orderId, text, cls) {
+        $("#badge-" + orderId).removeClass().addClass("badge " + cls).text(text);
+    }
+
+    function updateProgress() {
+        var pct = Math.round((current / total) * 100);
+        $("#overall-bar").css("width", pct + "%").attr("aria-valuenow", pct);
+        $("#done-count").text(current);
+    }
+
+    function processNext(index) {
+        if (index >= total) {
+            // All done
+            $("#final-message").removeClass("d-none");
+            $("#overall-bar").removeClass("progress-bar-animated").addClass("bg-success");
+            return;
+        }
+
+        var order = orders[index];
+        var $row  = $("#order-row-" + order.id);
+
+        // Mark as processing
+        $row.addClass("processing");
+        setIcon(order.id, "processing");
+        setBadge(order.id, "Sending…", "bg-warning text-dark");
+
+        // Scroll the row into view
+        $row[0].scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+        // AJAX call to send this one order
+        $.ajax({
+            url: sendUrl,
+            method: "POST",
+            data: {
+                order_id : order.id,
+                courier  : courier,
+                csrfmiddlewaretoken: csrfToken,
+            },
+            success: function (res) {
+                $row.removeClass("processing").addClass("done-ok");
+                setIcon(order.id, "ok");
+                setBadge(order.id, res.tracking_code || "Sent", "bg-success");
+            },
+            error: function (xhr) {
+                var msg = xhr.responseJSON ? xhr.responseJSON.error : "Failed";
+                $row.removeClass("processing").addClass("done-err");
+                setIcon(order.id, "error");
+                setBadge(order.id, msg, "bg-danger");
+            },
+            complete: function () {
+                current++;
+                updateProgress();
+                // Wait 5 seconds before sending the next order
+                setTimeout(function () {
+                    processNext(index + 1);
+                }, 5000);
+            }
+        });
+    }
+
+    // Kick off the first order immediately
+    processNext(0);
+});
+</script>
+{% endblock %}

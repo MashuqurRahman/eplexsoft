@@ -1,0 +1,181 @@
+{% extends "admin_base.html" %}
+{% block title %}Flash Sale Products{% endblock %}
+{% block content %}
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="fw-bold">Flash Sale Products</h5>
+        <a href="{% url 'flash_sell_create_url' %}" class="btn add-btn btn-sm">+ Add Product</a>
+    </div>
+
+    <div class="card-body">
+        <div class="table-header mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="data-search">
+                        <div class="input-group search">
+                            <input class="form-control" id="search_id" placeholder="Search..." type="search">
+                            <span class="input-group-text" id="searchBtn"><i aria-hidden="true" class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive" id="search_items">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Campaign Name</th>
+                        <th>Campaign Type</th>
+                        <th>Category</th>
+                        <th>Sub Category</th>
+                        <th>Sub Sub Category</th>
+                        <th>Product</th>
+                        <th>Discount Amount</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    
+                        <th>Percent(%)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in obj_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ obj.side_slider.campaign_name }}</td>
+                        <td>{{ obj.side_slider.get_campaign_type_display}}</td>
+                        <td>{{ obj.product.categories }}</td>
+                        <td>{{ obj.product.sub_categories.sub_cat_name }}</td>
+                        <td>{{ obj.product.sub_sub_categories.sub_sub_cat_name }}</td>
+                        <td>{{ obj.product.product_name }}</td>
+                        <td>{{ obj.discount_amount }}</td>
+                        <th>{{ obj.side_slider.is_active_status }}</th>
+                        <td>{{ obj.side_slider.start_date}}- {{ obj.side_slider.end_date}}</td>
+
+                        
+                        <td>
+                            {% if obj.is_percentage == 1 %}
+                            Yes
+                            {% else %}
+                            NO
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% comment %} <a href="{% url 'flash_sell_update_url' obj.id %}" class="edit_btn" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a> {% endcomment %}
+
+                            <a href="{% url 'flash_sell_delete_url' obj.id %}" class="delete_btn" title="Delete" 
+                                onclick="SweetDelete(event, this.href)">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="12" class="text-center">No products found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="table-footer">
+            {% if obj_list.has_other_pages %}
+                <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    {% if obj_list.has_previous %}
+                    <li class="page-item" >
+                            <a href="?page={{ obj_list.previous_page_number }}" class="page-link" tabindex="-1">Previous</a>
+                        </li>
+                    {% if obj_list.number > 3 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">1</a>
+                    </li>
+                        {% if obj_list.number > 4 %}
+
+                        <li class="page-item">
+                        <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                    {% endif %}
+
+                    {% for num in obj_list.paginator.page_range %}
+                    {% if obj_list.number == num %}
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% elif num > obj_list.number|add:'-3' and num < obj_list.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if obj_list.has_next %}
+                    {% if obj_list.number < obj_list.paginator.num_pages|add:'-3' %}
+                        <li class="page-item">
+                        <span class="page-link">...</span>
+                        </li>
+                        <li class="page-item">
+                        <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                        </li>
+                    {% elif obj_list.number < obj_list.paginator.num_pages|add:'-2' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item">
+                    <a href="?page={{ obj_list.next_page_number }}" class="page-link">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>  
+            </nav> 
+            {% endif %}  
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+<script type=text/javascript>
+    $(document).ready(function(){
+        var search_url = "{% url 'flash_sale_search_url' %}"
+        var redirect_url = "{% url 'flash_sell_index_url' %}"
+
+        $("#search_id").keypress(function (e) { 
+            if (e.keyCode == 13){
+                $("#searchBtn").click();
+            }
+        });
+    
+        $("#searchBtn").click(function () {
+            if($("#search_id").val())
+                $.ajax({                       
+                    url: search_url,                   
+                data: {
+                    'search_id': $("#search_id").val()
+                },
+                success: function (data) {   
+                    $("#search_items").html(data);
+                }
+            });
+            else
+                location.href = redirect_url
+        });
+    });
+</script>
+{% endblock  %}

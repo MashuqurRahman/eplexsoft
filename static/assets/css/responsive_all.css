@@ -1,0 +1,7 @@
+/* MOBILE 375PX */
+@media (max-width: 375px) {
+    .nav-item.user-info {
+        margin-left: 251px;
+        margin-top: -44px;
+    }
+}

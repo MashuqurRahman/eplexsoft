@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Readyecommerce</title>
+    <!-- Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Responsive Website Design, landing page, Portfolio, Business, E-commerce">
+    <meta name="description" content="Responsive Website Design & Development">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="rebots" content="index, archive">
+    <link rel="canonical" href="https://www.example.com">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!--favicon icon-->
+    <link rel="shortcut icon" href="assets/img/favicon.ico">
+
+    <!-- CSS style links-->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+</head>
+
+<body>
+
+
+    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="staticBackdropLabel"><i class="bi bi-bag-dash-fill"></i> My Cart
+                <span>(2 items)</span>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="cartlist">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <img src="assets/img/mRKF0owlNWGDDChE5DsaKAwhqL7AbT1mYDC555DL.png" alt="...">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <button class="delete"><i class="bi bi-trash3-fill"></i></button>
+                        <span>Samsung</span>
+                        <h4>Mutton Meat</h4>
+                        <p>$8.20
+                            <del>$9.20</del>
+                            <span class="badge text-bg-danger"> 10.87% OFF</span>
+                        </p>
+                        <div class="number">
+                            <span class="minus">-</span>
+                            <input type="text" value="1" />
+                            <span class="plus">+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cartlist">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <img src="assets/img/mRKF0owlNWGDDChE5DsaKAwhqL7AbT1mYDC555DL.png" alt="...">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <button class="delete"><i class="bi bi-trash3-fill"></i></button>
+                        <span>Samsung</span>
+                        <h4>Mutton Meat</h4>
+                        <p>$8.20
+                            <del>$9.20</del>
+                            <span class="badge text-bg-danger"> 10.87% OFF</span>
+                        </p>
+                        <div class="number">
+                            <span class="minus">-</span>
+                            <input type="text" value="1" />
+                            <span class="plus">+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cartlist">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <img src="assets/img/mRKF0owlNWGDDChE5DsaKAwhqL7AbT1mYDC555DL.png" alt="...">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <button class="delete"><i class="bi bi-trash3-fill"></i></button>
+                        <span>Samsung</span>
+                        <h4>Mutton Meat</h4>
+                        <p>$8.20
+                            <del>$9.20</del>
+                            <span class="badge text-bg-danger"> 10.87% OFF</span>
+                        </p>
+                        <div class="number">
+                            <span class="minus">-</span>
+                            <input type="text" value="1" />
+                            <span class="plus">+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cartlist">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <img src="assets/img/mRKF0owlNWGDDChE5DsaKAwhqL7AbT1mYDC555DL.png" alt="...">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <button class="delete"><i class="bi bi-trash3-fill"></i></button>
+                        <span>Samsung</span>
+                        <h4>Mutton Meat</h4>
+                        <p>$8.20
+                            <del>$9.20</del>
+                            <span class="badge text-bg-danger"> 10.87% OFF</span>
+                        </p>
+                        <div class="number">
+                            <span class="minus">-</span>
+                            <input type="text" value="1" />
+                            <span class="plus">+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="checkoutbtn">
+            <div class="amout">
+                <h4>Cart Amount</h4>
+                <h2>$0.00</h2>
+            </div>
+            <a href="checkout.html" class="cusbtn2">Checkout</a>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="logins" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Welcome!</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="login-form">
+                        <h5>Please login to your account</h5>
+                        <form action="">
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="exampleInputPassword1">
+                                <a href="#" class="forgot">Forgot Password?</a>
+                            </div>
+                            <button type="submit" class="cusbtn2">Login</button>
+                            <p>Don’t have an account? <a href="#">Sign Up</a> </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- top-heading -->
+    <section class="top-heading">
+        <div class="containers">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="helpline">
+                        <p><a href="#">Become a Seller</a> | Hotline: 01711257498</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="language">
+                        <select class="form-select form-select-sm" aria-label="Small select example">
+                            <option selected>USD, $</option>
+                            <option value="1">Tk ৳</option>
+                        </select>
+
+                        <select class="form-select form-select-sm" aria-label="Small select example">
+                            <option selected>English</option>
+                            <option value="2">Bnagla</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- top-heading -->
+
+
+    <!-- header -->
+    <header class="header-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="navigation">
+                        <nav class="navbar navbar-expand-xl">
+                            <div class="container-fluid p-0">
+                                <a class="navbar-brand" href="index.html"><img src="assets/img/logo.png" alt="Logo"></a>
+                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                    <div class="input-group search-bar">
+                                        <input type="text" class="form-control" placeholder="Search product" aria-label="Search product" aria-describedby="basic-addon2">
+                                        <span class="input-group-text" id="basic-addon2"><i class="bi bi-search"></i></span>
+                                    </div>
+                                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                                        <li class="nav-item">
+                                            <button type="button" class=" position-relative">
+                                                <i class="bi bi-heart"></i>
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    99
+                                                    <span class="visually-hidden">unread messages</span>
+                                                </span>
+                                            </button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button type="button" class=" position-relative" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">  
+                                                <i class="bi bi-bag-dash"></i>
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    9
+                                                    <span class="visually-hidden">unread messages</span>
+                                                </span>
+                                            </button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logins">Login <i class="bi bi-person"></i></a>
+                                        </li>
+                                    </ul>
+
+                                    <ul class="submenus mobile-menu">
+                                        <li><a href="index.html">Home</a></li>
+                                        <li><a href="products.html">Products</a></li>
+                                        <li><a href="digital-products.html">Digital Products</a></li>
+                                        <li><a href="shops.html">Shops</a></li>
+                                        <li><a href="most-popular.html">Most Popular</a></li>
+                                        <li><a href="best-deal.html">Best Deal</a></li>
+                                        <li><a href="contact.html"> Contact</a></li>
+                                        <li><a href="blog.html"> Blogs</a></li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="submenus-area">
+                        <div class="submenus-content">
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-grid"></i> Categories
+                                </a>
+
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <img src="assets/img/St5WapMgiQdynIVHGgIYpUh2YMm0lpOoqmlCatRE.png" alt="items">
+                                            <p>Software License <i class="bi bi-chevron-down"></i></p>
+                                        </a>
+
+                                        <ul class="subcate">
+                                            <li>
+                                                <a href="#"><img src="assets/img/St5WapMgiQdynIVHGgIYpUh2YMm0lpOoqmlCatRE.png" alt="items">
+                                                    <p>Software License</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#"><img src="assets/img/St5WapMgiQdynIVHGgIYpUh2YMm0lpOoqmlCatRE.png" alt="items">
+                                            <p>Software License</p>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#"><img src="assets/img/St5WapMgiQdynIVHGgIYpUh2YMm0lpOoqmlCatRE.png" alt="items">
+                                            <p>Software License</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <ul class="submenus">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="products.html">Products</a></li>
+                            <li><a href="digital-products.html">Digital Products</a></li>
+                            <li><a href="shops.html">Shops</a></li>
+                            <li><a href="most-popular.html">Most Popular</a></li>
+                            <li><a href="best-deal.html">Best Deal</a></li>
+                            <li><a href="contact.html"> Contact</a></li>
+                            <li><a href="blog.html"> Blogs</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- header -->
+
+
+
+
+
+    <!-- main-contents -->
+    <main class="main-contents">
+
+        <!-- detail-area -->
+        <section class="details-area">
+            <div class="containers">
+                <div class="row">
+                    <div class="col-xxl-9">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item"><a href="#">Library</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Data</li>
+                            </ol>
+                        </nav>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="detailslider">
+                                    <ul id="lightSlider">
+                                        <li data-thumb="assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png"><img src="assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png"></li>
+                                        <li data-thumb="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png"><img src="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png"></li>
+                                        <li data-thumb="assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png"><img src="assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png"></li>
+                                        <li data-thumb="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png"><img src="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png"></li>
+                                        <li data-thumb="assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png"><img src="assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png"></li>
+                                        <li data-thumb="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png"><img src="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="detailscon">
+                                    <span class="badge text-bg-danger">Samsung</span>
+                                    <h2>Smart Watch</h2>
+                                    <p>What's in the box:Watch Band1; Type:Jewelry Bracelet; Band Material:Stainless Steel,Rhinestone; Features:Bling</p>
+                                    <div class="review-sold">
+                                        <ul>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                        </ul>
+                                        <p> 0 Review <span class="vr"></span> 12 Sold <span class="vr"></span> <i class="bi bi-share"></i> Share <span class="vr"></span>
+                                            <i class="loves bi bi-heart-fill"></i></p>
+                                    </div>
+                                    <div class="price">
+                                        <h3>$121.00 <del>$129.00</del> <span class="badge text-bg-danger">6.20% OFF</span></h3>
+                                    </div>
+                                    <div class="sizes">
+                                        <div class="tagname">
+                                            <p>Size:</p>
+                                        </div>
+
+                                        <div class="taglint">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked>
+                                                <label class="form-check-label" for="inlineRadio1">Large</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                                <label class="form-check-label" for="inlineRadio2">XL</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3">
+                                                <label class="form-check-label" for="inlineRadio3">XXL</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="sizes">
+                                        <div class="tagname">
+                                            <p>Color: </p>
+                                        </div>
+
+                                        <div class="taglint">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="colors" id="colorradio1" value="White" checked>
+                                                <label class="form-check-label" for="colorradio1">White</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="colors" id="colorradio2" value="Black">
+                                                <label class="form-check-label" for="colorradio2">Black</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="colors" id="colorradio3" value="Goldenrod">
+                                                <label class="form-check-label" for="colorradio3">Goldenrod</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="buybtns">
+                                        <a href="#" class="cusbtn"><i class="bi bi-bag-dash"></i> Add to Cart</a>
+                                        <a href="checkout.html" class="cusbtn2">Buy Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- about-product -->
+                        <div class="about-product">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">About Product</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Reviews</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                                    <div class="tab-con">
+                                        <p>What's in the box:Watch Band1; Type:Jewelry Bracelet; Band Material:Stainless Steel,Rhinestone; Features:Bling Diamond,with Case</p>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                                    <div class="tab-con">
+                                        <h4>Rating and Review</h4>
+                                        <div class="row">
+                                            <div class="col-md-12 col-lg-8">
+                                                <div class="rating">
+                                                    <div class="ratingrate">
+                                                        <h4>5.0</h4>
+                                                        <ul>
+                                                            <li><i class="bi bi-star-fill"></i></li>
+                                                            <li><i class="bi bi-star-fill"></i></li>
+                                                            <li><i class="bi bi-star-fill"></i></li>
+                                                            <li><i class="bi bi-star-fill"></i></li>
+                                                            <li><i class="bi bi-star-fill"></i></li>
+                                                        </ul>
+                                                        <p>0 reviews</p>
+                                                    </div>
+                                                    <div class="progresbar">
+                                                        <p>1 <span class="bar"></span> 0%</p>
+                                                        <p>2 <span class="bar"></span> 0%</p>
+                                                        <p>3 <span class="bar"></span> 0%</p>
+                                                        <p>4 <span class="bar"></span> 0%</p>
+                                                        <p>5 <span class="bar"></span> 0%</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="review">
+                                            <h4>Reviews</h4>
+                                            <p>Showing 1 to 0 of 0 results</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- about-product -->
+
+                    </div>
+                    <div class="col-xxl-3">
+                        <div class="delivary">
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0">
+                                    <img src="assets/img/money.svg" alt="icons">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p>Delivery charge</p>
+                                    <h5>$2.00</h5>
+                                </div>
+                            </div>
+                            <div class="d-flex ">
+                                <div class="flex-shrink-0">
+                                    <img src="assets/img/clock.svg" alt="icons">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p>Estimated delivery</p>
+                                    <h5>4</h5>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="populers">
+                            <h5>Popular Products From Them</h5>
+                            <div class="d-flex populeritem mb-3">
+                                <div class="flex-shrink-0">
+                                    <img src="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png" alt="icons">
+                                </div>
+                                <div class="flex-grow-1 ms-3 productcon">
+                                    <a href="#">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                                    <h5>$121.00 <del>$129.00</del></h5>
+                                    <div class="starsold">
+                                        <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                        <div class="vr"></div>
+                                        <p>12 Sold</p>
+                                    </div>
+                                    <div class="buybtn">
+                                        <a href="#"> <i class="bi bi-bag-check"></i></a>
+                                        <a href="#">Buy now</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex populeritem mb-3">
+                                <div class="flex-shrink-0">
+                                    <img src="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png" alt="icons">
+                                </div>
+                                <div class="flex-grow-1 ms-3 productcon">
+                                    <a href="#">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                                    <h5>$121.00 <del>$129.00</del></h5>
+                                    <div class="starsold">
+                                        <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                        <div class="vr"></div>
+                                        <p>12 Sold</p>
+                                    </div>
+                                    <div class="buybtn">
+                                        <a href="#"> <i class="bi bi-bag-check"></i></a>
+                                        <a href="#">Buy now</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex populeritem mb-3">
+                                <div class="flex-shrink-0">
+                                    <img src="assets/img/kewsY3LGdmI37EyO8zDMgPvo2cUvctuCarnWAWKB.png" alt="icons">
+                                </div>
+                                <div class="flex-grow-1 ms-3 productcon">
+                                    <a href="#">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                                    <h5>$121.00 <del>$129.00</del></h5>
+                                    <div class="starsold">
+                                        <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                        <div class="vr"></div>
+                                        <p>12 Sold</p>
+                                    </div>
+                                    <div class="buybtn">
+                                        <a href="#"> <i class="bi bi-bag-check"></i></a>
+                                        <a href="#">Buy now</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- detail-area -->
+
+
+
+    </main>
+    <!-- main-contents -->
+
+
+
+
+    <!-- footer -->
+    <footer class="footer-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-grid">
+                        <div class="fologo">
+                            <a href="index.html"><img src="assets/img/logoWhite.png" alt="logo"></a>
+                            <p>The ultimate all-in-one solution for your eCommerce business worldwide</p>
+                            <h5><i class="bi bi-telephone-fill"></i> 01711257498</h5>
+                            <h5><i class="bi bi-envelope-fill"></i> support@razinsoft.com</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-grid">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#">Products</a></li>
+                            <li><a href="#">Most Popular</a></li>
+                            <li><a href="#">Best Deal</a></li>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Become a Seller</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-grid">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#">About us</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Return and Refund Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-grid">
+                        <h4>Download our app</h4>
+                        <div class="appsdown">
+                            <ul>
+                                <li>
+                                    <a href="#"><img src="assets/img/appStoreFooter.png" alt="appStoreFooter"></a>
+                                </li>
+                                <li>
+                                    <a href="#"><img src="assets/img/playStoreFooter.png" alt="playStoreFooter"></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <ul class="social">
+                            <li><a href="#"><i class="bi bi-facebook"></i></a></li>
+                            <li><a href="#"><i class="bi bi-linkedin"></i></a></li>
+                            <li><a href="#"><i class="bi bi-instagram"></i></a></li>
+                            <li><a href="#"><i class="bi bi-youtube"></i></a></li>
+                            <li><a href="#"><i class="bi bi-whatsapp"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="containers">
+            <div class="copyright">
+                <p>© 2025 All right reserved.</p>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <a href="#" class="scrolltotop"><i class="bi bi-arrow-up-circle"></i></a>
+        </div>
+    </footer>
+    <!-- footer -->
+
+
+
+
+    <!-- Js script links-->
+    <script src="assets/js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/slick.min.js"></script>
+    <script src="assets/js/jquery-ui.min.js"></script>
+    <script src="assets/js/select2.min.js"></script>
+    <script src="assets/js/imagepreviewer.min.js"></script>
+    <script src="assets/js/script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,696 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %}Home{% endblock  %}
+
+{% block content %}
+    <!-- hero-slider -->
+
+    <section class="hero-slider">
+        <div class="containers">
+            <div class="row">
+                <!-- Main Hero Slider -->
+                <div class="col-lg-12 col-xl-12">
+                    <div class="heroslider">
+                        {% for slider in hero_sliders %}
+                            <div class="items">
+                                <a href="{{slider.slider_url}}"><img src="{{ slider.image.url }}" alt="slider img"></a>
+                            </div>
+                        {% empty %}
+                            <div class="items">
+                                <img src="{% static 'assets/img/UmAixlXz4k9NyQwDpT8zx2ePDzNO3dOOhkbJn6NB.jpg' %}" alt="slider img">
+                            </div>
+                            <div class="items">
+                                <img src="{% static 'assets/img/9t34nYXnE3QGpOta0nqIl2etOyG3tOrMayQ9azTW.jpg' %}" alt="slider img">
+                            </div>
+                            <div class="items">
+                                <img src="{% static 'assets/img/IG73uQqG2GT2QNlIna4CRShJ66NsNRU9NK1xMLDp.jpg' %}" alt="slider img">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <div class="categories">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="title">
+                            <h2>Categories</h2>
+                        </div>
+                        <div class="viewall slideall">
+                            <a href="{% url 'all_categories' %}">View all <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="categori-slider">
+                {% for category in categories %}
+                <div class="items">
+                    <a href="{% url 'category_products' category.id %}">
+                        {% if category.image %}
+                         <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                        {% else %}
+                         <img src="{% static 'assets/img/lCjRExEMOBrqGlmAq6SIXRgy5vVPEzjT9iQOIkfR.png' %}" alt="categories">
+                        {% endif %}
+                       
+                        <p style="margin-top: 13px;">{{ category.name }}</p>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+                {% comment %} <div class="categori-slider">
+                    <div class="items">
+                        <a href="#">
+                            <img src="{% static 'assets/img/lCjRExEMOBrqGlmAq6SIXRgy5vVPEzjT9iQOIkfR.png' %}" alt="categories">
+                            <p>Beauty</p>
+                        </a>
+                    </div>
+                </div> {% endcomment %}
+            </div>
+        </div>
+    </div>
+    <!-- Categories -->
+    <section class="products-area p-0" id='product_list'>
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="title">
+                            <h2></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+                <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5" id="product_list">
+                <!-- products -->
+                {% for item in oobj_list %}
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist" data-product-id="{{item.id}}">
+                            {% with varient=item.product_attribute.first %}
+                                {% if varient.discount_price %}
+                                    <span class="badge text-bg-danger">
+                                        {{ varient.discount_percentage }}% OFF
+                                    </span>
+                                {% endif %}
+                            {% endwith %}
+                            {% comment %} <i class="loves bi {% if item.id in user_wishlist_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i> {% endcomment %}
+                        </div>
+                        {% if item.product_attribute.all %}
+                        <div class="productimg">
+                            <a href="{% url 'product_details_page_url' item.id %}">
+                                <img src="{{ item.product_attribute.first.image.url }}" alt="product img">
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="productimg">
+                            {% with varient=item.product_varient.first %}
+                            <a href="{% url 'product_details_page_url' item.id %}">
+                                <img src="{{ varient.cover_photo.url }}" alt="product img">
+                            </a>
+                            {% endwith %}
+                        </div>
+                        {% endif %}
+                        <div class="productcon">
+                            <a href="{% url 'product_details_page_url' item.id %}">{{item.product_name}}</a>
+                            {% for varient in item.product_attribute.all %}
+                                {% if varient.discount_price %}
+                                    <h5>৳ {{ varient.discount_price }} <del>৳ {{ varient.regular_price }}</del></h5>
+                                {% else %}
+                                    <h5>৳ {{ varient.regular_price }}</h5>
+                                {% endif %}
+
+                            {% comment %} <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div> {% endcomment %}
+                            <p class="small">
+                                Stock: {{varient.product.product_stock_status}}
+                                {% if varient.stock > 0 and variant.stock >= item.moq %}
+                                    <span class="text-success">In stock</span>
+                                {% else %}
+                                    <span class="text-danger">Out of stock</span>
+                                {% endif %}
+                            </p>
+                            {% endfor %}
+                        </div>
+                        <div class="buybtn">
+                            {% comment %} <a href="javascript:void(0)" class="add-to-cart" data-product-id="{{item.id}}" data-variant-id="{{ item.product_attribute.first.id }}"> <i class="bi bi-bag-check"></i></a>
+                            {% if varient.stock > 0 and variant.stock >= item.moq %}
+                            <a href="{% url 'buy_now_product_url' item.product_attribute.first.id %}">Buy now</a>
+                            {% else %}
+                            <a href="javascript:void(0)">Buy now</a>
+                            {% endif %} {% endcomment %}
+
+        
+                            <a href="{% url 'product_details_page_url' item.id %}">Buy now</a>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- products -->
+            </div>
+        </div>
+
+        </div>
+    </section>
+
+    {% if flashsell_products %}
+    <section class="products-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="title">
+                            <h2>Flash Sale Products</h2>
+                        </div>
+                        <div class="viewall">
+                            <a href="{% url 'flash_sell_products' %}">View all <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+            {% for item in flashsell_products %}
+    
+            <div class="col">
+                <div class="products">
+
+                    <div class="wishlist" data-product-id="{{ item.id }}">
+                        {% if item.cover_product_attribute.final_discount.total_discount%}
+                            <span style="position: relative; display: inline-block; float: right;">
+                                <img style="width: 60px; margin-right: 6px;" src="{% static 'assets/img/red.png' %}" alt="">
+                                <span class="discount_prices">
+                                    {{ item.cover_product_attribute.final_discount.total_discount_percentage }}% <br> OFF
+                                </span>
+                            </span>
+                        {% endif %}
+                        {% comment %} <i class="loves bi {% if item.id in user_wishlist_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i> {% endcomment %}
+                    </div>
+
+                    <div class="productimg">
+                        <a href="{% url 'product_details_page_url' item.id %}">
+                            <img src="{{ item.cover_product_attribute.image.url }}" alt="product img">
+                        </a>
+                    </div>
+
+                    <div class="productcon">
+                        <a href="{% url 'product_details_page_url' item.id %}">
+                            {{ item.product_name }}
+                        </a>
+
+                        {% if item.cover_product_attribute.final_discount.total_discount %}
+                            <h5>৳ {{ item.cover_product_attribute.product_final_price  }} <del>৳ {{ item.cover_product_attribute.regular_price }}</del></h5>
+                        {% else %}
+                            <h5>৳ {{ item.cover_product_attribute.regular_price }}</h5>
+                        {% endif %}
+
+                        <div class="starsold review-sold">
+                            <ul class="open-review-modal" style="cursor:pointer">
+                                {% for i in item.reviews_calculation.full_stars %}
+                                <li><i style="font-size: 12px;" class="bi bi-star-fill text-warning"></i></li>
+                                {% endfor %}
+
+                                {% if item.reviews_calculation.half_star %}
+                                <li><i style="font-size: 12px;"class="bi bi-star-half text-warning"></i></li>
+                                {% endif %}
+
+                                {% for i in item.reviews_calculation.empty_stars %}
+                                <li><i style="font-size: 12px;"class="bi bi-star text-muted"></i></li>
+                                {% endfor %}
+                                <li style="color: #64748b !important;">({{item.reviews_calculation.total_reviews}})</li>
+                            </ul>
+                            <div class="vr"></div>
+                            <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                        </div>
+
+                        {% comment %} <p class="small">
+
+                            {% if item.product_stock_status.flag %}
+                                <span class="text-success">Stock: {{item.product_stock_status.stock_qty}}</span>
+                            {% else %}
+                                <span class="text-danger">Out of stock</span>
+                            {% endif %}
+                        </p> {% endcomment %}
+                    </div>
+
+                    <div class="buybtn">
+                        {% comment %} <a href="javascript:void(0)" class="add-to-cart"
+                            data-product-id="{{ item.id }}"
+                            data-variant-id="{{ cover.id }}">
+                            <i class="bi bi-bag-check"></i>
+                        </a>
+                        {% if item.product_stock_status.flag %}
+                        <a href="{% url 'buy_now_product_url' item.id %}">
+                            Buy now
+                        </a>
+                        {% else %}
+                        <a href="javascript:void(0)" diabled>
+                            Buy now
+                        </a>
+                        {% endif %} {% endcomment %}
+
+                        <a href="{% url 'product_details_page_url' item.id %}">Buy now</a>
+                    </div>
+
+                </div>
+            </div>
+          
+        {% endfor %}
+
+        </div>
+
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="products-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-lg-12 col-xl-12">
+                    {% if first_slider %}
+                        <div class="slideimg">
+                            <a href="{% url 'campaign_products' first_slider.id %}"><img src="{{ first_slider.image.url }}" alt="side slider img"></a>
+                        </div>
+                    {% else %}
+                        <div class="slideimg">
+                            <img src="{% static 'assets/img/V6XGxnZXsekvObHLd3yam9R14OwFdtZViZmlQ9ZM.jpg' %}" alt="slider img">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!--Popular products -->
+    <section class="products-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="title">
+                            <h2>Popular Products</h2>
+                        </div>
+                        <div class="viewall">
+                            <a href="{% url 'most_popular_products' %}">View all <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+            {% for item in popular_products %}
+            
+            <div class="col">
+                <div class="products">
+
+                    <div class="wishlist" data-product-id="{{ item.id }}">
+                        {% if item.cover_product_attribute.final_discount.total_discount%}
+                            <span style="position: relative; display: inline-block; float: right;">
+                                <img style="width: 60px; margin-right: 6px;" src="{% static 'assets/img/red.png' %}" alt="">
+                                <span class="discount_prices">
+                                    {{ item.cover_product_attribute.final_discount.total_discount_percentage }}% <br> OFF
+                                </span>
+                            </span>
+                        {% endif %}
+                        {% comment %} <i class="loves bi {% if item.id in user_wishlist_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i> {% endcomment %}
+                    </div>
+
+                    <div class="productimg">
+                        <a href="{% url 'product_details_page_url' item.id %}">
+                            <img src="{{ item.cover_product_attribute.image.url }}" alt="product img">
+                        </a>
+                    </div>
+
+                    <div class="productcon">
+                        <a href="{% url 'product_details_page_url' item.id %}">
+                            {{ item.product_name }}
+                        </a>
+
+                        {% if item.cover_product_attribute.final_discount.total_discount %}
+                            <h5>৳ {{ item.cover_product_attribute.product_final_price  }} <del>৳ {{ item.cover_product_attribute.regular_price }}</del></h5>
+                        {% else %}
+                            <h5>৳ {{ item.cover_product_attribute.regular_price }}</h5>
+                        {% endif %}
+
+                        {% comment %} <div class="starsold">
+                            <p><i class="bi bi-star-fill"></i> {{item.reviews_calculation.average_rating|floatformat:"1" }} ({{item.reviews_calculation.total_reviews}})</p>
+                            <div class="vr"></div>
+                            <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                        </div> {% endcomment %}
+
+                        <div class="starsold review-sold">
+                            <ul class="open-review-modal" style="cursor:pointer">
+                                {% for i in item.reviews_calculation.full_stars %}
+                                <li><i style="font-size: 12px;" class="bi bi-star-fill text-warning"></i></li>
+                                {% endfor %}
+
+                                {% if item.reviews_calculation.half_star %}
+                                <li><i style="font-size: 12px;"class="bi bi-star-half text-warning"></i></li>
+                                {% endif %}
+
+                                {% for i in item.reviews_calculation.empty_stars %}
+                                <li><i style="font-size: 12px;"class="bi bi-star text-muted"></i></li>
+                                {% endfor %}
+                                <li style="color: #64748b !important;">({{item.reviews_calculation.total_reviews}})</li>
+                            </ul>
+                            <div class="vr"></div>
+                            <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                        </div>
+
+                        {% comment %} <p class="small">
+
+                            {% if item.product_stock_status.flag %}
+                                <span class="text-success">Stock: {{item.product_stock_status.stock_qty}}</span>
+                            {% else %}
+                                <span class="text-danger">Out of stock</span>
+                            {% endif %}
+                        </p> {% endcomment %}
+                    </div>
+
+                    <div class="buybtn">
+                        {% comment %} <a href="javascript:void(0)" class="add-to-cart"
+                            data-product-id="{{ item.id }}"
+                            data-variant-id="{{ cover.id }}">
+                            <i class="bi bi-bag-check"></i>
+                        </a>
+                        {% if item.product_stock_status.flag %}
+                        <a href="{% url 'buy_now_product_url' item.id %}">
+                            Buy now
+                        </a>
+                        {% else %}
+                        <a href="javascript:void(0)" diabled>
+                            Buy now
+                        </a>
+                        {% endif %} {% endcomment %}
+
+                        <a href="{% url 'product_details_page_url' item.id %}">Buy now</a>
+                    </div>
+
+                </div>
+            </div>
+            
+        {% endfor %}
+
+            </div>
+
+        </div>
+    </section>
+    <!-- products -->
+
+    <!--Best Deal products -->
+    {% if best_deal_products %}
+    <section class="products-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="title">
+                            <h2>Best Deal Products</h2>
+                        </div>
+                        <div class="viewall">
+                            <a href="{% url 'best_deal_products' %}">View all <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+            {% for item in best_deal_products %}
+            
+            <div class="col">
+                <div class="products">
+
+                    <div class="wishlist" data-product-id="{{ item.id }}">
+                        {% if item.cover_product_attribute.final_discount.total_discount%}
+                            <span style="position: relative; display: inline-block; float: right;">
+                                <img style="width: 60px; margin-right: 6px;" src="{% static 'assets/img/red.png' %}" alt="">
+                                <span class="discount_prices">
+                                    {{ item.cover_product_attribute.final_discount.total_discount_percentage }}% <br> OFF
+                                </span>
+                            </span>
+                        {% endif %}
+                        {% comment %} <i class="loves bi {% if item.id in user_wishlist_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i> {% endcomment %}
+                    </div>
+
+                    <div class="productimg">
+                        <a href="{% url 'product_details_page_url' item.id %}">
+                            <img src="{{ item.cover_product_attribute.image.url }}" alt="product img">
+                        </a>
+                    </div>
+
+                    <div class="productcon">
+                        <a href="{% url 'product_details_page_url' item.id %}">
+                            {{ item.product_name }}
+                        </a>
+
+                        {% if item.cover_product_attribute.final_discount.total_discount %}
+                            <h5>৳ {{ item.cover_product_attribute.product_final_price  }} <del>৳ {{ item.cover_product_attribute.regular_price }}</del></h5>
+                        {% else %}
+                            <h5>৳ {{ item.cover_product_attribute.regular_price }}</h5>
+                        {% endif %}
+
+                        {% comment %} <div class="starsold">
+                            <p><i class="bi bi-star-fill"></i> {{item.reviews_calculation.average_rating|floatformat:"1" }} ({{item.reviews_calculation.total_reviews}})</p>
+                            <div class="vr"></div>
+                            <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                        </div> {% endcomment %}
+
+                        <div class="starsold review-sold">
+                            <ul class="open-review-modal" style="cursor:pointer">
+                                {% for i in item.reviews_calculation.full_stars %}
+                                <li><i style="font-size: 12px;" class="bi bi-star-fill text-warning"></i></li>
+                                {% endfor %}
+
+                                {% if item.reviews_calculation.half_star %}
+                                <li><i style="font-size: 12px;"class="bi bi-star-half text-warning"></i></li>
+                                {% endif %}
+
+                                {% for i in item.reviews_calculation.empty_stars %}
+                                <li><i style="font-size: 12px;"class="bi bi-star text-muted"></i></li>
+                                {% endfor %}
+                                <li style="color: #64748b !important;">({{item.reviews_calculation.total_reviews}})</li>
+                            </ul>
+                            <div class="vr"></div>
+                            <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                        </div>
+
+                        {% comment %} <p class="small">
+
+                            {% if item.product_stock_status.flag %}
+                                <span class="text-success">Stock: {{item.product_stock_status.stock_qty}}</span>
+                            {% else %}
+                                <span class="text-danger">Out of stock</span>
+                            {% endif %}
+                        </p> {% endcomment %}
+                    </div>
+
+                    <div class="buybtn">
+                        {% comment %} <a href="javascript:void(0)" class="add-to-cart"
+                            data-product-id="{{ item.id }}"
+                            data-variant-id="{{ cover.id }}">
+                            <i class="bi bi-bag-check"></i>
+                        </a>
+                        {% if item.product_stock_status.flag %}
+                        <a href="{% url 'buy_now_product_url' item.id %}">
+                            Buy now
+                        </a>
+                        {% else %}
+                        <a href="javascript:void(0)" diabled>
+                            Buy now
+                        </a>
+                        {% endif %} {% endcomment %}
+
+                        <a href="{% url 'product_details_page_url' item.id %}">Buy now</a>
+                    </div>
+
+                </div>
+            </div>
+            
+        {% endfor %}
+
+        </div>
+
+        </div>
+    </section>
+    {% endif %}
+    <!-- products -->
+
+
+    <section class="products-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-lg-12 col-xl-12">
+                    {% if second_slider %}
+                        <div class="slideimg">
+                            <a href="{% url 'campaign_products' second_slider.id %}"><img src="{{ second_slider.image.url }}" alt="side slider img"></a>
+                        </div>
+                    {% else %}
+                        <div class="slideimg">
+                            <img src="{% static 'assets/img/8iFiqA7eVqpiPab5HhKM1tYcMq1VDRseks75hYQx.jpg' %}" alt="slider img">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- products -->
+    <section class="products-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="title">
+                            <h2>Just For You</h2>
+                        </div>
+                        <div class="viewall">
+                            <a href="{% url 'just_for_you_products_url' %}">View all <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2
+                            row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5"
+                    id="product-container">
+
+                    {% include 'client/products/product_card.html' %}
+                </div>
+
+
+        <div class="col-12 text-center mt-4">
+            <button class="cusbtn" id="load-more-btn">
+                Load More Products
+            </button>
+        </div>
+
+        </div>
+    </section>
+    <!-- products -->
+    
+
+{% endblock  %}
+
+{% block JS %}
+
+<script>
+    let offset = 9;
+    const LOAD_MORE_URL = "{% url 'load_more_products' %}";
+    const btn = document.getElementById('load-more-btn');
+    const container = document.getElementById('product-container');
+
+    if (btn) {
+        btn.addEventListener('click', function () {
+            btn.innerText = 'Loading...';
+            btn.disabled = true;
+
+            fetch(`${LOAD_MORE_URL}?offset=${offset}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                if (data.html.trim() !== '') {
+                    container.insertAdjacentHTML('beforeend', data.html);
+                    offset += 10;
+                }
+
+                btn.innerText = 'Load More Products';
+                btn.disabled = false;
+
+                if (!data.has_more) {
+                    btn.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Load more error:', error);
+                btn.innerText = 'Load More Products';
+                btn.disabled = false;
+            });
+        });
+    }
+
+</script>
+
+<script>
+    
+    $(document).on('click', '.loves', function(){
+        let heart = $(this);
+        let productId = heart.closest('.wishlist').data('product-id');
+
+        $.ajax({
+            url: '{% url "add_to_wishlist_url" %}',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function(response) {
+                if(response.status === 'added'){
+                    heart.removeClass('bi-heart').addClass('bi-heart-fill text-danger');
+                }
+                else if(response.status === 'removed'){
+                    heart.removeClass('bi-heart-fill text-danger').addClass('bi-heart')
+                }
+            }
+        });
+    });
+
+</script>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.get("login_success")) {
+    Toastify({
+      text: "Logged in successfully!",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      close: true,
+      backgroundColor: "#28a745"
+    }).showToast();
+  };
+
+  if (urlParams.get("open_login_modal")) {
+    Toastify({
+      text: "Registration successful! Please log in to continue.",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      close: true,
+      backgroundColor: "#28a745"
+    }).showToast();
+  };
+
+  if (urlParams.get("logout")) {
+    Toastify({
+      text: "Logged out successfully!",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      close: true,
+      backgroundColor: "#28a745"
+    }).showToast();
+  };
+
+</script>
+{% endblock  %}

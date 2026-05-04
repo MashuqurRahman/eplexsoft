@@ -1,0 +1,1038 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% block title %}Edit Order — {{ order.order_no }}{% endblock %}
+
+{% block content %}
+<div class="pg" style="padding:20px">
+
+  <div class="page-header d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <div style="font-size:11px;font-weight:500;color:#888;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px">Order management</div>
+      <h1 style="font-size:20px;font-weight:600;letter-spacing:-.4px">Edit Order</h1>
+      <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
+        <code class="me-2" style="font-size:11px;background:#f3f3f6;padding:2px 8px;border-radius:4px;border:0.5px solid #ddd">#{{ order.order_no }}</code>
+        <span class="badge {% if order.order_status == 'pending' %}bg-warning text-dark{% elif order.order_status == 'confirmed' %}bg-success{% elif order.order_status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %} me-2">
+          {{ order.get_order_status_display }}
+        </span>
+        <span style="font-size:11px;color:#aaa">{{ order.created_at|date:"M d, Y · h:i A" }}</span>
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
+      <button class="btn btn-sm btn-primary mx-2" id="saveOrderBtn">
+        <i class="bi bi-check-lg"></i> Save changes
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-8 d-flex flex-column gap-3">
+      <div class="boxs">
+        <p class="subtitle">Order Status</p>
+        <div class="row g-3 mt-1">
+          <div class="col-sm-6">
+            <label class="form-label small fw-medium">Order Status</label>
+            <select id="editOrderStatus" class="form-select form-select-sm">
+              <option value="pending"   {% if order.order_status == 'pending'%}selected{% endif %}>Pending</option>
+              <option value="confirmed" {% if order.order_status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+              <option value="shipped"   {% if order.order_status == 'shipped' %}selected{% endif %}>Shipped</option>
+              <option value="delivered" {% if order.order_status == 'delivered' %}selected{% endif %}>Delivered</option>
+              <option value="cancelled" {% if order.order_status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+              <option value="returned"  {% if order.order_status == 'returned' %}selected{% endif %}>Returned</option>
+            </select>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label small fw-medium">Payment Status</label>
+            <div class="d-flex align-items-center gap-2 mt-1">
+              <label class="switch mb-0">
+                <input type="checkbox" id="editPaymentToggle"
+                  {% if order.payment_status == 'paid' %}checked{% endif %}>
+                <span class="slider round"></span>
+              </label>
+              <span id="payStatusLabel" class="small mx-2">
+                {{ order.get_payment_status_display }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="boxs">
+        <p class="subtitle">Delivery Location</p>
+        <div class="row g-3 mt-1 align-items-end">
+
+          <div class="col-sm-6">
+            <label class="form-label small fw-medium">Shipping Method</label>
+            <select id="shippingMethodSelect" class="form-select form-select-sm">
+              <option value="inside_dhaka"
+                {% if order.shipping_method == 'inside_dhaka' %}selected{% endif %}>
+                Inside Dhaka
+              </option>
+              <option value="outside_dhaka"
+                {% if order.shipping_method == 'outside_dhaka' %}selected{% endif %}>
+                Outside Dhaka
+              </option>
+            </select>
+          </div>
+
+          <div class="col-sm-4">
+            <label class="form-label small fw-medium">Current Charge</label>
+            <div class="fw-medium" style="font-size:13px;padding:5px 0" id="shippingChargeDisplay">
+              ৳ {{ order.shipping_charge }}
+            </div>
+          </div>
+
+          <div class="col-sm-2 text-end">
+            <button class="btn btn-sm btn-outline-primary w-100" id="updateShippingMethodBtn">
+              <i class="bi bi-arrow-repeat"></i> Update
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Status message -->
+        <div id="shippingMethodMsg" class="mt-2" style="display:none;font-size:12px"></div>
+      </div>
+
+      <div class="boxs">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <p class="subtitle mb-0">Order Items</p>
+          <small class="text-muted" id="itemCountLabel">
+            {{ product_item_obj.count }} item(s)
+          </small>
+        </div>
+
+        <ul class="nav nav-tabs mb-3" id="itemTabs">
+          <li class="nav-item">
+            <a class="nav-link bar_menu_item active" data-tab="current" href="#">Current Items</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link bar_menu_item" data-tab="add" href="#">+ Add Products</a>
+          </li>
+        </ul>
+
+        <div id="tab-current">
+          <div class="table-responsive">
+            <table class="table mytable" id="orderItemsTable">
+              <thead>
+                <tr>
+                  <th>SL</th>
+                  <th>Product</th>
+                  <th>Size</th>
+                  <th>Color</th>
+                  <th>Qty</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="orderItemsBody">
+                {% for item in order_items %}
+                <tr data-item-id="{{ item.id }}"
+                    data-attr-id="{{ item.product_attribute.id }}"
+                    data-product-id="{{ item.product.id }}"
+                    data-unit-price="{{ item.product_attribute.product_final_price }}"
+                    data-stock="{{ item.product_attribute.attribute_stock_status.remaining_stock }}"
+                    data-is-new="false">
+
+                  <td class="row-num">{{ forloop.counter }}</td>
+
+                  <td>
+                    <div class="d-flex gap-2 align-items-center">
+                      <img src="{{ item.product_attribute.image.url }}" width="36" height="36"
+                          class="row-product-img"
+                          style="border-radius:6px;object-fit:cover;border:0.5px solid #ddd" loading="lazy">
+                      <div>
+                        <div class="fw-medium" style="font-size:13px">{{ item.product.product_name }}</div>
+                        <div class="text-muted" style="font-size:11px">ID: {{ item.id }}</div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td style="min-width:90px">
+                    <select class="form-select form-select-sm size-select" style="font-size:11px;padding:2px 6px">
+                      <option value="{{ item.product_attribute.id }}" selected>
+                        {{ item.product_attribute.size|default:"N/A" }}
+                      </option>
+                    </select>
+                  </td>
+
+                  <td style="min-width:100px">
+                    <select class="form-select form-select-sm color-select" style="font-size:11px;padding:2px 6px">
+                      <option value="{{ item.product_attribute.id }}" selected>
+                        {{ item.product_attribute.color|default:"N/A" }}
+                      </option>
+                    </select>
+                  </td>
+
+                  <td>
+                    <div class="d-flex align-items-center gap-1">
+                      <button class="btn btn-sm btn-outline-secondary qty-minus" style="padding:1px 7px;line-height:1">−</button>
+                      <span class="qty-val fw-medium mx-1" style="min-width:20px;text-align:center">{{ item.quantity }}</span>
+                      <button class="btn btn-sm btn-outline-secondary qty-plus" style="padding:1px 7px;line-height:1">+</button>
+                    </div>
+                  </td>
+
+                  <td class="unit-price-cell" style="font-size:12px">৳ {{ item.product_attribute.product_final_price }}</td>
+                  <td class="row-total fw-medium" style="font-size:12px">
+                    ৳ {{ item.product_attribute.product_final_price|floatformat:2 }}
+                  </td>
+
+                  <td>
+                    <button class="btn btn-sm remove-item-btn text-danger"
+                            style="padding:2px 6px;background:transparent;border:none">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center text-muted">No items in this order.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-add" style="display:none">
+          <div class="row g-2 mb-3">
+            <div class="col-sm-7">
+              <input type="search" id="productSearchInput" class="form-control form-control-sm" placeholder="Search products…">
+            </div>
+            <div class="col-sm-5">
+              <select id="categoryFilter" class="form-select form-select-sm">
+                <option value="">All categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div id="productCatalogGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-height:280px;overflow-y:auto;padding-right:4px">
+            <div class="text-muted small p-3 text-center" style="grid-column:1/-1">
+              Start typing to search products…
+            </div>
+          </div>
+        </div>
+
+        <div class="border-top pt-3 mt-3">
+          <div class="d-flex flex-column gap-1 ms-auto" style="max-width:300px">
+            <div class="d-flex justify-content-between"><span class="text-muted small">Sub Total After Discount</span><span id="editSubtotal" class="small fw-medium">৳ {{ order.sub_total_after_discount }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted small">Coupon Discount</span><span class="small fw-medium">৳ {{ order.coupon_price|default:"0.00" }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted small">Delivery Charge</span><span class="small fw-medium delivery-charge-display">৳ {{ order.shipping_charge }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted small">VAT &amp; Tax</span><span class="small fw-medium">৳ {{ vat_gst }}</span></div>
+            <div class="d-flex justify-content-between border-top pt-2 mt-1">
+              <span class="fw-bold">Grand Total</span>
+              <span class="fw-bold" id="editGrandTotal">৳ {{ order.total_payable }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col-md-4 d-flex flex-column gap-3">
+      <div class="boxs">
+          <div class="mt-3">
+              <p class="subtitle">Customer Info</p>
+              <div class="border-bottom py-2 d-flex  align-items-center gap-3">
+                  <p>Name: </p>
+                  <p><b>{{order.user.name|default:"N/A"}}</b></p>
+              </div>
+              <div class=" py-2 d-flex  align-items-center gap-3">
+                  <p>E-mail: </p>
+                  <p><b>{{order.user.email|default:"N/A"}}</b></p>
+              </div>
+              <div class=" py-2 d-flex  align-items-center gap-3">
+                  <p>Phone: </p>
+                  <p><b>{{order.user.phone|default:"N/A"}}</b></p>
+              </div>
+          </div>
+      </div>
+
+      <div class="boxs">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <p class="subtitle mb-0">Shipping Address</p>
+          <button class="btn btn-sm btn-outline-secondary" id="editAddressBtn" style="font-size:11px;padding:3px 10px">
+            <i class="bi bi-pencil"></i> Edit
+          </button>
+        </div>
+
+        <div id="addressDisplay" class="mt-2 p-2 rounded" style="background:#f8f8fb;border:0.5px solid #e0e0e8;font-size:12px;line-height:1.9">
+          <div class="fw-medium" id="disp-full-name"><b>Name:</b> {{ order.shipping_address.full_name }}</div>
+          <span id="disp-phone-no"><b>Phone:</b> {{ order.shipping_address.phone_no }}</span><br>
+          <span id="disp-address-line"><b>Address:</b> {{ order.shipping_address.address_line }}</span><br>
+          <span id="disp-thana"><b>Thana:</b> {{ order.shipping_address.thana }}</span>,
+          <span id="disp-city"><b>City:</b> {{ order.shipping_address.city }}</span><br>
+          <span id="disp-upozila"><b>Upazila:</b> {{ order.shipping_address.upozila }}</span><br>
+          <span id="disp-postal-code"><b>Post Code:</b> {{ order.shipping_address.postal_code }}</span>
+          <div id="disp-note" class="text-muted mt-1" style="{% if not order.shipping_address.note %}display:none{% endif %}">
+            <b>Note:</b> {{ order.shipping_address.note }}
+          </div>
+        </div>
+
+        <div id="addressForm" style="display:none;margin-top:10px">
+          <div class="row g-2">
+            <div class="col-sm-6">
+              <label class="form-label" style="font-size:11px;font-weight:500">Full Name</label>
+              <input type="text" id="addr-full-name" class="form-control form-control-sm" value="{{ order.shipping_address.full_name }}">
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label" style="font-size:11px;font-weight:500">Phone</label>
+              <input type="text" id="addr-phone-no" class="form-control form-control-sm"
+                    value="{{ order.shipping_address.phone_no }}">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label" style="font-size:11px;font-weight:500">Address Line</label>
+              <input type="text" id="addr-address-line" class="form-control form-control-sm" value="{{ order.shipping_address.address_line }}">
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label" style="font-size:11px;font-weight:500">City</label>
+              <input type="text" id="addr-city" class="form-control form-control-sm" value="{{ order.shipping_address.city }}">
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label" style="font-size:11px;font-weight:500">Thana</label>
+              <input type="text" id="addr-thana" class="form-control form-control-sm" value="{{ order.shipping_address.thana }}">
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label" style="font-size:11px;font-weight:500">Upazila</label>
+              <input type="text" id="addr-upozila" class="form-control form-control-sm" value="{{ order.shipping_address.upozila }}">
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label" style="font-size:11px;font-weight:500">Post Code</label>
+              <input type="text" id="addr-postal-code" class="form-control form-control-sm" value="{{ order.shipping_address.postal_code }}">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label" style="font-size:11px;font-weight:500">Note <span class="text-muted">(optional)</span></label>
+              <textarea id="addr-note" class="form-control form-control-sm" rows="2" style="font-size:12px">{{ order.shipping_address.note }}</textarea>
+            </div>
+
+          </div>
+
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-primary" id="saveAddressBtn">
+              <i class="bi bi-check-lg"></i> Save Address
+            </button>
+            <button class="btn btn-sm btn-outline-secondary mx-1" id="cancelAddressBtn">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="boxs">
+        <p class="subtitle">Order Summary</p>
+        <div id="changeBanner" style="display:none" class="mb-2 p-2 rounded d-flex align-items-center justify-content-between" style="background:#EEEDFE;border:0.5px solid #AFA9EC">
+          <span style="font-size:11px;color:#3C3489">⚠ Unsaved changes</span>
+          <span id="changeDelta" class="fw-bold" style="font-size:12px;color:#3C3489"></span>
+        </div>
+        <div class="d-flex flex-column gap-1">
+          <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">Original total</span><span class="small fw-medium">৳ {{ order.total_payable }}</span></div>
+          <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">Items added</span><span class="small fw-medium" id="newItemsCount">0 items</span></div>
+          <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">New subtotal</span><span class="small fw-medium" id="summarySubtotal">৳ {{ order.sub_total_after_discount }}</span></div>
+          <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">Delivery</span><span class="small fw-medium delivery-charge-display">৳ {{ order.shipping_charge }}</span></div>
+          <div class="d-flex justify-content-between pt-2 mt-1">
+            <span class="fw-bold small">New total</span>
+            <span class="fw-bold small" id="summaryGrandTotal">৳ {{ order.total_payable }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div id="saveToast" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:none">
+  <div class="alert alert-success shadow d-flex align-items-center gap-2 mb-0">
+    <i class="bi bi-check-circle-fill"></i>
+    <span id="toastMsg">Order saved successfully!</span>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block JS %}
+<script>
+const ORDER_ID = {{ order.id }};
+const CSRF_TOKEN = "{{ csrf_token }}";
+const ORIGINAL_TOTAL = parseFloat("{{ order.total_payable|default:'0' }}") || 0;
+let currentDelivery = parseFloat("{{ order.shipping_charge|default:'0' }}") || 0;
+const COUPON = parseFloat("{{ order.coupon_price|default:'0' }}") || 0;
+const VAT_GST = parseFloat("{{ vat_gst|default:'0' }}") || 0;
+const SEARCH_URL = "{% url 'search_products_ajax' %}";
+const SAVE_URL = "{% url 'update_order_ajax' %}";
+const VARIANTS_URL = "{% url 'get_product_variants_ajax' %}";
+const ADDRESS_SAVE_URL = "{% url 'update_shipping_address_ajax' %}";
+const SHIPPING_METHOD_URL = "{% url 'update_shipping_method_ajax' %}";
+
+let deletedItemIds = [];
+let newItems       = [];      
+let attributeSwaps = {};   
+
+const variantCache = {}; 
+
+// shipping method update handler
+document.getElementById('updateShippingMethodBtn').addEventListener('click', function() {
+  const btn = this;
+  const select = document.getElementById('shippingMethodSelect');
+  const selectedMethod = select.value;
+  const msgEl = document.getElementById('shippingMethodMsg');
+
+  btn.disabled    = true;
+  btn.innerHTML   = '<span class="spinner-border spinner-border-sm"></span>';
+  msgEl.style.display = 'none';
+
+  fetch(SHIPPING_METHOD_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+    body:    JSON.stringify({
+      order_id:        ORDER_ID,
+      shipping_method: selectedMethod,
+    }),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+
+      document.getElementById('shippingChargeDisplay').textContent =
+        '৳ ' + data.shipping_charge.toFixed(2);
+
+      currentDelivery = data.shipping_charge;
+      recalc();
+
+      document.querySelectorAll('.delivery-charge-display').forEach(el => {
+        el.textContent = '৳ ' + data.shipping_charge.toFixed(2);
+      });
+
+      // Show success
+      msgEl.style.display = 'block';
+      msgEl.className     = 'mt-2 text-success';
+      msgEl.innerHTML     = `<i class="bi bi-check-circle"></i> Updated to 
+        <b>${select.options[select.selectedIndex].text}</b> — 
+        Charge: ৳ ${data.shipping_charge.toFixed(2)}. 
+        New total: ৳ ${data.new_total.toFixed(2)}`;
+
+      showToast('Shipping method updated!', 'success');
+    } else {
+      msgEl.style.display = 'block';
+      msgEl.className     = 'mt-2 text-danger';
+      msgEl.textContent   = 'Error: ' + (data.error || 'Could not update.');
+      showToast('Failed to update shipping method.', 'danger');
+    }
+  })
+  .catch(() => {
+    msgEl.style.display = 'block';
+    msgEl.className     = 'mt-2 text-danger';
+    msgEl.textContent   = 'Network error. Try again.';
+    showToast('Network error.', 'danger');
+  })
+  .finally(() => {
+    btn.disabled  = false;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Update';
+  });
+});
+
+// ─── Page load: populate selects for all existing rows ────
+document.querySelectorAll('#orderItemsBody tr[data-product-id]').forEach(tr => {
+  loadVariantsForRow(tr);
+});
+
+// ─── Fetch variants and populate selects ────
+function loadVariantsForRow(tr) {
+  const productId     = tr.dataset.productId;
+  const currentAttrId = parseInt(tr.dataset.attrId);
+  if (!productId) return;
+
+  if (variantCache[productId]) {
+    populateSelects(tr, variantCache[productId], currentAttrId);
+    return;
+  }
+
+  fetch(`${VARIANTS_URL}?product_id=${encodeURIComponent(productId)}&order_id=${ORDER_ID}`)
+    .then(r => r.json())
+    .then(data => {
+      variantCache[productId] = data.variants || [];
+      populateSelects(tr, variantCache[productId], currentAttrId);
+    })
+    .catch(err => console.error('Variant load failed for product', productId, err));
+}
+
+// ─── Populate size + color selects ──────
+function populateSelects(tr, variants, currentAttrId) {
+  if (!variants.length) return;
+
+  const sizeSelect  = tr.querySelector('.size-select');
+  const colorSelect = tr.querySelector('.color-select');
+  if (!sizeSelect || !colorSelect) return;
+
+  // Store on row for later use
+  tr.dataset.variants = JSON.stringify(variants);
+
+  // Find current variant
+  const currentVariant = variants.find(v => v.product_attribute_id === currentAttrId) || variants[0];
+
+  // Build unique sizes
+  const seenSizes  = new Set();
+  const uniqueSizes = [];
+  variants.forEach(v => {
+    if (!seenSizes.has(v.size)) { seenSizes.add(v.size); uniqueSizes.push(v.size); }
+  });
+
+  sizeSelect.innerHTML = uniqueSizes.map(size =>
+    `<option value="${escAttr(size)}" ${size === currentVariant.size ? 'selected' : ''}>${escHtml(size)}</option>`
+  ).join('');
+
+  // Build colors for current size
+  buildColorOptions(colorSelect, variants, currentVariant.size, currentVariant.color);
+
+  // ── Listeners via onchange to avoid stacking ──
+  sizeSelect.onchange = function() {
+    const allVariants = JSON.parse(tr.dataset.variants || '[]');
+    // When size changes, show all colors for that size, no preferred color
+    buildColorOptions(colorSelect, allVariants, this.value, null);
+    syncAttrFromSelects(tr);
+  };
+
+  colorSelect.onchange = function() {
+    syncAttrFromSelects(tr);
+  };
+}
+
+// ─── Build color <option>s filtered by size ───────
+function buildColorOptions(colorSelect, variants, selectedSize, preferredColor) {
+  const filtered = variants.filter(v => v.size === selectedSize);
+  const source   = filtered.length ? filtered : variants;
+
+  colorSelect.innerHTML = source.map((v, idx) => {
+    let isSelected = false;
+    if (preferredColor !== null && preferredColor !== undefined) {
+      isSelected = (v.color === preferredColor);
+    } else {
+      isSelected = (idx === 0);
+    }
+    return `<option value="${escAttr(v.color)}"
+                     data-attr-id="${v.product_attribute_id}"
+                     data-price="${v.price}"
+                     data-stock="${v.stock}"
+                     data-in-stock="${v.in_stock ? 'true' : 'false'}"
+                     ${isSelected ? 'selected' : ''}>
+               ${escHtml(v.color)}${!v.in_stock ? ' (out of stock)' : ''}
+             </option>`;
+  }).join('');
+}
+
+// ─── Sync attribute from current select values ────
+function syncAttrFromSelects(tr) {
+  const colorSelect = tr.querySelector('.color-select');
+  if (!colorSelect) return;
+
+  const selectedOpt = colorSelect.options[colorSelect.selectedIndex];
+  if (!selectedOpt) return;
+
+  const newAttrId = parseInt(selectedOpt.dataset.attrId);
+  const newPrice  = parseFloat(selectedOpt.dataset.price);
+  const newStock  = parseInt(selectedOpt.dataset.stock ?? 9999);  //
+  const inStock   = selectedOpt.dataset.inStock === 'true';
+  const isNew     = tr.dataset.isNew === 'true';
+  const itemId    = tr.dataset.itemId; 
+
+  if (!newAttrId || isNaN(newPrice)) {
+    console.warn('syncAttrFromSelects: invalid attrId or price', selectedOpt.dataset);
+    return;
+  }
+
+  // Read OLD attrId BEFORE any update
+  const oldAttrId = parseInt(tr.dataset.attrId);
+
+  // Update row dataset
+  tr.dataset.attrId    = String(newAttrId);
+  tr.dataset.unitPrice = String(newPrice);
+  tr.dataset.stock     = String(newStock);
+
+  // Update visible unit price cell
+  const unitCell = tr.querySelector('.unit-price-cell');
+  if (unitCell) unitCell.textContent = '৳ ' + newPrice.toFixed(2);
+
+  // Track the change
+  if (isNew) {
+    // Find the newItems entry by oldAttrId and update it
+    const ni = newItems.find(i => i.product_attribute_id === oldAttrId);
+    if (ni) {
+      ni.product_attribute_id = newAttrId;
+    } else {
+      // Fallback: also check by rowKey
+      const rowKey = tr.dataset.rowKey;
+      const niByKey = newItems.find(i => i.rowKey === rowKey);
+      if (niByKey) niByKey.product_attribute_id = newAttrId;
+    }
+  } else {
+    // Existing item: record the swap using string itemId as key
+    attributeSwaps[itemId] = newAttrId;
+    console.log('attributeSwaps updated:', attributeSwaps);
+  }
+
+  if (!inStock) showToast('Warning: this variant is out of stock!', 'warning');
+
+  recalc();
+}
+
+// ─── Tab switching ────
+document.querySelectorAll('[data-tab]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('[data-tab]').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+    const tab = this.dataset.tab;
+    document.getElementById('tab-current').style.display = tab === 'current' ? 'block' : 'none';
+    document.getElementById('tab-add').style.display     = tab === 'add'     ? 'block' : 'none';
+    if (tab === 'add') fetchCatalog();
+  });
+});
+
+// ─── Click handler for table body ─────
+document.getElementById('orderItemsBody').addEventListener('click', function(e) {
+  const tr = e.target.closest('tr');
+  if (!tr) return;
+
+  if (e.target.closest('.qty-minus')) {
+    const span = tr.querySelector('.qty-val');
+    const qty  = parseInt(span.textContent);
+    if (qty > 1) { span.textContent = qty - 1; recalc(); }
+    return;
+  }
+
+  if (e.target.closest('.qty-plus')) {
+    const span    = tr.querySelector('.qty-val');
+    const current = parseInt(span.textContent);
+    const stock   = parseInt(tr.dataset.stock ?? 9999);
+
+    if (current >= stock) {
+      showToast(`Only ${stock} unit(s) available in stock!`, 'danger');
+      return;
+    }
+    span.textContent = current + 1;
+    recalc();
+    return;
+  }
+
+  if (e.target.closest('.remove-item-btn')) {
+    const isNew = tr.dataset.isNew === 'true';
+    if (isNew) {
+      const attrId = parseInt(tr.dataset.attrId);
+      const rowKey = tr.dataset.rowKey;
+      newItems = newItems.filter(i => i.product_attribute_id !== attrId && i.rowKey !== rowKey);
+    } else {
+      deletedItemIds.push(parseInt(tr.dataset.itemId));
+    }
+    tr.remove();
+    renumberRows();
+    recalc();
+    return;
+  }
+});
+
+// ─── Payment toggle ────
+document.getElementById('editPaymentToggle').addEventListener('change', function() {
+  document.getElementById('payStatusLabel').textContent = this.checked ? 'Paid' : 'Pending';
+});
+
+// ─── Live recalc ────
+function recalc() {
+  let subtotal = 0;
+  let newCount = 0;
+
+  document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
+    const unitPrice = parseFloat(tr.dataset.unitPrice || 0);
+    const qty       = parseInt(tr.querySelector('.qty-val')?.textContent || 1);
+    const rowTotal  = unitPrice * qty;
+    const totalCell = tr.querySelector('.row-total');
+    if (totalCell) totalCell.textContent = '৳ ' + rowTotal.toFixed(2);
+    subtotal += rowTotal;
+    if (tr.dataset.isNew === 'true') newCount++;
+  });
+
+  // ✅ Use currentDelivery instead of DELIVERY
+  const grand = subtotal + currentDelivery - COUPON + VAT_GST;
+  const delta = grand - ORIGINAL_TOTAL;
+
+  document.getElementById('editSubtotal').textContent      = '৳ ' + subtotal.toFixed(2);
+  document.getElementById('editGrandTotal').textContent    = '৳ ' + grand.toFixed(2);
+  document.getElementById('summarySubtotal').textContent   = '৳ ' + subtotal.toFixed(2);
+  document.getElementById('summaryGrandTotal').textContent = '৳ ' + grand.toFixed(2);
+  document.getElementById('newItemsCount').textContent     = newCount + ' item' + (newCount !== 1 ? 's' : '');
+  document.getElementById('itemCountLabel').textContent    =
+    document.querySelectorAll('#orderItemsBody tr').length + ' item(s)';
+
+  const banner = document.getElementById('changeBanner');
+  if (Math.abs(delta) > 0.005) {
+    banner.style.display = 'flex';
+    document.getElementById('changeDelta').textContent =
+      (delta > 0 ? '+' : '') + '৳ ' + delta.toFixed(2);
+  } else {
+    banner.style.display = 'none';
+  }
+}
+recalc();
+
+function renumberRows() {
+  document.querySelectorAll('#orderItemsBody tr').forEach((tr, i) => {
+    const cell = tr.querySelector('.row-num');
+    if (cell) cell.textContent = i + 1;
+  });
+}
+
+// ─── Catalog search ──────────
+let searchTimer;
+document.getElementById('productSearchInput').addEventListener('input', function() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(fetchCatalog, 300);
+});
+document.getElementById('categoryFilter').addEventListener('change', fetchCatalog);
+
+function fetchCatalog() {
+  const q    = document.getElementById('productSearchInput').value.trim();
+  const cat  = document.getElementById('categoryFilter').value;
+  const grid = document.getElementById('productCatalogGrid');
+  grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:#aaa;font-size:12px">Loading…</div>';
+
+  fetch(`${SEARCH_URL}?q=${encodeURIComponent(q)}&category_id=${encodeURIComponent(cat)}&order_id=${ORDER_ID}`)
+    .then(r => r.json())
+    .then(data => renderCatalog(data.products))
+    .catch(() => {
+      grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:red;font-size:12px">Error loading products.</div>';
+    });
+}
+
+function renderCatalog(products) {
+  const grid = document.getElementById('productCatalogGrid');
+  if (!products.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:#aaa;font-size:12px">No products found.</div>';
+    return;
+  }
+  grid.innerHTML = products.map(p => `
+    <div class="prod-card border rounded p-2"
+         style="cursor:pointer;transition:border-color .15s"
+         data-attr-id="${p.product_attribute_id}"
+         data-product-id="${p.product_id}"
+         data-name="${escAttr(p.name)}"
+         data-size="${escAttr(p.size)}"
+         data-color="${escAttr(p.color)}"
+         data-price="${p.price}"
+         data-image="${escAttr(p.image)}">
+      <div style="height:160px;background:#f3f3f6;border-radius:5px;margin-bottom:6px;overflow:hidden;border:0.5px solid #ddd">
+        ${p.image
+          ? `<img src="${escAttr(p.image)}" style="width:100%;height:100%;object-fit:contain">`
+          : `<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#aaa">📦</div>`}
+      </div>
+      <div style="font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+           title="${escAttr(p.name)}">${escHtml(p.name)}</div>
+      <div style="font-size:12px;font-weight:600;color:#3C3489;margin-top:2px">
+        ৳ ${p.price.toLocaleString('en-BD', {minimumFractionDigits:2, maximumFractionDigits:2})}
+      </div>
+      <div style="font-size:11px;color:#aaa;margin-top:2px">Size: ${escHtml(p.size)} | Color: ${escHtml(p.color)}</div>
+      <div class="d-flex justify-content-between align-items-center mt-1">
+        <span style="font-size:11px;color:#aaa">Stock: ${p.stock}</span>
+        <span style="font-size:10px;padding:2px 8px;background:#EEEDFE;color:#3C3489;border-radius:4px;border:0.5px solid #AFA9EC">+ Add</span>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.prod-card').forEach(card => {
+    card.addEventListener('click', function() {
+      addProductToOrder(
+        parseInt(this.dataset.attrId),
+        parseInt(this.dataset.productId),
+        this.dataset.name,
+        this.dataset.size,
+        this.dataset.color,
+        parseFloat(this.dataset.price),
+        this.dataset.image
+      );
+    });
+  });
+}
+
+// ─── Add new product row ──────
+let rowKeyCounter = 0; 
+
+function addProductToOrder(attrId, productId, name, size, color, price, image) {
+  // Prevent duplicate by productId (not attrId, since user may want same product diff variant)
+  const existing = document.querySelector(`#orderItemsBody tr[data-product-id="${productId}"][data-is-new="true"]`);
+  if (existing) {
+    showToast('Product already added! Change variant in the table.', 'warning');
+    return;
+  }
+
+  // Unique row key so we can always find this row in newItems
+  const rowKey = 'new_' + (++rowKeyCounter);
+
+  newItems.push({ product_attribute_id: attrId, rowKey });
+
+  const tbody  = document.getElementById('orderItemsBody');
+  const rowNum = tbody.querySelectorAll('tr').length + 1;
+  const tr = document.createElement('tr');
+  tr.dataset.itemId  = 'new';
+  tr.dataset.rowKey = rowKey;
+  tr.dataset.attrId = String(attrId);
+  tr.dataset.productId = String(productId);
+  tr.dataset.unitPrice = String(price);
+  tr.dataset.isNew = 'true';
+  tr.style.background  = 'rgba(127,119,221,0.04)';
+
+  tr.innerHTML = `
+    <td class="row-num">${rowNum}</td>
+    <td>
+      <div class="d-flex gap-2 align-items-center">
+        ${image
+          ? `<img src="${escAttr(image)}" width="36" height="36" style="border-radius:6px;object-fit:cover;border:0.5px solid #ddd">`
+          : `<div style="width:36px;height:36px;background:#f3f3f6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px">📦</div>`}
+        <div>
+          <div class="fw-medium" style="font-size:13px">
+            ${escHtml(name)}
+            <span style="font-size:9px;padding:1px 6px;background:#EEEDFE;color:#3C3489;border-radius:3px;margin-left:4px;vertical-align:middle">NEW</span>
+          </div>
+        </div>
+      </div>
+    </td>
+    <td style="min-width:90px">
+      <select class="form-select form-select-sm size-select" style="font-size:11px;padding:2px 6px">
+        <option value="${escAttr(size)}" selected>${escHtml(size)}</option>
+      </select>
+    </td>
+    <td style="min-width:100px">
+      <select class="form-select form-select-sm color-select" style="font-size:11px;padding:2px 6px">
+        <option value="${escAttr(color)}" data-attr-id="${attrId}" data-price="${price}" data-in-stock="true" selected>${escHtml(color)}</option>
+      </select>
+    </td>
+    <td>
+      <div class="d-flex align-items-center gap-1">
+        <button class="btn btn-sm btn-outline-secondary qty-minus" style="padding:1px 7px;line-height:1">−</button>
+        <span class="qty-val fw-medium mx-1" style="min-width:20px;text-align:center">1</span>
+        <button class="btn btn-sm btn-outline-secondary qty-plus" style="padding:1px 7px;line-height:1">+</button>
+      </div>
+    </td>
+    <td class="unit-price-cell" style="font-size:12px">৳ ${price.toFixed(2)}</td>
+    <td class="row-total fw-medium" style="font-size:12px">৳ ${price.toFixed(2)}</td>
+    <td>
+      <button class="btn btn-sm remove-item-btn text-danger"
+              style="padding:2px 6px;background:transparent;border:none">
+        <i class="bi bi-trash3"></i>
+      </button>
+    </td>
+  `;
+
+  tbody.appendChild(tr);
+  loadVariantsForRow(tr);
+  recalc();
+  document.querySelector('[data-tab="current"]').click();
+  showToast(`"${name}" added to order.`, 'success');
+}
+
+// ─── Save order ─────
+document.getElementById('saveOrderBtn').addEventListener('click', function() {
+  const btn = this;
+
+  let stockError = null;
+  document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
+    if (stockError) return;
+    const stock = parseInt(tr.dataset.stock ?? 9999);
+    const qty   = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
+    const name  = tr.querySelector('.fw-medium')?.textContent?.trim() || 'A product';
+    if (qty > stock) {
+      stockError = `"${name}" only has ${stock} unit(s) in stock but ${qty} were entered.`;
+    }
+  });
+
+  if (stockError) {
+    showToast(stockError, 'danger');
+    return;
+  }
+
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
+
+  const items = [];
+
+  // Existing rows — use string itemId as key for attributeSwaps
+  document.querySelectorAll('#orderItemsBody tr[data-is-new="false"]').forEach(tr => {
+    const itemId    = tr.dataset.itemId;       // string
+    const itemIdInt = parseInt(itemId);
+    const swappedAttrId = attributeSwaps[itemId] || null;
+    console.log(`Row itemId=${itemId}, swappedAttrId=${swappedAttrId}`);
+    items.push({
+      id: itemIdInt,
+      quantity: parseInt(tr.querySelector('.qty-val').textContent),
+      new_product_attribute_id: swappedAttrId,
+      is_new: false,
+      is_deleted: false,
+    });
+  });
+
+  // New rows — find by rowKey
+  newItems.forEach(ni => {
+    const tr  = document.querySelector(`#orderItemsBody tr[data-row-key="${ni.rowKey}"]`);
+    const qty = tr ? parseInt(tr.querySelector('.qty-val').textContent) : 1;
+    // Always use the current attrId from the row dataset (updated by syncAttrFromSelects)
+    const currentAttrId = tr ? parseInt(tr.dataset.attrId) : ni.product_attribute_id;
+    console.log(`New item rowKey=${ni.rowKey}, attrId=${currentAttrId}`);
+    items.push({
+      product_attribute_id: currentAttrId,
+      quantity: qty,
+      is_new: true,
+      is_deleted: false,
+    });
+  });
+
+  // Deleted rows
+  deletedItemIds.forEach(id => {
+    items.push({ id, is_new: false, is_deleted: true });
+  });
+
+  console.log('Saving payload items:', items);
+  console.log('attributeSwaps:', attributeSwaps);
+
+  fetch(SAVE_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+    body: JSON.stringify({
+      order_id: ORDER_ID,
+      order_status: document.getElementById('editOrderStatus').value,
+      payment_status: document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
+      items,
+    }),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      showToast('Order saved successfully!', 'success');
+      // Reset state
+      deletedItemIds = [];
+      attributeSwaps = {};
+      newItems = [];
+      document.querySelectorAll('#orderItemsBody tr[data-is-new="true"]').forEach(tr => {
+        tr.dataset.isNew = 'false';
+        tr.style.background = '';
+      });
+    } else {
+      showToast('Error: ' + (data.error || 'Could not save.'), 'danger');
+    }
+  })
+  .catch(() => showToast('Network error. Try again.', 'danger'))
+  .finally(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-check-lg"></i> Save changes';
+  });
+});
+
+// ─── Shipping address ──────
+const editAddressBtn   = document.getElementById('editAddressBtn');
+const cancelAddressBtn = document.getElementById('cancelAddressBtn');
+const saveAddressBtn = document.getElementById('saveAddressBtn');
+const addressDisplay = document.getElementById('addressDisplay');
+const addressForm  = document.getElementById('addressForm');
+
+editAddressBtn.addEventListener('click', function() {
+  addressDisplay.style.display = 'none';
+  addressForm.style.display    = 'block';
+  editAddressBtn.style.display = 'none';
+});
+
+cancelAddressBtn.addEventListener('click', function() {
+  addressDisplay.style.display = 'block';
+  addressForm.style.display    = 'none';
+  editAddressBtn.style.display = '';
+});
+
+saveAddressBtn.addEventListener('click', function() {
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
+
+  const payload = {
+    order_id: ORDER_ID,
+    full_name: document.getElementById('addr-full-name').value.trim(),
+    phone_no: document.getElementById('addr-phone-no').value.trim(),
+    address_line: document.getElementById('addr-address-line').value.trim(),
+    city: document.getElementById('addr-city').value.trim(),
+    thana: document.getElementById('addr-thana').value.trim(),
+    upozila: document.getElementById('addr-upozila').value.trim(),
+    postal_code: document.getElementById('addr-postal-code').value.trim(),
+    note: document.getElementById('addr-note').value.trim(),
+  };
+
+  if (!payload.full_name || !payload.phone_no || !payload.address_line || !payload.city) {
+    showToast('Please fill in all required fields.', 'danger');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Address';
+    return;
+  }
+
+  fetch(ADDRESS_SAVE_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+    body: JSON.stringify(payload),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      const a = data.address;
+      document.getElementById('disp-full-name').textContent = 'Name: '  + a.full_name;
+      document.getElementById('disp-phone-no').textContent = 'Phone: ' + a.phone_no;
+      document.getElementById('disp-address-line').textContent = 'Address: ' + a.address_line;
+      document.getElementById('disp-city').textContent  = 'City: ' + a.city;
+      document.getElementById('disp-thana').textContent = 'Thana: ' + a.thana;
+      document.getElementById('disp-upozila').textContent  = 'Upazila: ' + a.upozila;
+      document.getElementById('disp-postal-code').textContent  = 'Post Code: ' + a.postal_code;
+      const noteEl = document.getElementById('disp-note');
+      if (a.note) {
+        noteEl.textContent   = 'Note: ' + a.note;
+        noteEl.style.display = 'block';
+      } else {
+        noteEl.style.display = 'none';
+      }
+      addressDisplay.style.display = 'block';
+      addressForm.style.display    = 'none';
+      editAddressBtn.style.display = '';
+      showToast('Shipping address updated!', 'success');
+    } else {
+      showToast('Error: ' + (data.error || 'Could not save address.'), 'danger');
+    }
+  })
+  .catch(() => showToast('Network error. Try again.', 'danger'))
+  .finally(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Address';
+  });
+});
+
+// ─── Helpers ─────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function showToast(msg, type='success') {
+  const el = document.getElementById('saveToast');
+  el.querySelector('div').className = `alert alert-${type} shadow d-flex align-items-center gap-2 mb-0`;
+  document.getElementById('toastMsg').textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+</script>
+{% endblock %}

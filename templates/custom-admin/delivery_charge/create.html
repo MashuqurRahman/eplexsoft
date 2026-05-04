@@ -1,0 +1,44 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Add Delivery Charge{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Add Delivery Charge</h5>
+    </div>
+
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.initial_charge|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.initial_weight|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.increment_weight_per_unit|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row"> 
+                <div class="col-md-4">
+                    {{ form.delivery_location|as_crispy_field }}
+                </div>
+                <div class="col-md-4" style="margin-top: 40px;">
+                    {{ form.is_active|as_crispy_field }}
+                </div>
+            </div>
+            <div class="text-center pt-3 pb-4">
+                <button type="submit" class="btn add-btn">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+
+{% endblock  %}

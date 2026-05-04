@@ -1,0 +1,58 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Update Coupon{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Update Coupon</h5>
+    </div>
+
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.name|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.code|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.value|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.type|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.min_price|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.number_of_user|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.start_date|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.end_date|as_crispy_field }}
+                </div>
+                <div class="col-md-4" style="margin-top: 40px;">
+                    {{ form.is_percent|as_crispy_field }}
+                </div>
+            </div>
+            <div class="text-center pt-3 pb-4">
+                <button type="submit" class="btn add-btn">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+
+{% endblock  %}

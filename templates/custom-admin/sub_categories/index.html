@@ -1,0 +1,170 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% block title %}Sub categories list{% endblock  %}
+
+{% block content %}
+
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="boxs">
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="subtitle mb-0">Sub Categories List</h6>
+
+        <a href="{% url 'add_sub_categories_url' %}" class="btn add-btn btn-sm">
+            <i class="fas fa-plus"></i> Add Sub Category
+        </a>
+    </div>
+
+    
+    <hr>
+
+    <div class="table-header mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="data-search">
+                    <div class="input-group search">
+                        <input class="form-control" id="search_id" placeholder="Search..." type="search">
+                        <span class="input-group-text" id="searchBtn"><i aria-hidden="true" class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive" id="search_items">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center">SL No</th>
+                    <th>Category Name</th>
+                    <th>Sub Category Name</th>
+                    <th>Description</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if obj_list %}
+                {% for obj in obj_list %}
+                <tr>
+                    <td class="text-center">{{forloop.counter}}</td>
+                    <td>{{obj.categories}}</td>
+                    <td>{{obj.sub_cat_name}}</td>
+                    <td>{{obj.description|default:"N/A"}}</td>
+                    <td>
+                        <a href="{% url 'update_sub_categories_url' obj.id %}" class="edit_btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a href="{% url 'delete_sub_categories_url' obj.id %}" class="delete_btn" title="Delete" 
+                            onclick="SweetDelete(event, this.href)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">Data is not found</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <div class="table-footer">
+            {% if obj_list.has_other_pages %}
+                <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    {% if obj_list.has_previous %}
+                    <li class="page-item" >
+                            <a href="?page={{ obj_list.previous_page_number }}" class="page-link" tabindex="-1">Previous</a>
+                        </li>
+                    {% if obj_list.number > 3 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">1</a>
+                    </li>
+                        {% if obj_list.number > 4 %}
+
+                        <li class="page-item">
+                        <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                    {% endif %}
+
+                    {% for num in obj_list.paginator.page_range %}
+                    {% if obj_list.number == num %}
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% elif num > obj_list.number|add:'-3' and num < obj_list.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if obj_list.has_next %}
+                    {% if obj_list.number < obj_list.paginator.num_pages|add:'-3' %}
+                        <li class="page-item">
+                        <span class="page-link">...</span>
+                        </li>
+                        <li class="page-item">
+                        <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                        </li>
+                    {% elif obj_list.number < obj_list.paginator.num_pages|add:'-2' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item">
+                    <a href="?page={{ obj_list.next_page_number }}" class="page-link">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>  
+            </nav> 
+            {% endif %}  
+        </div>
+
+    </div>
+
+    </section>
+{% endblock  %}
+
+{% block JS %}
+<script type=text/javascript>
+    $(document).ready(function(){
+        var search_url = "{% url 'search_sub_categories_url' %}"
+        var redirect_url = "{% url 'sub_categories_index_url' %}"
+
+        $("#search_id").keypress(function (e) { 
+            if (e.keyCode == 13){
+                $("#searchBtn").click();
+            }
+        });
+    
+        $("#searchBtn").click(function () {
+            if($("#search_id").val())
+                $.ajax({                       
+                    url: search_url,                   
+                data: {
+                    'search_id': $("#search_id").val()
+                },
+                success: function (data) {   
+                    $("#search_items").html(data);
+                }
+            });
+            else
+                location.href = redirect_url
+        });
+    });
+</script>
+{% endblock  %}
