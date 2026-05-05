@@ -27,7 +27,7 @@
             <td>{{ obj.product.sub_sub_categories.sub_sub_cat_name }}</td>
             <td>{{ obj.product.product_name }}</td>
             <td>{{ obj.discount_amount }}</td>
-            <th>{{ obj.side_slider.is_active_status }}</th>
+            <th style="color: #687387 !important;">{{ obj.side_slider.is_active_status }}</th>
             <td>{{ obj.side_slider.start_date}}- {{ obj.side_slider.end_date}}</td>
 
             
@@ -43,8 +43,12 @@
                     <i class="fas fa-edit"></i>
                 </a> {% endcomment %}
 
-                <a href="{% url 'flash_sell_delete_url' obj.id %}" class="delete_btn" title="Delete" 
+                {% comment %} <a href="{% url 'flash_sell_delete_url' obj.id %}" class="delete_btn" title="Delete" 
                     onclick="SweetDelete(event, this.href)">
+                    <i class="fas fa-trash-alt"></i>
+                </a> {% endcomment %}
+                <a href="javascript:void(0);" class="delete_btn" title="Delete" 
+                    onclick="showDemoCheckoutModal()">
                     <i class="fas fa-trash-alt"></i>
                 </a>
             </td>

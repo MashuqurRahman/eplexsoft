@@ -90,8 +90,15 @@
                                     height="120" 
                                     style="object-fit: cover; border-radius: 8px; border:1px solid #ddd;">
 
-                                <a href="{% url 'delete_attribute_image' img.id %}"
+                                {% comment %} <a href="{% url 'delete_attribute_image' img.id %}"
                                     onclick="SweetDelete(event, this.href)"
+                                    style="position: absolute; top: -8px; right: -8px;
+                                            background: red; color: white; border-radius: 50%;
+                                            padding: 4px 8px; text-decoration: none;">
+                                        ×
+                                </a> {% endcomment %}
+                                <a href="javascript:void(0)"
+                                    onclick="showDemoCheckoutModal()"
                                     style="position: absolute; top: -8px; right: -8px;
                                             background: red; color: white; border-radius: 50%;
                                             padding: 4px 8px; text-decoration: none;">
@@ -115,7 +122,8 @@
             </div>
 
             <div class="text-center pt-3 pb-4">
-                <button id="submit_btn" type="submit" class="btn add-btn">Update</button>
+                {% comment %} <button id="submit_btn" type="submit" class="btn add-btn">Update</button> {% endcomment %}
+                <button type="button" onclick="showDemoCheckoutModal()" class="btn add-btn">Update</button>
             </div>
         </form>
     </div>

@@ -21,8 +21,12 @@
                     <i class="fas fa-edit"></i>
                 </a>
 
-                <a href="{% url 'delete_sub_categories_url' obj.id %}" class="delete_btn" title="Delete" 
+                {% comment %} <a href="{% url 'delete_sub_categories_url' obj.id %}" class="delete_btn" title="Delete" 
                     onclick="SweetDelete(event, this.href)">
+                    <i class="fas fa-trash-alt"></i>
+                </a> {% endcomment %}
+                <a href="javascript:void(0);" class="delete_btn" title="Delete" 
+                    onclick="showDemoCheckoutModal()">
                     <i class="fas fa-trash-alt"></i>
                 </a>
             </td>

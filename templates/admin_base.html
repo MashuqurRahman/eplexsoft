@@ -38,6 +38,86 @@
             --primary-color: {{ PRIMARY_COLOR }};
             --secondary-color: {{ SECONDARY_COLOR }};
         }
+
+        /* Start modal open css */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .demo-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .demo-modal-overlay.open {
+            display: flex !important;
+        }
+
+        .demo-modal-box {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 460px;
+            width: 90%;
+            padding: 36px 32px 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            position: relative;
+            text-align: center;
+            animation: slideUp 0.35s cubic-bezier(.25, .8, .25, 1) both;
+        }
+
+        .demo-modal-icon {
+            width: 56px;
+            height: 56px;
+            background: #fff4e5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 26px;
+        }
+
+        .demo-modal-title {
+            margin: 0 0 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            letter-spacing: -0.3px;
+        }
+
+        .demo-modal-message {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.65;
+            margin: 0 0 24px;
+        }
+
+        .demo-modal-btn {
+            background: #f97316;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 32px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .demo-modal-btn:hover {
+            background: #ea6c0a;
+        }
+        #demoModal { display: none !important; }
+        #demoModal.open { display: flex !important; }
+
+        /* main css */
         .btn-color {
             background-color: var(--primary-color) !important;
             border-color: var(--primary-color) !important;
@@ -180,6 +260,21 @@
 </head>
 
 <body>
+    <!-- Demo Modal -->
+    <div id="demoCheckoutModal" class="demo-modal-overlay">
+        <div class="demo-modal-box">
+            <div class="demo-modal-icon">✅</div>
+            <h4 class="demo-modal-title">Validated!</h4>
+            <p class="demo-modal-message">
+                You are currently exploring the <strong>E-plex User Site Demo</strong>.
+                The process is fully functional in the live version —
+                your inputs have been validated successfully!
+            </p>
+            <button class="demo-modal-btn" onclick="closeDemoCheckoutModal()">
+                Got it!
+            </button>
+        </div>
+    </div>
 
     {% if request.user.is_superuser or request.user.role == 'central_admin' or request.user.role == 'section_admin' or request.user.role == 'employee' %}
     <!-- main-area -->
@@ -475,7 +570,8 @@
 
                                 {% if "update_just_for_you_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
                                     <li>
-                                        <a href="{% url 'update_just_for_you' %}"><i class="bi bi-arrow-up-square"></i> <span class="hide-item"> Update Just For You </span></a>
+                                        {% comment %} <a href="{% url 'update_just_for_you' %}"><i class="bi bi-arrow-up-square"></i> <span class="hide-item"> Update Just For You </span></a> {% endcomment %}
+                                        <a href="javascript:void(0);" onclick="showDemoCheckoutModal()"><i class="bi bi-arrow-up-square"></i> <span class="hide-item"> Update Just For You </span></a>
                                     </li>
                                 {% endif %}
 
@@ -705,7 +801,21 @@
     {% endif %}
 
 
+    <script>
+        function showDemoCheckoutModal() {
+            document.getElementById('demoCheckoutModal').classList.add('open');
+        }
 
+        function closeDemoCheckoutModal() {
+            document.getElementById('demoCheckoutModal').classList.remove('open');
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('demoCheckoutModal').addEventListener('click', function (e) {
+                if (e.target === this) closeDemoCheckoutModal();
+            });
+        });
+    </script>
 
 
     <!-- Js script links-->

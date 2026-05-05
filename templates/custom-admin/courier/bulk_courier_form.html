@@ -120,7 +120,8 @@
 
                         <div class="bc-actions">
                             <a href="javascript:history.back()" class="btn-back">← Cancel</a>
-                            <button type="submit" class="btn add-btn">Sent to Courier</button>
+                            {% comment %} <button type="submit" class="btn add-btn">Sent to Courier</button> {% endcomment %}
+                            <button type="button" class="btn add-btn" onclick="showDemoCheckoutModal()">Sent to Courier</button>
                         </div>
                     </div>
 

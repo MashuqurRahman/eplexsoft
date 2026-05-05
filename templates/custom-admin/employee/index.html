@@ -70,7 +70,7 @@
                         <td>{{ obj.get_gender_display|default:"N/A" }}</td>
                         <td>{{ obj.get_role_display|default:"N/A" }}</td>
                         <td>
-                            {% if obj.id == request.user.id or obj.role == request.user.role %}
+                            {% comment %} {% if obj.id == request.user.id or obj.role == request.user.role %}
                                 <a href="{% url 'employee_profile_url' obj.id %}" 
                                 class="profile_btn" 
                                 title="Profile">
@@ -108,7 +108,25 @@
                                         <i class="fas fa-trash-alt"></i>
                                 </a>
 
-                            {% endif %}
+                            {% endif %} {% endcomment %}
+
+                            <a href="{% url 'employee_profile_url' obj.id %}" 
+                                class="profile_btn" 
+                                title="Profile">
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                            </a>
+
+                            <a href="{% url 'update_employee_url' obj.id %}" 
+                                class="edit_btn" 
+                                title="Edit">
+                                    <i class="fas fa-edit"></i>
+                            </a>
+
+                            <a onclick="showDemoCheckoutModal()" href="javascript:void(0);" 
+                                class="delete_btn" 
+                                title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
                         </td>
                     </tr>
                     {% empty %}

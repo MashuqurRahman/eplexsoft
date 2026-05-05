@@ -31,6 +31,86 @@
             --price-color: {{ PRICE_COLOR }};
             --button-color: {{ BUTTON_COLOR }};
         }
+
+         /* Start modal open css */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .demo-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .demo-modal-overlay.open {
+            display: flex !important;
+        }
+
+        .demo-modal-box {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 460px;
+            width: 90%;
+            padding: 36px 32px 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            position: relative;
+            text-align: center;
+            animation: slideUp 0.35s cubic-bezier(.25, .8, .25, 1) both;
+        }
+
+        .demo-modal-icon {
+            width: 56px;
+            height: 56px;
+            background: #fff4e5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 26px;
+        }
+
+        .demo-modal-title {
+            margin: 0 0 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            letter-spacing: -0.3px;
+        }
+
+        .demo-modal-message {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.65;
+            margin: 0 0 24px;
+        }
+
+        .demo-modal-btn {
+            background: #f97316;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 32px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .demo-modal-btn:hover {
+            background: #ea6c0a;
+        }
+        #demoModal { display: none !important; }
+        #demoModal.open { display: flex !important; }
+
+
         .badge {
             padding: 0.5em 0.8em;
             border-radius: 4px;
@@ -241,6 +321,24 @@
 
 </head>
 <body>
+
+    <!-- Demo Modal -->
+    <div id="demoCheckoutModal" class="demo-modal-overlay">
+        <div class="demo-modal-box">
+            <div class="demo-modal-icon">✅</div>
+            <h4 class="demo-modal-title">Validated!</h4>
+            <p class="demo-modal-message">
+                You are currently exploring the <strong>E-plex User Site Demo</strong>.
+                The process is fully functional in the live version —
+                your inputs have been validated successfully!
+            </p>
+            <button class="demo-modal-btn" onclick="closeDemoCheckoutModal()">
+                Got it!
+            </button>
+        </div>
+    </div>
+
+
     <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
 
     <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
@@ -813,6 +911,22 @@
     <script src="{% static 'assets/js/select2.min.js' %}"></script>
     <script src="{% static 'assets/js/imagepreviewer.min.js' %}"></script>
     <script src="{% static 'assets/js/script.js' %}"></script>
+
+    <script>
+        function showDemoCheckoutModal() {
+            document.getElementById('demoCheckoutModal').classList.add('open');
+        }
+
+        function closeDemoCheckoutModal() {
+            document.getElementById('demoCheckoutModal').classList.remove('open');
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('demoCheckoutModal').addEventListener('click', function (e) {
+                if (e.target === this) closeDemoCheckoutModal();
+            });
+        });
+    </script>
     
 
     <!-- JAVASCRIPT BLOCK -->

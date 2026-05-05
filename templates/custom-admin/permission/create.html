@@ -25,7 +25,10 @@
             {{ form|crispy }}
 
             <div class="text-center mt-3">
-                <button type="submit" class="btn add-btn">
+                {% comment %} <button type="submit" class="btn add-btn">
+                    {% if form.instance.pk %}Create{% else %}Save{% endif %}
+                </button> {% endcomment %}
+                <button type="button" onclick="showDemoCheckoutModal()" class="btn add-btn">
                     {% if form.instance.pk %}Create{% else %}Save{% endif %}
                 </button>
             </div>

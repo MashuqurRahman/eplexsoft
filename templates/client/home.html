@@ -3,6 +3,29 @@
 {% block title %}Home{% endblock  %}
 
 {% block content %}
+    <!-- Demo Notice Modal -->
+    <div id="demoModal" class="demo-modal-overlay">
+        <div class="demo-modal-box">
+
+            <div class="demo-modal-icon">🛍️</div>
+
+            <h4 class="demo-modal-title">Welcome to E-plex Demo</h4>
+
+            <p class="demo-modal-message">
+                The products displayed on this site have been collected from various
+                resources for demonstration purposes only. This site is not intended for actual
+                buying or selling. Enjoy exploring the E-plex user experience!
+            </p>
+
+            <button class="demo-modal-btn" onclick="closeDemoModal()">
+                Got it, let's explore!
+            </button>
+
+        </div>
+    </div>
+
+    
+
     <!-- hero-slider -->
 
     <section class="hero-slider">
@@ -587,6 +610,24 @@
 {% endblock  %}
 
 {% block JS %}
+<script>
+    // Show demo modal on every home page visit
+    function closeDemoModal() {
+        document.getElementById('demoModal').classList.remove('open');
+    }
+
+    // Open on page load with a slight delay for polish
+    window.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+            document.getElementById('demoModal').classList.add('open');
+        }, 600);
+    });
+
+    // Also close when clicking the dark overlay
+    document.getElementById('demoModal').addEventListener('click', function (e) {
+        if (e.target === this) closeDemoModal();
+    });
+</script>
 
 <script>
     let offset = 9;

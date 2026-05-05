@@ -41,26 +41,29 @@
                 </div>
                 <div class="col-md-6">
                     <div class="login-form">
-                        {% if site_setting %}
+                        {% comment %} {% if site_setting %}
                             <img src="{{ site_setting.logo.url }}" alt="{{ site_setting.company_name }}">
                             <p>Welcome to {{ site_setting.company_name }}</p>
                         {% else %}
                             <img src="{% static 'assets/img/logo.png' %}" alt="Ready Ecommerce">
                             <p>Welcome to Ready Ecommerce</p>
-                        {% endif %}
+                        {% endif %} {% endcomment %}
+                        <img src="{% static 'assets/img/eplex_resize.png' %}" alt="e_plex-logo">
+                        <p>Welcome to E-PLEX</p>
+
                         <h4>Login</h4>
                         <form class="row g-3" method="POST" action="">
                             {% csrf_token %}
                             <div class="col-12">
                                 <label for="Email" class="form-label">Email</label>
-                                <input type="text" name="email" class="form-control" id="email" placeholder="Enter Email">
+                                <input value="admin@gmail.com" type="text" name="email" class="form-control" id="email" placeholder="Enter Email">
                                 {% if errors.email %}
                                     <small class="text-danger" style="font-size: 14px;">{{ errors.email }}</small>
                                 {% endif %}
                             </div>
                             <div class="col-md-12 position-relative">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" name="password" class="form-control" id="password" placeholder="Enter Password">
+                                <input value="1234" type="password" name="password" class="form-control" id="password" placeholder="Enter Password">
                                 <span class="eye" onclick="showHidePassword()">
                                     <i class="bi bi-eye-slash" id="togglePassword"></i>
                                 </span>
@@ -70,14 +73,14 @@
                                 {% endif %}
 
                                 <!-- Forgot password link -->
-                                <div class="mt-2">
+                                {% comment %} <div class="mt-2">
                                     <a href="{% url 'password_reset' %}" class="text-primary" style="font-size: 14px;">Forgot Password?</a>
-                                </div>
+                                </div> {% endcomment %}
                             </div>
 
                             <div class="col-md-12">
                                 <button type="submit" class="cusbtn2">Login</button>
-                                <p>Don’t have an account? <a href="{% url 'registration_url' %}">Sign Up</a> </p>
+                                {% comment %} <p>Don’t have an account? <a href="{% url 'registration_url' %}">Sign Up</a> </p> {% endcomment %}
                             </div>
                         </form>
                     </div>

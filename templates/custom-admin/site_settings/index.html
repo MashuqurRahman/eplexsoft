@@ -54,10 +54,15 @@
                     {% if request.user.is_superuser or request.user.role == 'central_admin' %}
                     <td>
                         <a href="{% url 'site_setting_update' s.id %}" class="btn btn-sm add-btn">Edit</a>
-                        <a href="{% url 'site_setting_delete' s.id %}"
-                        class="btn btn-sm btn-danger"
-                        onclick="return confirm('Are you sure?')">
-                        Delete
+                        {% comment %} <a href="{% url 'site_setting_delete' s.id %}"
+                            class="btn btn-sm btn-danger"
+                            onclick="SweetDelete(event, this.href)">
+                            Delete
+                        </a> {% endcomment %}
+                        <a href="javascript:void(0)"
+                            class="btn btn-sm btn-danger"
+                            onclick="showDemoCheckoutModal()">
+                            Delete
                         </a>
                     </td>
                     {% endif %}

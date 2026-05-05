@@ -37,6 +37,18 @@
                         title="View Order">
                             <i class="bi bi-eye"></i>
                     </a>
+                    {% if order.order_status == 'confirmed' or order.order_status == 'pending' %}
+                    {% comment %} <a href="{% url 'order_edit_url' order.id %}" 
+                        class="action-btn action-edit" title="Edit Order"
+                        style="color: white;">
+                        <i class="bi bi-pencil-square"></i>
+                    </a> {% endcomment %}
+                    <a href="javascript:void(0);" onclick="showDemoCheckoutModal()"
+                        class="action-btn action-edit" title="Edit Order"
+                        style="color: white;">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    {% endif %}
 
                 {% comment %} <a href="{% url 'order_invoice_download' order.id %}" 
         

@@ -214,4 +214,4 @@ def admin_login_view(request):
 
 def admin_logout_view(request):
     logout(request)
-    return redirect("home_page_url")
+    return redirect("login_url")

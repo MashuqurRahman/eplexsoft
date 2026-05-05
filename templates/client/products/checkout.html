@@ -4,6 +4,24 @@
 {% block title %}Checkout{% endblock  %}
 
 {% block content %}
+
+<!-- Demo Checkout Modal -->
+<div id="demoCheckoutModal" class="demo-modal-overlay">
+    <div class="demo-modal-box">
+        <div class="demo-modal-icon">✅</div>
+        <h4 class="demo-modal-title">Order Validated!</h4>
+        <p class="demo-modal-message">
+            You are currently exploring the <strong>E-plex User Site Demo</strong>.
+            The checkout process is fully functional in the live version —
+            your inputs have been validated successfully!
+        </p>
+        <button class="demo-modal-btn" onclick="closeDemoCheckoutModal()">
+            Got it!
+        </button>
+    </div>
+</div>
+
+
 <div class="modal fade" id="orderSuccessModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -297,7 +315,8 @@
                                 </div>
                                 <input type="hidden" name="coupon_obj" id="coupon_obj_id">
                                 <div class="col-md-12">
-                                    <button class="cusbtn2" type="submit" {% if out_of_stock %}disabled {% endif %}>Place Order </button>
+                                    {% comment %} <button class="cusbtn2" type="submit" {% if out_of_stock %}disabled {% endif %} >Place Order </button> {% endcomment %}
+                                    <button class="cusbtn2" type="button" {% if out_of_stock %}disabled {% endif %}  onclick="showDemoCheckoutModal()">Place Order </button>
                                 </div>
                             </div>
 
@@ -325,6 +344,22 @@
       }).showToast();
     {% endfor %}
   {% endif %}
+</script>
+
+<script>
+    function showDemoCheckoutModal() {
+        document.getElementById('demoCheckoutModal').classList.add('open');
+    }
+
+    function closeDemoCheckoutModal() {
+        document.getElementById('demoCheckoutModal').classList.remove('open');
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('demoCheckoutModal').addEventListener('click', function (e) {
+            if (e.target === this) closeDemoCheckoutModal();
+        });
+    });
 </script>
 
 

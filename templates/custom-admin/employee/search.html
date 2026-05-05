@@ -19,7 +19,7 @@
             <td>{{ obj.phone|default:"N/A" }}</td>
             <td>{{ obj.get_gender_display|default:"N/A" }}</td>
             <td>{{ obj.get_role_display|default:"N/A" }}</td>
-            <td>
+            {% comment %} <td>
                 <a href="{% url 'employee_profile_url' obj.id %}" class="edit_btn" title="Edit">
                     <i class="fas fa-user" aria-hidden="true"></i>
                 </a>
@@ -29,6 +29,18 @@
 
                 <a href="{% url 'delete_employee_url' obj.id %}" class="delete_btn" title="Delete" 
                     onclick="SweetDelete(event, this.href)">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </td> {% endcomment %}
+            <td>
+                <a href="{% url 'employee_profile_url' obj.id %}" class="edit_btn" title="Edit">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                </a>
+                <a href="{% url 'update_employee_url' obj.id %}" class="edit_btn" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                <a onclick="showDemoCheckoutModal()" href="javaScript:void(0);"  class="delete_btn" title="Delete">
                     <i class="fas fa-trash-alt"></i>
                 </a>
             </td>
