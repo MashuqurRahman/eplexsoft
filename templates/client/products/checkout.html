@@ -6,20 +6,40 @@
 {% block content %}
 
 <!-- Demo Checkout Modal -->
-<div id="demoCheckoutModal" class="demo-modal-overlay">
-    <div class="demo-modal-box">
-        <div class="demo-modal-icon">✅</div>
-        <h4 class="demo-modal-title">Order Validated!</h4>
-        <p class="demo-modal-message">
-            You are currently exploring the <strong>E-plex User Site Demo</strong>.
-            The checkout process is fully functional in the live version —
-            your inputs have been validated successfully!
+<div id="demoCheckoutModal">
+    <div class="dco-card" role="alertdialog" aria-modal="true"
+        aria-labelledby="dco-title" aria-describedby="dco-desc">
+        <div class="dco-inner">
+
+        <div class="dco-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="9" x2="12" y2="13"
+                stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12" cy="17" r="1" fill="#f59e0b"/>
+            </svg>
+        </div>
+
+        <h2 class="dco-title" id="dco-title">Demo Environment</h2>
+        <p class="dco-body" id="dco-desc">
+            You are currently exploring the <strong>E-Plex Admin Demo</strong>.
+            This is a read-only preview — changes made here will <strong>not be saved</strong>
+            and may not reflect live data. Proceed with caution.
         </p>
-        <button class="demo-modal-btn" onclick="closeDemoCheckoutModal()">
-            Got it!
-        </button>
+
+        <div class="dco-divider"></div>
+
+        <div class="dco-actions">
+            <button class="dco-btn dco-btn-dismiss" onclick="closeDemoCheckoutModal()">Dismiss</button>
+            <button class="dco-btn dco-btn-confirm" onclick="closeDemoCheckoutModal()">I Understand</button>
+        </div>
+
+        </div>
     </div>
 </div>
+
+
 
 
 <div class="modal fade" id="orderSuccessModal" tabindex="-1">
@@ -311,7 +331,8 @@
                                     <input name="coupon_code" type="text" value="{% if cart.coupon %}{{cart.coupon.code}}{% endif %}" id="coupon-code" class="form-control" placeholder="Have a coupon?">
                                 </div>
                                 <div class="col-md-4">
-                                    <button id="apply-coupon" type="button" class="cusbtn2">Apply </button>
+                                    {% comment %} <button id="apply-coupon" type="button" class="cusbtn2">Apply </button> {% endcomment %}
+                                    <button type="button" class="cusbtn2" onclick="showDemoCheckoutModal()">Apply </button>
                                 </div>
                                 <input type="hidden" name="coupon_obj" id="coupon_obj_id">
                                 <div class="col-md-12">

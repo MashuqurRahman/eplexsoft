@@ -39,84 +39,7 @@
             --secondary-color: {{ SECONDARY_COLOR }};
         }
 
-        /* Start modal open css */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .demo-modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(3px);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .demo-modal-overlay.open {
-            display: flex !important;
-        }
-
-        .demo-modal-box {
-            background: #fff;
-            border-radius: 16px;
-            max-width: 460px;
-            width: 90%;
-            padding: 36px 32px 28px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-            position: relative;
-            text-align: center;
-            animation: slideUp 0.35s cubic-bezier(.25, .8, .25, 1) both;
-        }
-
-        .demo-modal-icon {
-            width: 56px;
-            height: 56px;
-            background: #fff4e5;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 18px;
-            font-size: 26px;
-        }
-
-        .demo-modal-title {
-            margin: 0 0 12px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #1a1a2e;
-            letter-spacing: -0.3px;
-        }
-
-        .demo-modal-message {
-            color: #555;
-            font-size: 0.95rem;
-            line-height: 1.65;
-            margin: 0 0 24px;
-        }
-
-        .demo-modal-btn {
-            background: #f97316;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 11px 32px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .demo-modal-btn:hover {
-            background: #ea6c0a;
-        }
-        #demoModal { display: none !important; }
-        #demoModal.open { display: flex !important; }
-
+        
         /* main css */
         .btn-color {
             background-color: var(--primary-color) !important;
@@ -261,18 +184,51 @@
 
 <body>
     <!-- Demo Modal -->
-    <div id="demoCheckoutModal" class="demo-modal-overlay">
+    {% comment %} <div id="demoCheckoutModal" class="demo-modal-overlay">
         <div class="demo-modal-box">
             <div class="demo-modal-icon">✅</div>
             <h4 class="demo-modal-title">Validated!</h4>
             <p class="demo-modal-message">
-                You are currently exploring the <strong>E-plex User Site Demo</strong>.
+                You are currently exploring the <strong>E-plex Admin Site Demo</strong>.
                 The process is fully functional in the live version —
                 your inputs have been validated successfully!
             </p>
             <button class="demo-modal-btn" onclick="closeDemoCheckoutModal()">
                 Got it!
             </button>
+        </div>
+    </div> {% endcomment %}
+
+    <div id="demoCheckoutModal">
+        <div class="dco-card" role="alertdialog" aria-modal="true"
+            aria-labelledby="dco-title" aria-describedby="dco-desc">
+            <div class="dco-inner">
+
+            <div class="dco-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                    stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="9" x2="12" y2="13"
+                    stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="12" cy="17" r="1" fill="#f59e0b"/>
+                </svg>
+            </div>
+
+            <h2 class="dco-title" id="dco-title">Demo Environment</h2>
+            <p class="dco-body" id="dco-desc">
+                You are currently exploring the <strong>E-Plex Admin Demo</strong>.
+                This is a read-only preview — changes made here will <strong>not be saved</strong>
+                and may not reflect live data. Proceed with caution.
+            </p>
+
+            <div class="dco-divider"></div>
+
+            <div class="dco-actions">
+                <button class="dco-btn dco-btn-dismiss" onclick="closeDemoCheckoutModal()">Dismiss</button>
+                <button class="dco-btn dco-btn-confirm" onclick="closeDemoCheckoutModal()">I Understand</button>
+            </div>
+
+            </div>
         </div>
     </div>
 
@@ -488,10 +444,10 @@
                                                 <a style="{% if request.resolver_match.url_name == 'delivery_discount_create_url' or request.resolver_match.url_name == 'delivery_discount_update_url' %}color: white !important;{% endif %}" href="{% url 'delivery_discount_index_url' %}">Delivery Discount</a>
                                             </li>
 
-                                            <li class="{% if request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}active{% endif %}"
+                                            {% comment %} <li class="{% if request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}active{% endif %}"
                                                 style="{% if request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}background: var(--primary-color) !important;{% endif %}">
                                                 <a style="{% if request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}color: white !important;{% endif %}" href="{% url 'courier_index_url' %}">Courier</a>
-                                            </li>
+                                            </li> {% endcomment %}
 
                                         </ul>
                                     </li>

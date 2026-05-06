@@ -1005,6 +1005,166 @@ a.dropdown-item {
     border-radius: 12px;
 }
 
+/* ── Demo Checkout Modal ── */
+#demoCheckoutModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgb(210 210 210 / 65%);
+    backdrop-filter: blur(2px);
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+}
+#demoCheckoutModal.open { display: flex; }
+
+.dco-card {
+    background: #1a1d27;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 18px;
+    padding: 40px 36px 32px;
+    width: 420px;
+    max-width: 92vw;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 1px rgba(245, 158, 11, 0.12),
+        0 32px 64px rgba(0, 0, 0, 0.3);
+    animation: dcoSlideUp 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes dcoSlideUp {
+    from { opacity: 0; transform: translateY(22px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* amber top accent bar */
+.dco-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+}
+
+/* horizontal + vertical grid texture */
+.dco-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.dco-inner { position: relative; z-index: 1; }
+
+.dco-icon {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    background: #f7e3bf;
+    border: 1.5px solid rgba(245, 158, 11, 0.28);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 22px;
+    animation: dcoPulse 2.4s ease-in-out infinite;
+}
+@keyframes dcoPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.3); }
+    50%       { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); }
+}
+.dco-icon svg { width: 30px; height: 30px; }
+
+.dco-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.10);
+    border: 1px solid rgba(245, 158, 11, 0.22);
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin: 0 auto 16px;
+    width: fit-content;
+    font-family: 'DM Sans', sans-serif;
+}
+.dco-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    animation: dcoBlink 1.2s ease-in-out infinite;
+}
+@keyframes dcoBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+.dco-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: #f1f5f9;
+    text-align: center;
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
+}
+.dco-body {
+    font-size: 14px; line-height: 1.75;
+    color: #8b93a8;
+    text-align: center;
+    margin-bottom: 28px;
+    font-family: 'DM Sans', sans-serif;
+}
+.dco-body strong { color: #f59e0b; font-weight: 600; }
+
+.dco-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+    margin-bottom: 24px;
+}
+
+.dco-actions { display: flex; gap: 12px; }
+
+.dco-btn {
+    flex: 1; height: 44px;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s, transform 0.12s;
+    font-family: 'DM Sans', sans-serif;
+}
+.dco-btn:active { transform: scale(0.97); }
+
+.dco-btn-dismiss {
+    background: white;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #1a1d27;
+}
+.dco-btn-dismiss:hover {
+    background: rgba(255, 255, 255, 0.09);
+    color: #f1f5f9;
+}
+
+.dco-btn-confirm {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border: none;
+    color: #1a1d27;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 18px rgba(245, 158, 11, 0.28);
+}
+.dco-btn-confirm:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 26px rgba(245, 158, 11, 0.42);
+}
+.dco-btn-confirm::after {
+    content: '';
+    position: absolute; top: 0; left: -100%;
+    width: 55%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+    transform: skewX(-18deg);
+    animation: dcoShine 3s ease-in-out infinite 1.2s;
+}
+@keyframes dcoShine {
+    0%, 100% { left: -100%; }
+    45%, 60%  { left: 160%; }
+}
+
 
 /* taglines */
 

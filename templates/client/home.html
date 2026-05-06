@@ -4,23 +4,33 @@
 
 {% block content %}
     <!-- Demo Notice Modal -->
-    <div id="demoModal" class="demo-modal-overlay">
-        <div class="demo-modal-box">
+    <div class="overlay" id="demoModal">
+        <div class="popup welcome-popup">
 
-            <div class="demo-modal-icon">🛍️</div>
+            <div class="welcome-header">
+                <div class="welcome-badge">
+                    <span></span> Demo Version
+                </div>
 
-            <h4 class="demo-modal-title">Welcome to E-plex Demo</h4>
+                <h2 class="welcome-title">Welcome to E-plex Demo!</h2>
 
-            <p class="demo-modal-message">
-                The products displayed on this site have been collected from various
+                <p class="welcome-sub">
+                    Explore our full-featured e-commerce platform.<br>
+                    Browse, interact, and see what is possible.
+                </p>
+            </div>
+
+            <div class="welcome-body">
+
+            <div class="feature-pills">
+                <div class="feature-pill">The products displayed on this site have been collected from various
                 resources for demonstration purposes only. This site is not intended for actual
-                buying or selling. Enjoy exploring the E-plex user experience!
-            </p>
+                buying or selling. Enjoy exploring the <span style="color: #0B1C3A; font-weight: bold;">E-plex</span> user experience!</div>
+            </div>
 
-            <button class="demo-modal-btn" onclick="closeDemoModal()">
-                Got it, let's explore!
-            </button>
+            <button class="btn-primaryy" onclick="closeDemoModal()">Got it, let's explore!</button>
 
+            </div>
         </div>
     </div>
 
@@ -611,19 +621,18 @@
 
 {% block JS %}
 <script>
-    // Show demo modal on every home page visit
     function closeDemoModal() {
         document.getElementById('demoModal').classList.remove('open');
+        sessionStorage.setItem('eplex_demo_shown', 'true');
     }
-
-    // Open on page load with a slight delay for polish
     window.addEventListener('DOMContentLoaded', function () {
-        setTimeout(function () {
-            document.getElementById('demoModal').classList.add('open');
-        }, 600);
+        const alreadyShown = sessionStorage.getItem('eplex_demo_shown');
+        if (!alreadyShown) {
+            setTimeout(function () {
+                document.getElementById('demoModal').classList.add('open');
+            }, 600);
+        }
     });
-
-    // Also close when clicking the dark overlay
     document.getElementById('demoModal').addEventListener('click', function (e) {
         if (e.target === this) closeDemoModal();
     });

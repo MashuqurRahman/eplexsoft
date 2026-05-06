@@ -17,7 +17,8 @@
     <div class="card-header d-flex justify-content-between">
         <h5 class="fw-bold">Courier Info List</h5>
         {% if request.user.is_superuser or request.user.role == 'central_admin' %}
-        <a href="{% url 'courier_create_url' %}" class="btn add-btn btn-sm">+ Courier</a>
+        {% comment %} <a href="{% url 'courier_create_url' %}" class="btn add-btn btn-sm">+ Courier</a> {% endcomment %}
+        <a href="javascript:void(0)" class="btn add-btn btn-sm" onclick="showDemoCheckoutModal()">+ Courier</a>
         {% endif %}
     </div>
 
@@ -26,7 +27,7 @@
             <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="7" class="text-center">SteadFast Courier Informations</th>
+                    <th colspan="7" class="text-center">Courier Informations</th>
                 </tr>
                 <tr>
                     <th>SL No.</th>
