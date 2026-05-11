@@ -195,7 +195,6 @@
                     data-product-id="{{ item.product.id }}"
                     data-unit-price="{{ item.product_attribute.product_final_price }}"
                     data-stock="{{ item.product_attribute.attribute_stock_status.remaining_stock }}"
-                    data-original-qty="{{ item.quantity }}"
                     data-is-new="false">
 
                   <td class="row-num">{{ forloop.counter }}</td>
@@ -608,43 +607,54 @@ const SAVE_URL = "{% url 'update_order_ajax' %}";
 const VARIANTS_URL = "{% url 'get_product_variants_ajax' %}";
 const ADDRESS_SAVE_URL = "{% url 'update_shipping_address_ajax' %}";
 const SHIPPING_METHOD_URL = "{% url 'update_shipping_method_ajax' %}";
- 
+
 let deletedItemIds = [];
-let newItems       = [];
-let attributeSwaps = {};
-const variantCache = {};
- 
-// ─── Shipping method update ────────────────────────────────────────────────
+let newItems       = [];      
+let attributeSwaps = {};   
+
+const variantCache = {}; 
+
+// shipping method update handler
 document.getElementById('updateShippingMethodBtn').addEventListener('click', function() {
   const btn = this;
   const select = document.getElementById('shippingMethodSelect');
   const selectedMethod = select.value;
   const msgEl = document.getElementById('shippingMethodMsg');
- 
-  btn.disabled  = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+  btn.disabled    = true;
+  btn.innerHTML   = '<span class="spinner-border spinner-border-sm"></span>';
   msgEl.style.display = 'none';
- 
+
   fetch(SHIPPING_METHOD_URL, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
-    body:    JSON.stringify({ order_id: ORDER_ID, shipping_method: selectedMethod }),
+    body:    JSON.stringify({
+      order_id:        ORDER_ID,
+      shipping_method: selectedMethod,
+    }),
   })
   .then(r => r.json())
   .then(data => {
     if (data.success) {
-      document.getElementById('shippingChargeDisplay').textContent = '৳ ' + data.shipping_charge.toFixed(2);
+
+      document.getElementById('shippingChargeDisplay').textContent =
+        '৳ ' + data.shipping_charge.toFixed(2);
+
       currentDelivery = data.shipping_charge;
       recalc();
+
       document.querySelectorAll('.delivery-charge-display').forEach(el => {
         el.textContent = '৳ ' + data.shipping_charge.toFixed(2);
       });
+
+      // Show success
       msgEl.style.display = 'block';
       msgEl.className     = 'mt-2 text-success';
       msgEl.innerHTML     = `<i class="bi bi-check-circle"></i> Updated to 
         <b>${select.options[select.selectedIndex].text}</b> — 
         Charge: ৳ ${data.shipping_charge.toFixed(2)}. 
         New total: ৳ ${data.new_total.toFixed(2)}`;
+
       showToast('Shipping method updated!', 'success');
     } else {
       msgEl.style.display = 'block';
@@ -664,22 +674,23 @@ document.getElementById('updateShippingMethodBtn').addEventListener('click', fun
     btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Update';
   });
 });
- 
-// ─── Page load: populate selects for all existing rows ────────────────────
+
+// ─── Page load: populate selects for all existing rows ────
 document.querySelectorAll('#orderItemsBody tr[data-product-id]').forEach(tr => {
   loadVariantsForRow(tr);
 });
- 
+
+// ─── Fetch variants and populate selects ────
 function loadVariantsForRow(tr) {
   const productId     = tr.dataset.productId;
   const currentAttrId = parseInt(tr.dataset.attrId);
   if (!productId) return;
- 
+
   if (variantCache[productId]) {
     populateSelects(tr, variantCache[productId], currentAttrId);
     return;
   }
- 
+
   fetch(`${VARIANTS_URL}?product_id=${encodeURIComponent(productId)}&order_id=${ORDER_ID}`)
     .then(r => r.json())
     .then(data => {
@@ -688,44 +699,60 @@ function loadVariantsForRow(tr) {
     })
     .catch(err => console.error('Variant load failed for product', productId, err));
 }
- 
+
+// ─── Populate size + color selects ──────
 function populateSelects(tr, variants, currentAttrId) {
   if (!variants.length) return;
+
   const sizeSelect  = tr.querySelector('.size-select');
   const colorSelect = tr.querySelector('.color-select');
   if (!sizeSelect || !colorSelect) return;
- 
+
+  // Store on row for later use
   tr.dataset.variants = JSON.stringify(variants);
+
+  // Find current variant
   const currentVariant = variants.find(v => v.product_attribute_id === currentAttrId) || variants[0];
- 
+
+  // Build unique sizes
   const seenSizes  = new Set();
   const uniqueSizes = [];
   variants.forEach(v => {
     if (!seenSizes.has(v.size)) { seenSizes.add(v.size); uniqueSizes.push(v.size); }
   });
- 
+
   sizeSelect.innerHTML = uniqueSizes.map(size =>
     `<option value="${escAttr(size)}" ${size === currentVariant.size ? 'selected' : ''}>${escHtml(size)}</option>`
   ).join('');
- 
+
+  // Build colors for current size
   buildColorOptions(colorSelect, variants, currentVariant.size, currentVariant.color);
- 
+
+  // ── Listeners via onchange to avoid stacking ──
   sizeSelect.onchange = function() {
     const allVariants = JSON.parse(tr.dataset.variants || '[]');
+    // When size changes, show all colors for that size, no preferred color
     buildColorOptions(colorSelect, allVariants, this.value, null);
     syncAttrFromSelects(tr);
   };
-  colorSelect.onchange = function() { syncAttrFromSelects(tr); };
+
+  colorSelect.onchange = function() {
+    syncAttrFromSelects(tr);
+  };
 }
- 
+
+// ─── Build color <option>s filtered by size ───────
 function buildColorOptions(colorSelect, variants, selectedSize, preferredColor) {
   const filtered = variants.filter(v => v.size === selectedSize);
   const source   = filtered.length ? filtered : variants;
- 
+
   colorSelect.innerHTML = source.map((v, idx) => {
-    let isSelected = preferredColor !== null && preferredColor !== undefined
-      ? (v.color === preferredColor)
-      : (idx === 0);
+    let isSelected = false;
+    if (preferredColor !== null && preferredColor !== undefined) {
+      isSelected = (v.color === preferredColor);
+    } else {
+      isSelected = (idx === 0);
+    }
     return `<option value="${escAttr(v.color)}"
                      data-attr-id="${v.product_attribute_id}"
                      data-price="${v.price}"
@@ -736,53 +763,63 @@ function buildColorOptions(colorSelect, variants, selectedSize, preferredColor) 
              </option>`;
   }).join('');
 }
- 
+
+// ─── Sync attribute from current select values ────
 function syncAttrFromSelects(tr) {
   const colorSelect = tr.querySelector('.color-select');
   if (!colorSelect) return;
+
   const selectedOpt = colorSelect.options[colorSelect.selectedIndex];
   if (!selectedOpt) return;
- 
+
   const newAttrId = parseInt(selectedOpt.dataset.attrId);
   const newPrice  = parseFloat(selectedOpt.dataset.price);
-  const newStock  = parseInt(selectedOpt.dataset.stock ?? 9999);
-  const originalQty = tr.dataset.isNew === 'true' ? 0 : parseInt(tr.dataset.originalQty ?? 0);
+  const newStock  = parseInt(selectedOpt.dataset.stock ?? 9999);  //
   const inStock   = selectedOpt.dataset.inStock === 'true';
   const isNew     = tr.dataset.isNew === 'true';
-  const itemId    = tr.dataset.itemId;
-  const attrChanged = String(newAttrId) !== tr.dataset.attrId;
-  const effectiveStock = attrChanged ? newStock : newStock + originalQty;
- 
-  if (!newAttrId || isNaN(newPrice)) return;
- 
+  const itemId    = tr.dataset.itemId; 
+
+  if (!newAttrId || isNaN(newPrice)) {
+    console.warn('syncAttrFromSelects: invalid attrId or price', selectedOpt.dataset);
+    return;
+  }
+
+  // Read OLD attrId BEFORE any update
   const oldAttrId = parseInt(tr.dataset.attrId);
+
+  // Update row dataset
   tr.dataset.attrId    = String(newAttrId);
   tr.dataset.unitPrice = String(newPrice);
   tr.dataset.stock     = String(newStock);
- 
+
+  // Update visible unit price cell
   const unitCell = tr.querySelector('.unit-price-cell');
   if (unitCell) unitCell.textContent = '৳ ' + newPrice.toFixed(2);
- 
+
+  // Track the change
   if (isNew) {
+    // Find the newItems entry by oldAttrId and update it
     const ni = newItems.find(i => i.product_attribute_id === oldAttrId);
-    if (ni) ni.product_attribute_id = newAttrId;
-    else {
+    if (ni) {
+      ni.product_attribute_id = newAttrId;
+    } else {
+      // Fallback: also check by rowKey
       const rowKey = tr.dataset.rowKey;
       const niByKey = newItems.find(i => i.rowKey === rowKey);
       if (niByKey) niByKey.product_attribute_id = newAttrId;
     }
   } else {
+    // Existing item: record the swap using string itemId as key
     attributeSwaps[itemId] = newAttrId;
+    console.log('attributeSwaps updated:', attributeSwaps);
   }
- 
-  // Re-check stock violation after variant change
-  checkRowStockViolation(tr);
- 
+
   if (!inStock) showToast('Warning: this variant is out of stock!', 'warning');
+
   recalc();
 }
- 
-// ─── Tab switching ─────────────────────────────────────────────────────────
+
+// ─── Tab switching ────
 document.querySelectorAll('[data-tab]').forEach(link => {
   link.addEventListener('click', function(e) {
     e.preventDefault();
@@ -794,50 +831,33 @@ document.querySelectorAll('[data-tab]').forEach(link => {
     if (tab === 'add') fetchCatalog();
   });
 });
- 
-// ─── Table body click handler ──────────────────────────────────────────────
+
+// ─── Click handler for table body ─────
 document.getElementById('orderItemsBody').addEventListener('click', function(e) {
   const tr = e.target.closest('tr');
   if (!tr) return;
- 
-  // ── QTY MINUS ──
+
   if (e.target.closest('.qty-minus')) {
     const span = tr.querySelector('.qty-val');
     const qty  = parseInt(span.textContent);
-    if (qty > 1) {
-      span.textContent = qty - 1;
-      checkRowStockViolation(tr);
-      recalc();
-    }
+    if (qty > 1) { span.textContent = qty - 1; recalc(); }
     return;
   }
- 
-  // ── QTY PLUS — allow over-stock, but warn ──
+
   if (e.target.closest('.qty-plus')) {
-    const span   = tr.querySelector('.qty-val');
+    const span    = tr.querySelector('.qty-val');
     const current = parseInt(span.textContent);
     const stock   = parseInt(tr.dataset.stock ?? 9999);
-    const originalQty = parseInt(tr.dataset.originalQty ?? 0);
 
-    const effectiveStock = stock + originalQty;
- 
-    span.textContent = current + 1;  
- 
-    if (current + 1 > effectiveStock) {
-      showRowViolationWarning(tr, current + 1, effectiveStock);
-      showToast(
-        `⚠ Only ${effectiveStock} unit(s) available, but ${current + 1} ordered. This will be flagged as a stock violation.`,
-        'warning'
-      );
-    } else {
-      clearRowViolationWarning(tr);
+    if (current >= stock) {
+      showToast(`Only ${stock} unit(s) available in stock!`, 'danger');
+      return;
     }
- 
+    span.textContent = current + 1;
     recalc();
     return;
   }
- 
-  // ── REMOVE ──
+
   if (e.target.closest('.remove-item-btn')) {
     const isNew = tr.dataset.isNew === 'true';
     if (isNew) {
@@ -853,114 +873,44 @@ document.getElementById('orderItemsBody').addEventListener('click', function(e) 
     return;
   }
 });
- 
-// ─── Stock violation helpers ───────────────────────────────────────────────
- 
-/**
- * Checks the current qty vs stock for a row and shows/clears warning badge.
- */
-function checkRowStockViolation(tr) {
-  const qty         = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
-  const stock       = parseInt(tr.dataset.stock ?? 9999);
-  const originalQty = parseInt(tr.dataset.originalQty ?? 0);
-  const effectiveStock = stock + originalQty;
 
-  if (qty > effectiveStock) {
-    showRowViolationWarning(tr, qty, effectiveStock);
-  } else {
-    clearRowViolationWarning(tr);
-  }
-}
- 
-/**
- * Adds a red ⚠ badge inside the qty cell and highlights the row.
- */
-function showRowViolationWarning(tr, qty, stock) {
-  tr.classList.add('stock-violated-row');
-  tr.style.background = 'rgba(220,53,69,0.06)';
- 
-  // Remove old badge if any
-  const existing = tr.querySelector('.stock-violation-badge');
-  if (existing) existing.remove();
- 
-  const qtyTd = tr.querySelector('.qty-val');
-  if (qtyTd) {
-    const badge = document.createElement('div');
-    badge.className = 'stock-violation-badge';
-    badge.style.cssText = 'font-size:10px;color:#dc3545;margin-top:2px;white-space:nowrap';
-    badge.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Stock: ${stock} | Over by ${qty - stock}`;
-    qtyTd.parentElement.appendChild(badge);
-  }
-}
- 
-/**
- * Removes the violation badge and row highlight.
- */
-function clearRowViolationWarning(tr) {
-  tr.classList.remove('stock-violated-row');
-  if (tr.dataset.isNew !== 'true') {
-    tr.style.background = '';
-  }
-  const badge = tr.querySelector('.stock-violation-badge');
-  if (badge) badge.remove();
-}
- 
-/**
- * Returns { violated: bool, violatedQty: int } for a row.
- */
-function getRowViolation(tr) {
-  const qty          = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
-  const stock        = parseInt(tr.dataset.stock ?? 9999);
-  const originalQty  = parseInt(tr.dataset.originalQty ?? 0);
-  const effectiveStock = tr.dataset.isNew === 'true' ? stock + 0 : stock + originalQty;
-
-  return {
-    violated:    qty > effectiveStock,
-    violatedQty: Math.max(0, qty - effectiveStock),
-  };
-}
- 
-// ─── Payment toggle ────────────────────────────────────────────────────────
+// ─── Payment toggle ────
 document.getElementById('editPaymentToggle').addEventListener('change', function() {
   document.getElementById('payStatusLabel').textContent = this.checked ? 'Paid' : 'Pending';
 });
- 
-// ─── Live recalc ───────────────
+
+// ─── Live recalc ────
 function recalc() {
   let subtotal = 0;
   let newCount = 0;
-  let hasViolation = false;
- 
+
   document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
-    const unitPrice   = parseFloat(tr.dataset.unitPrice || 0);
-    const qty         = parseInt(tr.querySelector('.qty-val')?.textContent || 1);
-    const rowTotal    = unitPrice * qty;
-    const totalCell   = tr.querySelector('.row-total');
+    const unitPrice = parseFloat(tr.dataset.unitPrice || 0);
+    const qty       = parseInt(tr.querySelector('.qty-val')?.textContent || 1);
+    const rowTotal  = unitPrice * qty;
+    const totalCell = tr.querySelector('.row-total');
     if (totalCell) totalCell.textContent = '৳ ' + rowTotal.toFixed(2);
     subtotal += rowTotal;
     if (tr.dataset.isNew === 'true') newCount++;
-
-    // ── use effectiveStock, same logic as qty-plus ──
-    const stock       = parseInt(tr.dataset.stock ?? 9999);
-    const originalQty = parseInt(tr.dataset.originalQty ?? 0);
-    const effectiveStock = tr.dataset.isNew === 'true' ? stock : stock + originalQty;
-
-    if (qty > effectiveStock) hasViolation = true;
   });
- 
+
+  // ✅ Use currentDelivery instead of DELIVERY
   const grand = subtotal + currentDelivery - COUPON + VAT_GST;
   const delta = grand - ORIGINAL_TOTAL;
- 
+
   document.getElementById('editSubtotal').textContent      = '৳ ' + subtotal.toFixed(2);
   document.getElementById('editGrandTotal').textContent    = '৳ ' + grand.toFixed(2);
   document.getElementById('summarySubtotal').textContent   = '৳ ' + subtotal.toFixed(2);
   document.getElementById('summaryGrandTotal').textContent = '৳ ' + grand.toFixed(2);
-  document.getElementById('summaryCoupon').textContent     = '৳ ' + COUPON.toFixed(2);
-  document.getElementById('summaryVatTax').textContent     = '৳ ' + VAT_GST.toFixed(2);
-  document.getElementById('newItemsCount').textContent     = newCount + ' item' + (newCount !== 1 ? 's' : '');
-  document.getElementById('itemCountLabel').textContent    = document.querySelectorAll('#orderItemsBody tr').length + ' item(s)';
- 
+  document.getElementById('summaryCoupon').textContent =  '৳ ' + COUPON.toFixed(2);
+  document.getElementById('summaryVatTax').textContent =  '৳ ' + VAT_GST.toFixed(2);
+
+  document.getElementById('newItemsCount').textContent = newCount + ' item' + (newCount !== 1 ? 's' : '');
+  document.getElementById('itemCountLabel').textContent = document.querySelectorAll('#orderItemsBody tr').length + ' item(s)';
+
   const banner = document.getElementById('changeBanner');
+
+  
   if (Math.abs(delta) > 0.005) {
     banner.style.display = 'flex';
     document.getElementById('changeDelta').textContent =
@@ -968,52 +918,31 @@ function recalc() {
   } else {
     banner.style.display = 'none';
   }
- 
-  // Show/hide global violation warning banner
-  let violationBanner = document.getElementById('stockViolationBanner');
-  if (hasViolation) {
-    if (!violationBanner) {
-      violationBanner = document.createElement('div');
-      violationBanner.id = 'stockViolationBanner';
-      violationBanner.className = 'alert alert-warning d-flex align-items-center gap-2 mb-3';
-      violationBanner.style.fontSize = '13px';
-      violationBanner.innerHTML = `
-        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size:16px"></i>
-        <span>
-          <b>Stock violation detected.</b> Some items exceed available stock.
-        </span>`;
-      const tableWrapper = document.querySelector('#tab-current .table-responsive');
-      if (tableWrapper) tableWrapper.parentElement.insertBefore(violationBanner, tableWrapper);
-    }
-    violationBanner.style.display = 'flex';
-  } else {
-    if (violationBanner) violationBanner.style.display = 'none';
-  }
 }
 recalc();
- 
+
 function renumberRows() {
   document.querySelectorAll('#orderItemsBody tr').forEach((tr, i) => {
     const cell = tr.querySelector('.row-num');
     if (cell) cell.textContent = i + 1;
   });
 }
- 
-// ─── Catalog search ────────────────────────────────────────────────────────
+
+// ─── Catalog search ──────────
 let searchTimer;
 document.getElementById('productSearchInput').addEventListener('input', function() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(fetchCatalog, 300);
 });
 document.getElementById('categoryFilter').addEventListener('change', fetchCatalog);
- 
+
 function fetchCatalog() {
   const q    = document.getElementById('productSearchInput').value.trim();
   const cat  = document.getElementById('categoryFilter').value;
   const grid = document.getElementById('productCatalogGrid');
- 
+
   grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:#aaa;font-size:12px">Loading…</div>';
- 
+
   fetch(`${SEARCH_URL}?q=${encodeURIComponent(q)}&category_id=${encodeURIComponent(cat)}&order_id=${ORDER_ID}`)
     .then(r => r.json())
     .then(data => renderCatalog(data.products))
@@ -1021,7 +950,19 @@ function fetchCatalog() {
       grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:red;font-size:12px">Error loading products.</div>';
     });
 }
- 
+
+document.querySelectorAll('[data-tab]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('[data-tab]').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+    const tab = this.dataset.tab;
+    document.getElementById('tab-current').style.display = tab === 'current' ? 'block' : 'none';
+    document.getElementById('tab-add').style.display     = tab === 'add'     ? 'block' : 'none';
+    if (tab === 'add') fetchCatalog();  // ✅ always fetch when tab opens
+  });
+});
+
 function renderCatalog(products) {
   const grid = document.getElementById('productCatalogGrid');
   if (!products.length) {
@@ -1055,7 +996,7 @@ function renderCatalog(products) {
       </div>
     </div>
   `).join('');
- 
+
   grid.querySelectorAll('.prod-card').forEach(card => {
     card.addEventListener('click', function() {
       addProductToOrder(
@@ -1070,37 +1011,40 @@ function renderCatalog(products) {
     });
   });
 }
- 
-// ─── Add new product row ───────────────────────────────────────────────────
-let rowKeyCounter = 0;
- 
+
+// ─── Add new product row ──────
+let rowKeyCounter = 0; 
+
 function addProductToOrder(attrId, productId, name, size, color, price, image) {
+  // Prevent duplicate by productId (not attrId, since user may want same product diff variant)
   const existing = document.querySelector(`#orderItemsBody tr[data-product-id="${productId}"][data-is-new="true"]`);
   if (existing) {
     showToast('Product already added! Change variant in the table.', 'warning');
     return;
   }
- 
+
+  // Unique row key so we can always find this row in newItems
   const rowKey = 'new_' + (++rowKeyCounter);
+
   newItems.push({ product_attribute_id: attrId, rowKey });
- 
+
   const tbody  = document.getElementById('orderItemsBody');
   const rowNum = tbody.querySelectorAll('tr').length + 1;
   const tr = document.createElement('tr');
-  tr.dataset.itemId    = 'new';
-  tr.dataset.rowKey    = rowKey;
-  tr.dataset.attrId    = String(attrId);
+  tr.dataset.itemId  = 'new';
+  tr.dataset.rowKey = rowKey;
+  tr.dataset.attrId = String(attrId);
   tr.dataset.productId = String(productId);
   tr.dataset.unitPrice = String(price);
-  tr.dataset.isNew     = 'true';
+  tr.dataset.isNew = 'true';
   tr.style.background  = 'rgba(127,119,221,0.04)';
- 
+
   tr.innerHTML = `
     <td class="row-num">${rowNum}</td>
     <td>
       <div class="d-flex gap-2 align-items-center">
         ${image
-          ? `<img src="${escAttr(image)}" width="36" height="36" style="border-radius:6px;margin-right:10px !important;object-fit:cover;border:0.5px solid #ddd">`
+          ? `<img src="${escAttr(image)}" width="36" height="36" style="border-radius:6px; margin-right: 10px !important; object-fit:cover;border:0.5px solid #ddd">`
           : `<div style="width:36px;height:36px;background:#f3f3f6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px">📦</div>`}
         <div>
           <div class="fw-medium" style="font-size:13px">
@@ -1136,183 +1080,214 @@ function addProductToOrder(attrId, productId, name, size, color, price, image) {
       </button>
     </td>
   `;
- 
+
   tbody.appendChild(tr);
   loadVariantsForRow(tr);
   recalc();
   document.querySelector('[data-tab="current"]').click();
   showToast(`"${name}" added to order.`, 'success');
 }
- 
-// ─── Save order ────────────────────────────────────────────────────────────
+
+// ─── Save order ─────
 document.getElementById('saveOrderBtn').addEventListener('click', function() {
-  document.getElementById('updateShippingMethodBtn').click();
+  const updateShippingBtn = document.getElementById('updateShippingMethodBtn');
+  if (updateShippingBtn) {
+    updateShippingBtn.click();
+  }
   const btn = this;
- 
-  btn.disabled  = true;
+
+  let stockError = null;
+  document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
+    if (stockError) return;
+    const stock = parseInt(tr.dataset.stock ?? 9999);
+    const qty   = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
+    const name  = tr.querySelector('.fw-medium')?.textContent?.trim() || 'A product';
+    if (qty > stock) {
+      stockError = `"${name}" only has ${stock} unit(s) in stock but ${qty} were entered.`;
+    }
+  });
+
+  if (stockError) {
+    showToast(stockError, 'danger');
+    return;
+  }
+
+
+  btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
- 
+
   const items = [];
- 
-  // Existing rows
+
+  // Existing rows — use string itemId as key for attributeSwaps
   document.querySelectorAll('#orderItemsBody tr[data-is-new="false"]').forEach(tr => {
-    const itemId        = tr.dataset.itemId;
-    const itemIdInt     = parseInt(itemId);
+    const itemId    = tr.dataset.itemId;       // string
+    const itemIdInt = parseInt(itemId);
     const swappedAttrId = attributeSwaps[itemId] || null;
-    const qty           = parseInt(tr.querySelector('.qty-val').textContent);
-    const stock         = parseInt(tr.dataset.stock ?? 9999);
-    const violated      = qty > stock;
-    const violatedQty   = violated ? qty - stock : 0;
- 
+    console.log(`Row itemId=${itemId}, swappedAttrId=${swappedAttrId}`);
     items.push({
-      id:                      itemIdInt,
-      quantity:                qty,
+      id: itemIdInt,
+      quantity: parseInt(tr.querySelector('.qty-val').textContent),
       new_product_attribute_id: swappedAttrId,
-      is_new:                  false,
-      is_deleted:              false,
-      is_stock_violated:       violated,
-      violated_qty:            violatedQty,
+      is_new: false,
+      is_deleted: false,
     });
   });
- 
-  // New rows
+
+  // New rows — find by rowKey
   newItems.forEach(ni => {
-    const tr        = document.querySelector(`#orderItemsBody tr[data-row-key="${ni.rowKey}"]`);
-    const qty       = tr ? parseInt(tr.querySelector('.qty-val').textContent) : 1;
-    const stock     = tr ? parseInt(tr.dataset.stock ?? 9999) : 9999;
+    const tr  = document.querySelector(`#orderItemsBody tr[data-row-key="${ni.rowKey}"]`);
+    const qty = tr ? parseInt(tr.querySelector('.qty-val').textContent) : 1;
+    // Always use the current attrId from the row dataset (updated by syncAttrFromSelects)
     const currentAttrId = tr ? parseInt(tr.dataset.attrId) : ni.product_attribute_id;
-    const violated      = qty > stock;
-    const violatedQty   = violated ? qty - stock : 0;
- 
+    console.log(`New item rowKey=${ni.rowKey}, attrId=${currentAttrId}`);
     items.push({
       product_attribute_id: currentAttrId,
-      quantity:             qty,
-      is_new:               true,
-      is_deleted:           false,
-      is_stock_violated:    violated,
-      violated_qty:         violatedQty,
+      quantity: qty,
+      is_new: true,
+      is_deleted: false,
     });
   });
- 
+
   // Deleted rows
   deletedItemIds.forEach(id => {
     items.push({ id, is_new: false, is_deleted: true });
   });
- 
+
+  console.log('Saving payload items:', items);
+  console.log('attributeSwaps:', attributeSwaps);
+
   fetch(SAVE_URL, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
     body: JSON.stringify({
-      order_id:        ORDER_ID,
-      order_status:    document.getElementById('editOrderStatus').value,
-      payment_status:  document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
-      subtotal:        parseFloat(document.getElementById('manualSubtotal')?.value || 0),
-      coupon_price:    parseFloat(document.getElementById('manualCoupon')?.value || 0),
+      order_id: ORDER_ID,
+      order_status: document.getElementById('editOrderStatus').value,
+      payment_status: document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
+
+      subtotal: parseFloat(document.getElementById('manualSubtotal')?.value || 0),
+      coupon_price: parseFloat(document.getElementById('manualCoupon')?.value || 0),
       shipping_charge: parseFloat(document.getElementById('manualDelivery')?.value || 0),
-      vat_gst:         parseFloat(document.getElementById('manualVat')?.value || 0),
+      vat_gst: parseFloat(document.getElementById('manualVat')?.value || 0),
+
       items,
     }),
   })
   .then(r => r.json())
   .then(data => {
     if (data.success) {
-      showToast('Order saved successfully!', 'success');
- 
-      if (data.new_tax !== undefined) {
-        const vatGstEl = document.getElementById('editVatGst');
-        if (vatGstEl) vatGstEl.textContent = '৳ ' + parseFloat(data.new_tax).toFixed(2);
-      }
-      if (data.new_shipping_charge) {
-        const newCharge = parseFloat(data.new_shipping_charge);
-        currentDelivery = newCharge;
-        document.querySelectorAll('.delivery-charge-display').forEach(el => {
-          el.textContent = '৳ ' + newCharge.toFixed(2);
+        showToast('Order saved successfully!', 'success');
+
+        // ✅ Update VAT/GST display
+        if (data.new_tax !== undefined) {
+            const vatGstEl = document.getElementById('editVatGst');
+            if (vatGstEl) {
+                vatGstEl.textContent = '৳ ' + parseFloat(data.new_tax).toFixed(2);
+            }
+        }
+
+        // Update delivery charge display
+        if (data.new_shipping_charge) {
+            const newCharge = parseFloat(data.new_shipping_charge);
+            currentDelivery = newCharge;
+            document.querySelectorAll('.delivery-charge-display').forEach(el => {
+                el.textContent = '৳ ' + newCharge.toFixed(2);
+            });
+            const shippingDisplay = document.getElementById('shippingChargeDisplay');
+            if (shippingDisplay) {
+                shippingDisplay.textContent = '৳ ' + newCharge.toFixed(2);
+            }
+            recalc();
+        }
+
+        deletedItemIds = [];
+        attributeSwaps = {};
+        newItems       = [];
+        document.querySelectorAll('#orderItemsBody tr[data-is-new="true"]').forEach(tr => {
+            tr.dataset.isNew    = 'false';
+            tr.style.background = '';
         });
-        const shippingDisplay = document.getElementById('shippingChargeDisplay');
-        if (shippingDisplay) shippingDisplay.textContent = '৳ ' + newCharge.toFixed(2);
-        recalc();
-      }
- 
-      deletedItemIds = [];
-      attributeSwaps = {};
-      newItems       = [];
-      document.querySelectorAll('#orderItemsBody tr[data-is-new="true"]').forEach(tr => {
-        tr.dataset.isNew    = 'false';
-        tr.style.background = '';
-      });
- 
-      setTimeout(() => { window.location.href = "{% url 'order_list' %}"; }, 200);
+
+        setTimeout(() => {
+            window.location.href = "{% url 'order_list' %}";
+        }, 200);
+
     } else {
-      showToast('Error: ' + (data.error || 'Could not save.'), 'danger');
+        showToast('Error: ' + (data.error || 'Could not save.'), 'danger');
     }
   })
   .catch(() => showToast('Network error. Try again.', 'danger'))
   .finally(() => {
-    btn.disabled  = false;
+    btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-check-lg"></i> Save changes';
   });
 });
- 
-// ─── Address edit ──────────────────────────────────────────────────────────
+
+// ─── Shipping address ──────
 const editAddressBtn   = document.getElementById('editAddressBtn');
 const cancelAddressBtn = document.getElementById('cancelAddressBtn');
-const saveAddressBtn   = document.getElementById('saveAddressBtn');
-const addressDisplay   = document.getElementById('addressDisplay');
-const addressForm      = document.getElementById('addressForm');
- 
+const saveAddressBtn = document.getElementById('saveAddressBtn');
+const addressDisplay = document.getElementById('addressDisplay');
+const addressForm  = document.getElementById('addressForm');
+
 editAddressBtn.addEventListener('click', function() {
   addressDisplay.style.display = 'none';
   addressForm.style.display    = 'block';
   editAddressBtn.style.display = 'none';
 });
+
 cancelAddressBtn.addEventListener('click', function() {
   addressDisplay.style.display = 'block';
   addressForm.style.display    = 'none';
   editAddressBtn.style.display = '';
 });
+
 saveAddressBtn.addEventListener('click', function() {
   const btn = this;
-  btn.disabled  = true;
+  btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
- 
+
   const payload = {
-    order_id:     ORDER_ID,
-    full_name:    document.getElementById('addr-full-name').value.trim(),
-    phone_no:     document.getElementById('addr-phone-no').value.trim(),
+    order_id: ORDER_ID,
+    full_name: document.getElementById('addr-full-name').value.trim(),
+    phone_no: document.getElementById('addr-phone-no').value.trim(),
     address_line: document.getElementById('addr-address-line').value.trim(),
-    city:         document.getElementById('addr-city').value.trim(),
-    thana:        document.getElementById('addr-thana').value.trim(),
-    upozila:      document.getElementById('addr-upozila').value.trim(),
-    postal_code:  document.getElementById('addr-postal-code').value.trim(),
-    note:         document.getElementById('addr-note').value.trim(),
+    city: document.getElementById('addr-city').value.trim(),
+    thana: document.getElementById('addr-thana').value.trim(),
+    upozila: document.getElementById('addr-upozila').value.trim(),
+    postal_code: document.getElementById('addr-postal-code').value.trim(),
+    note: document.getElementById('addr-note').value.trim(),
   };
- 
+
   if (!payload.full_name || !payload.phone_no || !payload.address_line || !payload.city) {
     showToast('Please fill in all required fields.', 'danger');
-    btn.disabled  = false;
+    btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Address';
     return;
   }
- 
+
   fetch(ADDRESS_SAVE_URL, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
-    body:    JSON.stringify(payload),
+    body: JSON.stringify(payload),
   })
   .then(r => r.json())
   .then(data => {
     if (data.success) {
       const a = data.address;
-      document.getElementById('disp-full-name').textContent   = 'Name: '     + a.full_name;
-      document.getElementById('disp-phone-no').textContent    = 'Phone: '    + a.phone_no;
-      document.getElementById('disp-address-line').textContent= 'Address: '  + a.address_line;
-      document.getElementById('disp-city').textContent        = 'City: '     + a.city;
-      document.getElementById('disp-thana').textContent       = 'Thana: '    + a.thana;
-      document.getElementById('disp-upozila').textContent     = 'Upazila: '  + a.upozila;
-      document.getElementById('disp-postal-code').textContent = 'Post Code: '+ a.postal_code;
+      document.getElementById('disp-full-name').textContent = 'Name: '  + a.full_name;
+      document.getElementById('disp-phone-no').textContent = 'Phone: ' + a.phone_no;
+      document.getElementById('disp-address-line').textContent = 'Address: ' + a.address_line;
+      document.getElementById('disp-city').textContent  = 'City: ' + a.city;
+      document.getElementById('disp-thana').textContent = 'Thana: ' + a.thana;
+      document.getElementById('disp-upozila').textContent  = 'Upazila: ' + a.upozila;
+      document.getElementById('disp-postal-code').textContent  = 'Post Code: ' + a.postal_code;
       const noteEl = document.getElementById('disp-note');
-      if (a.note) { noteEl.textContent = 'Note: ' + a.note; noteEl.style.display = 'block'; }
-      else         { noteEl.style.display = 'none'; }
+      if (a.note) {
+        noteEl.textContent   = 'Note: ' + a.note;
+        noteEl.style.display = 'block';
+      } else {
+        noteEl.style.display = 'none';
+      }
       addressDisplay.style.display = 'block';
       addressForm.style.display    = 'none';
       editAddressBtn.style.display = '';
@@ -1323,80 +1298,156 @@ saveAddressBtn.addEventListener('click', function() {
   })
   .catch(() => showToast('Network error. Try again.', 'danger'))
   .finally(() => {
-    btn.disabled  = false;
+    btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Address';
   });
 });
- 
-// ─── Order Totals Edit ─────────────────────────────────────────────────────
+
+
+// ─── Order Totals Edit ─────────────────────
+
 const editTotalsBtn   = document.getElementById('editTotalsBtn');
 const cancelTotalsBtn = document.getElementById('cancelTotalsBtn');
 const saveTotalsBtn   = document.getElementById('saveTotalsBtn');
-const totalsDisplay   = document.getElementById('totalsDisplay');
-const totalsForm      = document.getElementById('totalsForm');
- 
-editTotalsBtn.addEventListener('click', function() {
-  totalsDisplay.style.display = 'none';
+
+const totalsDisplay = document.getElementById('totalsDisplay');
+const totalsForm    = document.getElementById('totalsForm');
+
+
+editTotalsBtn.addEventListener('click', function () {
+
+  totalsDisplay.style.display = 'block';
   totalsForm.style.display    = 'block';
+
+  totalsDisplay.style.display = 'none';
+
   editTotalsBtn.style.display = 'none';
 });
-cancelTotalsBtn.addEventListener('click', function() {
+
+cancelTotalsBtn.addEventListener('click', function () {
+
   totalsDisplay.style.display = 'block';
   totalsForm.style.display    = 'none';
+
   editTotalsBtn.style.display = '';
- 
+
+  // reset inputs from current display
   document.getElementById('manualSubtotal').value =
-    parseFloat(document.getElementById('editSubtotal').textContent.replace(/[^\d.]/g,'')) || 0;
+    parseFloat(
+      document.getElementById('editSubtotal')
+        .textContent.replace(/[^\d.]/g, '')
+    ) || 0;
+
   document.getElementById('manualCoupon').value =
-    parseFloat(document.getElementById('displayCoupon').textContent.replace(/[^\d.]/g,'')) || 0;
+    parseFloat(
+      document.getElementById('displayCoupon')
+        .textContent.replace(/[^\d.]/g, '')
+    ) || 0;
+
   document.getElementById('manualDelivery').value =
-    parseFloat(document.getElementById('displayShipping').textContent.replace(/[^\d.]/g,'')) || 0;
+    parseFloat(
+      document.getElementById('displayShipping')
+        .textContent.replace(/[^\d.]/g, '')
+    ) || 0;
+
   document.getElementById('manualVat').value =
-    parseFloat(document.getElementById('displayVat').textContent.replace(/[^\d.]/g,'')) || 0;
+    parseFloat(
+      document.getElementById('displayVat')
+        .textContent.replace(/[^\d.]/g, '')
+    ) || 0;
 });
-saveTotalsBtn.addEventListener('click', function() {
-  const subtotal = parseFloat(document.getElementById('manualSubtotal').value) || 0;
-  const coupon   = parseFloat(document.getElementById('manualCoupon').value)   || 0;
-  const shipping = parseFloat(document.getElementById('manualDelivery').value) || 0;
-  const vat      = parseFloat(document.getElementById('manualVat').value)      || 0;
- 
-  COUPON = coupon; VAT_GST = vat; currentDelivery = shipping;
-  const grand = subtotal + shipping - coupon + vat;
- 
-  document.getElementById('editSubtotal').textContent   = '৳ ' + subtotal.toFixed(2);
-  document.getElementById('displayCoupon').textContent  = '৳ ' + coupon.toFixed(2);
-  document.getElementById('displayShipping').textContent= '৳ ' + shipping.toFixed(2);
-  document.getElementById('displayVat').textContent     = '৳ ' + vat.toFixed(2);
-  document.getElementById('editGrandTotal').textContent = '৳ ' + grand.toFixed(2);
- 
+
+saveTotalsBtn.addEventListener('click', function () {
+
+  const subtotal = parseFloat(
+    document.getElementById('manualSubtotal').value
+  ) || 0;
+
+  const coupon = parseFloat(
+    document.getElementById('manualCoupon').value
+  ) || 0;
+
+  const shipping = parseFloat(
+    document.getElementById('manualDelivery').value
+  ) || 0;
+
+  const vat = parseFloat(
+    document.getElementById('manualVat').value
+  ) || 0;
+
+  // update globals
+  COUPON = coupon;
+  VAT_GST = vat;
+  currentDelivery = shipping;
+
+  // calculate grand total
+  const grand =
+    subtotal +
+    shipping -
+    coupon +
+    vat;
+
+  // update displays
+  document.getElementById('editSubtotal').textContent =
+    '৳ ' + subtotal.toFixed(2);
+
+  document.getElementById('displayCoupon').textContent =
+    '৳ ' + coupon.toFixed(2);
+
+  document.getElementById('displayShipping').textContent =
+    '৳ ' + shipping.toFixed(2);
+
+  document.getElementById('displayVat').textContent =
+    '৳ ' + vat.toFixed(2);
+
+  document.getElementById('editGrandTotal').textContent =
+    '৳ ' + grand.toFixed(2);
+
+  // summary section update
   const summarySubtotal = document.getElementById('summarySubtotal');
-  if (summarySubtotal) summarySubtotal.textContent = '৳ ' + subtotal.toFixed(2);
+  if (summarySubtotal) {
+    summarySubtotal.textContent =
+      '৳ ' + subtotal.toFixed(2);
+  }
+
   const summaryGrand = document.getElementById('summaryGrandTotal');
-  if (summaryGrand) summaryGrand.textContent = '৳ ' + grand.toFixed(2);
- 
+  if (summaryGrand) {
+    summaryGrand.textContent =
+      '৳ ' + grand.toFixed(2);
+  }
+
+  // update all delivery labels
   document.querySelectorAll('.delivery-charge-display').forEach(el => {
     el.textContent = '৳ ' + shipping.toFixed(2);
   });
- 
+
+  // hide form
   totalsDisplay.style.display = 'block';
   totalsForm.style.display    = 'none';
+
   editTotalsBtn.style.display = '';
+
   showToast('Totals updated successfully!', 'success');
 });
- 
-// ─── Helpers ──────────────────────────────────────────────────────────────
+
+
+// ─── Helpers ─────
 function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function escAttr(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 function showToast(msg, type='success') {
   const el = document.getElementById('saveToast');
   el.querySelector('div').className = `alert alert-${type} shadow d-flex align-items-center gap-2 mb-0`;
   document.getElementById('toastMsg').textContent = msg;
   el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 4000);
+  setTimeout(() => el.style.display = 'none', 3000);
 }
 </script>
 {% endblock %}

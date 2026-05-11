@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from requests import request
 from admin_app.models import admin_dashboard_models
-from django.db.models import Avg, Count, DecimalField, Prefetch, Min, F
-from django.db.models.functions import Coalesce, Random
+from django.db.models import Avg, Count, DecimalField, Prefetch, Min, F, Value, Q
+from django.db.models.functions import Coalesce, Random, Replace, Lower
 from django.utils import timezone
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -1834,20 +1834,39 @@ def categories_list(request):
 
 
 def product_search_view(request):
-    search_words = request.GET.get('search')
-    search_words = search_words.strip() if search_words else ''
-    products = (
-        admin_dashboard_models.Product.objects.filter(categories__name__icontains=search_words)|
-        admin_dashboard_models.Product.objects.filter(sub_categories__sub_cat_name__icontains=search_words)|
-        admin_dashboard_models.Product.objects.filter(sub_sub_categories__sub_sub_cat_name__icontains=search_words)|
-        admin_dashboard_models.Product.objects.filter(product_name__icontains=search_words)
-    )
-    
+    search_words = request.GET.get('search', '').strip()
+    normalized_search = search_words.replace(" ", "").lower()
+    products = admin_dashboard_models.Product.objects.annotate(
+        normalized_category=Lower(
+            Replace('categories__name', Value(' '), Value(''))
+        ),
+
+        normalized_sub_category=Lower(
+            Replace('sub_categories__sub_cat_name', Value(' '), Value(''))
+        ),
+
+        normalized_sub_sub_category=Lower(
+            Replace('sub_sub_categories__sub_sub_cat_name', Value(' '), Value(''))
+        ),
+
+        normalized_product_name=Lower(
+            Replace('product_name', Value(' '), Value(''))
+        )
+
+    ).filter(
+        Q(normalized_category__icontains=normalized_search) |
+        Q(normalized_sub_category__icontains=normalized_search) |
+        Q(normalized_sub_sub_category__icontains=normalized_search) |
+        Q(normalized_product_name__icontains=normalized_search)
+
+    ).distinct()
+
     context = {
         'search_words': search_words,
         'products': products
     }
-    return render(request,'client/search_products/search.html', context)
+
+    return render(request, 'client/search_products/search.html', context)
 
 # @login_required
 # def sub_category_product_show_view(request, sub_cat_id):

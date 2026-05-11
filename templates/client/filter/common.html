@@ -56,9 +56,9 @@
                     </a>
 
                     {% if item.cover_product_attribute.final_discount.total_discount %}
-                        <h5>৳ {{ item.cover_product_attribute.product_final_price  }} <del>৳ {{ item.cover_product_attribute.regular_price }}</del></h5>
+                        <h5>৳ {{ item.cover_product_attribute.product_final_price|floatformat:"0"  }} <del class="{% if item.cover_product_attribute.regular_price >= 10000 %}mobile-break{% endif %}">৳ {{ item.cover_product_attribute.regular_price|floatformat:"0" }}</del></h5>
                     {% else %}
-                        <h5>৳ {{ item.cover_product_attribute.regular_price }}</h5>
+                        <h5>৳ {{ item.cover_product_attribute.regular_price|floatformat:"0" }}</h5>
                     {% endif %}
 
                     {% comment %} <div class="starsold">

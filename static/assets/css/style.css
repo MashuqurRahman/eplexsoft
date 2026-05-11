@@ -5746,6 +5746,10 @@ td.site-setting-img img {
     .row.row-cols-2.row-cols-sm-2.row-cols-md-2.row-cols-lg-3.row-cols-xl-4.row-cols-xxl-4 {
         --bs-gutter-x: 0.5rem;
     }
+    .mobile-break{
+        display: block;
+        margin-top: 3px;
+    }
 }
 
 @media (max-width: 391px) {

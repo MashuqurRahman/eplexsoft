@@ -705,6 +705,8 @@ class Order(models.Model):
     gst = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('1'))], blank=True, null=True)
     coupon_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('1'))], blank=True, null=True)
     delivery_date = models.DateTimeField(blank=True, null=True)
+    edited_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='edited_orders', blank=True, null=True) 
+    edited_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -823,6 +825,8 @@ class OrderItem(models.Model):
     sub_total = models.FloatField(blank=True, null=True)
     tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     buying_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, null=True)
+    is_stock_violated = models.BooleanField(default=False)
+    violated_qty = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.product}/{self.price}"

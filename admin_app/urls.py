@@ -76,13 +76,15 @@ urlpatterns = [
     #order URLS
     # path("orders/<str:order_status>/", order_views.order_list, name="order_list"),
     path("orders/", order_views.order_list, name="order_list"),
+    path('orders/violated/', order_views.violated_orders, name='violated_orders'),
     path('orders/product-variants/', order_views.get_product_variants_ajax, name='get_product_variants_ajax'),
     path('orders/update-order/', order_views.update_order_ajax, name='update_order_ajax'),
     path('orders/search-products/', order_views.search_products_ajax, name='search_products_ajax'),
     path('orders/update-shipping-address/', order_views.update_shipping_address_ajax, name='update_shipping_address_ajax'),
     path('orders/update-shipping-method/', order_views.update_shipping_method_ajax, name='update_shipping_method_ajax'),
     path('orders/<int:order_id>/edit/', order_views.order_edit_view, name='order_edit_url'),
-    path("orders/<str:order_status>/", order_views.order_list, name="order_list_by_status"),
+    path('orders/items/<int:item_id>/resolve/', order_views.resolve_stock_violation, name='resolve_stock_violation'),  # ← moved up
+    path("orders/<str:order_status>/", order_views.order_list, name="order_list_by_status"),  # ← catch-all stays last
     path('orders-detail/<int:order_id>/', order_views.order_detail_view, name='order_detail'),
     path('update-order-status/', order_views.update_order_status, name='update_order_status'),
     path('update-payment-status/', order_views.update_payment_status, name='update_payment_status'),

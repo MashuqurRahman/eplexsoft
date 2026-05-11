@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 from decimal import Decimal
 from django.db import transaction
 from django.http import JsonResponse
@@ -34,16 +35,39 @@ def order_list(request, order_status=None):
         consignment = admin_dashboard_models.SteadfastConsignment.objects.filter(order=order).first()
         order.consignment_obj = consignment 
 
+    violated_order_ids = set(admin_dashboard_models.OrderItem.objects.filter(is_stock_violated=True).values_list('order_id', flat=True))
+
+    # Count only orders where violation is still real (stock hasn't recovered)
+    still_violated_count = 0
+    for item in admin_dashboard_models.OrderItem.objects.filter(is_stock_violated=True).select_related('product_attribute'):
+        remaining = item.product_attribute.attribute_stock_status['remaining_stock']
+        effective_stock = remaining + item.quantity
+        if item.quantity > effective_stock:
+            still_violated_count += 1
+            break 
+
+    # # For an accurate per-order count, use this instead of the loop above:
+    # real_violated_order_ids = set()
+    # for item in admin_dashboard_models.OrderItem.objects.filter(is_stock_violated=True).select_related('product_attribute'):
+    #     remaining = item.product_attribute.attribute_stock_status['remaining_stock']
+    #     effective_stock = remaining + item.quantity
+    #     if item.quantity > effective_stock:
+    #         real_violated_order_ids.add(item.order_id)
+
+
+
     context = {
         "orders": orders,
         "active_status": order_status,
         "status_list": status_list,
+        "violated_order_ids": violated_order_ids,
+        "violated_count": still_violated_count
     }
     return render(request, "custom-admin/orders/order_list.html", context)
 
 
 def order_edit_view(request, order_id):
-    order = get_object_or_404(admin_dashboard_models.Order, id=order_id)
+    order = get_object_or_404(admin_dashboard_models.Order.objects.select_related('user', 'edited_by'), id=order_id)
     order_items = admin_dashboard_models.OrderItem.objects.filter(order=order).select_related(
         'product', 'product_attribute', 'product_attribute__color', 'product_attribute__size'
     )
@@ -97,11 +121,12 @@ def get_product_variants_ajax(request):
                 stock = attr.attribute_stock_status
                 variants.append({
                     'product_attribute_id': attr.id,
-                    'size':     str(attr.size)  if attr.size  else 'N/A',
-                    'color':    str(attr.color) if attr.color else 'N/A',
-                    'price':    float(attr.product_final_price),
-                    'stock':    stock['remaining_stock'],
+                    'size': str(attr.size)  if attr.size  else 'N/A',
+                    'color': str(attr.color) if attr.color else 'N/A',
+                    'price': float(attr.product_final_price),
+                    'stock': stock['remaining_stock'],
                     'in_stock': stock['status'],
+                    'weight': float(attr.weight) if attr.weight else 0,
                 })
             except Exception as attr_err:
                 continue
@@ -280,7 +305,7 @@ def update_payment_status(request):
 def update_order_ajax(request):
     try:
         data = json.loads(request.body)
-        order_id  = data.get('order_id')
+        order_id = data.get('order_id')
         order_status = data.get('order_status')
         payment_status = data.get('payment_status')
         items = data.get('items', [])
@@ -288,15 +313,21 @@ def update_order_ajax(request):
         order = get_object_or_404(admin_dashboard_models.Order, id=order_id)
 
         with transaction.atomic():
+            # 1. Update status fields
             if order_status:
                 order.order_status = order_status
             if payment_status:
                 order.payment_status = payment_status
 
-
+            # 2. Process items
             submitted_existing_ids = set()
             for item_data in items:
 
+                # ── Grab violation fields sent from the frontend ──
+                is_stock_violated = item_data.get('is_stock_violated', False)
+                violated_qty      = item_data.get('violated_qty', 0)
+
+                # ── Delete ──
                 if item_data.get('is_deleted'):
                     if not item_data.get('is_new'):
                         admin_dashboard_models.OrderItem.objects.filter(
@@ -304,14 +335,25 @@ def update_order_ajax(request):
                         ).delete()
                     continue
 
+                # ── New item ──
                 if item_data.get('is_new'):
                     attr_id = item_data.get('product_attribute_id')
                     if not attr_id:
                         continue
                     try:
-                        attr = admin_dashboard_models.ProductAttribute.objects.get(id=attr_id)
+                        attr = admin_dashboard_models.ProductAttribute.objects.select_related(
+                            'product'
+                        ).get(id=attr_id)
                     except admin_dashboard_models.ProductAttribute.DoesNotExist:
                         continue
+
+                    quantity = item_data.get('quantity', 1)
+
+                    # ── No longer raise — just compute violation server-side too ──
+                    stock_status = attr.attribute_stock_status
+                    remaining    = stock_status['remaining_stock']
+                    server_violated     = quantity > remaining
+                    server_violated_qty = max(0, quantity - remaining) if server_violated else 0
 
                     if not admin_dashboard_models.OrderItem.objects.filter(
                         order=order, product_attribute=attr
@@ -325,9 +367,12 @@ def update_order_ajax(request):
                             product_attribute=attr,
                             product_variant=product_variant_obj,
                             price=attr.product_final_price,
-                            quantity=item_data.get('quantity', 1),
+                            quantity=quantity,
                             buying_price=attr.buying_price,
                             tax_amount=Decimal('0.00'),
+                            # Use server-computed values (more trustworthy than frontend)
+                            is_stock_violated=server_violated,
+                            violated_qty=server_violated_qty,
                         )
 
                 # ── Update existing ──
@@ -335,127 +380,295 @@ def update_order_ajax(request):
                     item_id     = item_data.get('id')
                     quantity    = item_data.get('quantity', 1)
                     new_attr_id = item_data.get('new_product_attribute_id')
-
                     update_fields = {'quantity': quantity}
 
                     if new_attr_id:
                         try:
-                            new_attr = admin_dashboard_models.ProductAttribute.objects.get(
-                                id=new_attr_id
-                            )
-                            # Must use _id suffix — NOT passing instance to .update()
-                            update_fields['product_attribute_id'] = new_attr.id
-                            update_fields['price'] = new_attr.product_final_price
-                            update_fields['buying_price'] = new_attr.buying_price
+                            new_attr = admin_dashboard_models.ProductAttribute.objects.select_related(
+                                'product'
+                            ).get(id=new_attr_id)
+                            stock_status        = new_attr.attribute_stock_status
+                            remaining           = stock_status['remaining_stock']
+                            server_violated     = quantity > remaining
+                            server_violated_qty = max(0, quantity - remaining) if server_violated else 0
 
-                            stock_status = new_attr.attribute_stock_status
-                            if quantity > stock_status['remaining_stock']:
-                                raise ValueError(
-                                    f"Quantity {quantity} exceeds available stock "
-                                    f"({stock_status['remaining_stock']}) for {new_attr.product.product_name}"
-                                )
-                            
+                            update_fields['product_attribute_id'] = new_attr.id
+                            update_fields['price']                = new_attr.product_final_price
+                            update_fields['buying_price']         = new_attr.buying_price
+                            update_fields['is_stock_violated']    = server_violated
+                            update_fields['violated_qty']         = server_violated_qty
                         except admin_dashboard_models.ProductAttribute.DoesNotExist:
-                            pass  # keep original attribute, just update quantity
+                            pass
                     else:
                         try:
-                            order_item = admin_dashboard_models.OrderItem.objects.get(id=item_id, order=order)
-                            stock_status = order_item.product_attribute.attribute_stock_status
-                            if quantity > stock_status['remaining_stock']:
-                                raise ValueError(
-                                    f"Quantity {quantity} exceeds available stock "
-                                    f"({stock_status['remaining_stock']}) for "
-                                    f"{order_item.product_attribute.product.product_name}"
-                                )
+                            order_item   = admin_dashboard_models.OrderItem.objects.select_related(
+                                'product_attribute__product'
+                            ).get(id=item_id, order=order)
+                            stock_status        = order_item.product_attribute.attribute_stock_status
+                            remaining           = stock_status['remaining_stock']
+                            server_violated     = quantity > remaining
+                            server_violated_qty = max(0, quantity - remaining) if server_violated else 0
+
+                            update_fields['is_stock_violated'] = server_violated
+                            update_fields['violated_qty']      = server_violated_qty
                         except admin_dashboard_models.OrderItem.DoesNotExist:
                             pass
 
-                    rows_updated = admin_dashboard_models.OrderItem.objects.filter(
-                        id=item_id,
-                        order=order   # ✅ Security: ensure item belongs to this order
+                    admin_dashboard_models.OrderItem.objects.filter(
+                        id=item_id, order=order
                     ).update(**update_fields)
-
-                    if rows_updated == 0:
-                        # Item not found or doesn't belong to this order — skip silently
-                        pass
-
                     submitted_existing_ids.add(item_id)
 
-            # 3. Recalculate totals
-            all_items = admin_dashboard_models.OrderItem.objects.filter(order=order).select_related(
-                'product_attribute'
+            # 3. Recalculate everything from DB — never trust JS values
+            all_items = admin_dashboard_models.OrderItem.objects.filter(
+                order=order
+            ).select_related(
+                'product_attribute',
+                'product_attribute__product',
             )
-            sub_total_after_discount = sum(
-                item.product_attribute.product_final_price * item.quantity
+
+            sub_total_after_discount = Decimal('0')
+            total_vat = Decimal('0')
+            total_gst = Decimal('0')
+
+            for item in all_items:
+                attr       = item.product_attribute
+                product    = attr.product
+                item_total = Decimal(str(attr.product_final_price)) * item.quantity
+
+                sub_total_after_discount += item_total
+
+                vat_rate   = Decimal(str(product.vat_tax_amount or 0))
+                gst_rate   = Decimal(str(product.gst_amount or 0))
+                is_percent = product.is_applicable
+
+                if is_percent:
+                    item_vat = (item_total * vat_rate) / Decimal('100')
+                    item_gst = (item_total * gst_rate) / Decimal('100')
+                else:
+                    if item_total > 0:
+                        item_vat = vat_rate * item.quantity
+                        item_gst = gst_rate * item.quantity
+                    else:
+                        item_vat = Decimal('0')
+                        item_gst = Decimal('0')
+
+                total_vat += item_vat
+                total_gst += item_gst
+
+            total_tax = total_vat + total_gst
+
+            # 4. Recalculate shipping charge from weight
+            import math
+            total_weight_grams = sum(
+                (item.product_attribute.weight or 0) * item.quantity
                 for item in all_items
             )
-            shipping = order.shipping_charge or Decimal('0')
+            total_weight_kg = total_weight_grams / 1000
+
+            try:
+                charge_obj = admin_dashboard_models.DeliveryCharge.objects.get(
+                    delivery_location=order.shipping_method,
+                    is_active=True
+                )
+                initial_charge   = float(charge_obj.initial_charge or 0)
+                initial_weight   = float(charge_obj.initial_weight or 0)
+                increment_per_kg = float(charge_obj.increment_weight_per_unit or 0)
+
+                if total_weight_kg <= initial_weight:
+                    new_shipping_charge = Decimal(str(initial_charge))
+                else:
+                    extra = math.ceil(total_weight_kg - initial_weight)
+                    new_shipping_charge = Decimal(
+                        str(initial_charge + (extra * increment_per_kg))
+                    )
+            except admin_dashboard_models.DeliveryCharge.DoesNotExist:
+                new_shipping_charge = order.shipping_charge or Decimal('0')
+
+            # 5. Recalculate grand total
             coupon_price = order.coupon_price or Decimal('0')
-            vat = order.vat or Decimal('0')
-            gst = order.gst or Decimal('0')
+            grand_total  = sub_total_after_discount + new_shipping_charge - coupon_price + total_tax
 
-            grand_total = (
-                Decimal(str(sub_total_after_discount))
-                + shipping
-                - coupon_price
-                + vat
-                + gst
-            )
-
-            order.sub_total_after_discount = Decimal(str(sub_total_after_discount))
-            order.total_payable = grand_total
+            # 6. Save
+            order.sub_total_after_discount = sub_total_after_discount
+            order.shipping_charge          = new_shipping_charge
+            order.vat                      = total_vat
+            order.gst                      = total_gst
+            order.total_payable            = grand_total
+            order.edited_by                = request.user
+            order.edited_at                = timezone.now()
             order.save()
 
+        # 7. Tell the frontend whether this order now has any violations
+        has_violations = admin_dashboard_models.OrderItem.objects.filter(
+            order=order, is_stock_violated=True
+        ).exists()
+
         return JsonResponse({
-            'success': True,
-            'message': 'Order updated successfully.',
-            'new_total': str(grand_total),
+            'success':                 True,
+            'message':                 'Order updated successfully.',
+            'new_total':               str(grand_total),
             'sub_total_after_discount': str(sub_total_after_discount),
+            'new_shipping_charge':     str(new_shipping_charge),
+            'new_vat':                 str(total_vat),
+            'new_gst':                 str(total_gst),
+            'new_tax':                 str(total_tax),
+            'has_violations':          has_violations,  # frontend can show a persistent banner
         })
 
     except Exception as e:
         import traceback
-        traceback.print_exc()  
+        traceback.print_exc()
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+def violated_orders(request):
+    violated_items = admin_dashboard_models.OrderItem.objects.filter(
+        is_stock_violated=True
+    ).select_related(
+        'order',
+        'order__shipping_address',
+        'product',
+        'product_attribute',
+    ).order_by('-order__created_at')
 
+    orders_map = defaultdict(list)
+    for item in violated_items:
+        remaining = item.product_attribute.attribute_stock_status['remaining_stock']
+        effective_stock = remaining + item.quantity
+        still_violated  = item.quantity > effective_stock 
+        over_by  = max(0, item.quantity - effective_stock)
+
+        orders_map[item.order].append({
+            'item': item,
+            'remaining': remaining,
+            'current_stock':  effective_stock,
+            'still_violated': still_violated,
+            'over_by': over_by,
+        })
+
+    context = {
+        'orders_with_violations': dict(orders_map),
+    }
+    return render(request, 'custom-admin/orders/violated_orders.html', context)
+
+
+@require_POST
+def resolve_stock_violation(request, item_id):
+    item = get_object_or_404(admin_dashboard_models.OrderItem, id=item_id)
+
+    remaining       = item.product_attribute.attribute_stock_status['remaining_stock']
+    effective_stock = remaining + item.quantity  # add back this order's own qty
+    
+    if item.quantity > effective_stock:
+        return JsonResponse({
+            'success': False,
+            'error':   f'Stock is still insufficient. Available: {effective_stock}, ordered: {item.quantity}.',
+        })
+
+    item.is_stock_violated = False
+    item.violated_qty      = 0
+    item.save()
+
+    still_violated = admin_dashboard_models.OrderItem.objects.filter(
+        order=item.order,
+        is_stock_violated=True
+    ).exists()
+
+    return JsonResponse({
+        'success':        True,
+        'still_violated': still_violated,
+        'message':        'Violation resolved. Stock is now sufficient.',
+    })
+
+
+# def search_products_ajax(request):
+#     query = request.GET.get('q', '').strip()
+#     category_id = request.GET.get('category_id', '')
+#     order_id = request.GET.get('order_id', '')
+
+#     # Get attribute IDs already in this order so we can exclude them
+#     already_added_attr_ids = set()
+#     if order_id:
+#         already_added_attr_ids = set(
+#             admin_dashboard_models.OrderItem.objects.filter(order_id=order_id)
+#             .values_list('product_attribute_id', flat=True)
+#         )
+    
+
+#     attrs = admin_dashboard_models.ProductAttribute.objects.select_related(
+#         'product', 'color', 'size', 'product__sub_categories'
+#     ).exclude(id__in=already_added_attr_ids)
+    
+
+#     if query:
+#         attrs = attrs.filter(product__product_name__icontains=query)
+#     if category_id:
+#         attrs = attrs.filter(product__categories_id=category_id)
+
+#     results = []
+#     for attr in attrs[:40]:   # limit to 40 results
+#         stock_status = attr.attribute_stock_status
+#         results.append({
+#             'product_attribute_id': attr.id,
+#             'product_id': attr.product.id,
+#             'name': attr.product.product_name,
+#             'size': str(attr.size) if attr.size else 'N/A',
+#             'color': str(attr.color) if attr.color else 'N/A',
+#             'price': float(attr.product_final_price),
+#             'stock': stock_status['remaining_stock'],
+#             'in_stock': stock_status['status'],
+#             'image': attr.image.url if attr.image else '',
+#             'category': attr.product.categories.name if attr.product.categories else '',
+#             'weight': float(attr.weight) if attr.weight else 0
+#         })
+
+#     return JsonResponse({'products': results})
+
+@login_required
 def search_products_ajax(request):
-    query = request.GET.get('q', '').strip()
-    category_id = request.GET.get('category_id', '')
-    order_id = request.GET.get('order_id', '')
+    query       = request.GET.get('q', '').strip()
+    category_id = request.GET.get('category_id', '').strip()
+    order_id    = request.GET.get('order_id', '').strip()
 
-    # Get attribute IDs already in this order so we can exclude them
-    already_added_attr_ids = set()
-    if order_id:
-        already_added_attr_ids = set(
-            admin_dashboard_models.OrderItem.objects.filter(order_id=order_id)
-            .values_list('product_attribute_id', flat=True)
-        )
-    
-
-    attrs = admin_dashboard_models.ProductAttribute.objects.select_related(
-        'product', 'color', 'size', 'product__sub_categories'
-    ).exclude(id__in=already_added_attr_ids)
-    
+    products = admin_dashboard_models.Product.objects.select_related(
+        'cover_product_attribute',
+        'cover_product_attribute__color',
+        'cover_product_attribute__size',
+        'categories',
+    ).filter(
+        is_active=True
+    )
 
     if query:
-        attrs = attrs.filter(product__product_name__icontains=query)
+        products = products.filter(product_name__icontains=query)
+
     if category_id:
-        attrs = attrs.filter(product__categories_id=category_id)
+        try:
+            products = products.filter(categories_id=int(category_id))
+        except (ValueError, TypeError):
+            pass
+
 
     results = []
-    for attr in attrs[:40]:   # limit to 40 results
-        stock_status = attr.attribute_stock_status
-        results.append({
-            'product_attribute_id': attr.id,
-            'product_id': attr.product.id,
-            'name': attr.product.product_name,
-            'size': str(attr.size) if attr.size else 'N/A',
-            'color': str(attr.color) if attr.color else 'N/A',
-            'price': float(attr.product_final_price),
-            'stock': stock_status['remaining_stock'],
-            'in_stock': stock_status['status'],
-            'image': attr.image.url if attr.image else '',
-            'category': attr.product.categories.name if attr.product.categories else '',
-        })
+    for product in products:
+        attr = product.cover_product_attribute or product.product_attribute.select_related('color', 'size').first()
+
+        try:
+            stock_status = attr.attribute_stock_status
+            results.append({
+                'product_attribute_id': attr.id,
+                'product_id':           product.id,
+                'name':                 product.product_name,
+                'size':                 str(attr.size)  if attr.size  else 'N/A',
+                'color':                str(attr.color) if attr.color else 'N/A',
+                'price':                float(attr.product_final_price),
+                'stock':                stock_status['remaining_stock'],
+                'in_stock':             stock_status['status'],
+                'image':                attr.image.url if attr.image else '',
+                'category':             product.categories.name if product.categories else '',
+                'weight':               float(attr.weight) if attr.weight else 0,
+            })
+        except Exception:
+            continue
 
     return JsonResponse({'products': results})
