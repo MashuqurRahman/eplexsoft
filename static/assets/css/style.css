@@ -3562,7 +3562,6 @@ table.bc-tbl td.td-num {
     padding: 8px 16px;
     border-radius: 8px;
     margin-bottom: 8px;
-    margin-left: 8px;
 }
 
 .bumns button.active {
@@ -5667,6 +5666,12 @@ td.site-setting-img img {
 /* Mobile responsive */
 
 @media (max-width: 430px){
+    .boxs.p-2.customer-info {
+        margin-top: 11px;
+    }
+    .bumns {
+        margin-top: 18px;
+    }
     .nav-item.cart-icons {
         margin-left: 311px !important;
         margin-top: -63px !important;
@@ -5698,7 +5703,7 @@ td.site-setting-img img {
         margin-bottom: 0px !important;
     }
     .boxs {
-        margin-bottom: 0px !important;
+        margin-bottom: 10px !important;
         padding: 15px 0;
     }
     .customscroll {
@@ -5760,7 +5765,7 @@ td.site-setting-img img {
     }
 
     .nav-item {
-        margin-left: -18px !important;
+        margin-left: 3px !important;
         font-size: 16px !important;
     }
     .nav-item.user-info {
@@ -5781,7 +5786,7 @@ td.site-setting-img img {
     }
 
     .nav-item {
-        margin-left: -18px !important;
+        margin-left: 3px !important;
         font-size: 16px !important;
     }
     .nav-item.user-info {

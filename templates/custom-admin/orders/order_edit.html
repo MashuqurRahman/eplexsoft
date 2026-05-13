@@ -3,93 +3,95 @@
 {% block title %}Edit Order — {{ order.order_no }}{% endblock %}
 
 {% block content %}
-<div class="pg" style="padding:20px">
+<div class="pg" style="padding:0px">
 
-  <div class="page-header d-flex align-items-start justify-content-between mb-4 flex-wrap">
-  <div>
-    <div style="font-size:11px;font-weight:500;color:#888;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px">
-      Order management
-    </div>
-    <h1 style="font-size:20px;font-weight:600;letter-spacing:-.4px">Edit Order</h1>
-    <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
-      <code class="me-2" style="font-size:11px;background:#f3f3f6;padding:2px 8px;border-radius:4px;border:0.5px solid #ddd">
-        #{{ order.order_no }}
-      </code>
-      <span class="badge {% if order.order_status == 'pending' %}bg-warning text-dark{% elif order.order_status == 'confirmed' %}bg-success{% elif order.order_status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %} me-2">
-        {{ order.get_order_status_display }}
-      </span>
-      <span style="font-size:11px;color:#aaa">{{ order.created_at|date:"M d, Y · h:i A" }}</span>
-    </div>
-  </div>
-
-  <div class="order_edited_by px-3 py-2 rounded d-none d-md-block" style="background:#f8f8fb;border:0.5px solid #e0e0e8;min-width:240px;max-width:320px">
-
-    {% if order.edited_by %}
-      <div style="font-size:10px;font-weight:600;color:#7F77DD;letter-spacing:.6px; text-transform:uppercase;margin-bottom:8px">
-        <i class="bi bi-pencil-square"></i> Last Edited By
+<div class="boxs mb-2 p-2">
+    <div class="page-header d-flex align-items-start justify-content-between mb-4 flex-wrap">
+      <div class="mb-2">
+        <div style="font-size:11px;font-weight:500;color:#888;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px">
+          Order management
+        </div>
+        <h1 style="font-size:20px;font-weight:600;letter-spacing:-.4px">Edit Order</h1>
+        <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
+          <code class="me-2" style="font-size:11px;background:#f3f3f6;padding:2px 8px;border-radius:4px;border:0.5px solid #ddd">
+            #{{ order.order_no }}
+          </code>
+          <span class="badge {% if order.order_status == 'pending' %}bg-warning text-dark{% elif order.order_status == 'confirmed' %}bg-success{% elif order.order_status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %} me-2">
+            {{ order.get_order_status_display }}
+          </span>
+          <span style="font-size:11px;color:#aaa">{{ order.created_at|date:"M d, Y · h:i A" }}</span>
+        </div>
       </div>
 
-      <div class="d-flex align-items-center gap-2 mb-2">
-        <div>
-          <div style="font-size:12px;font-weight:600;color:#222;line-height:1.3">
-            {{ order.edited_by.name|default:"N/A" }}
+      <div class="order_edited_by px-3 py-2 rounded d-md-block" style="background:#f8f8fb;border:0.5px solid #e0e0e8;min-width:240px;max-width:320px">
+
+        {% if order.edited_by %}
+          <div style="font-size:10px;font-weight:600;color:#7F77DD;letter-spacing:.6px; text-transform:uppercase;margin-bottom:8px">
+            <i class="bi bi-pencil-square"></i> Last Edited By
           </div>
-          <div style="font-size:11px;color:#888">
-            {{ order.edited_by.email|default:"N/A" }}
+
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#222;line-height:1.3">
+                Name: {{ order.edited_by.name|default:"N/A" }}
+              </div>
+              <div style="font-size:11px;color:#888">
+                E-mail: {{ order.edited_by.email|default:"N/A" }}
+              </div>
+              {% if order.edited_by.phone %}
+              <div style="font-size:11px;color:#aaa">
+                <i class="bi bi-telephone" style="font-size:10px"></i>
+                {{ order.edited_by.phone }}
+              </div>
+              {% endif %}
+            </div>
           </div>
-          {% if order.edited_by.phone %}
+
+          <div style="border-top:0.5px solid #e8e8f0;padding-top:6px;margin-top:4px">
+            <div style="font-size:11px;color:#aaa;margin-top:2px">
+              <i class="bi bi-calendar2-plus" style="font-size:10px;color:#7F77DD"></i>
+              <span style="color:#666">Order placed:</span>
+              {{ order.created_at|date:"M d, Y · h:i A" }}
+            </div>
+            <div style="font-size:11px;color:#aaa;margin-top:2px">
+              <i class="bi bi-arrow-repeat" style="font-size:10px;color:#7F77DD"></i>
+              <span style="color:#666">Last updated:</span>
+              {{ order.updated_at|date:"M d, Y · h:i A" }}
+            </div>
+          </div>
+
+        {% else %}
+          <div style="font-size:10px;font-weight:600;color:#aaa;letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px">
+            <i class="bi bi-pencil-square"></i> Edit History
+          </div>
+          <div style="font-size:12px;color:#aaa;margin-bottom:6px">
+            <i class="bi bi-info-circle" style="color:#7F77DD"></i>
+            This order has not been edited yet.
+          </div>
           <div style="font-size:11px;color:#aaa">
-            <i class="bi bi-telephone" style="font-size:10px"></i>
-            {{ order.edited_by.phone }}
+            <i class="bi bi-calendar2-plus" style="font-size:10px;color:#7F77DD"></i>
+            <span style="color:#666">Placed:</span>
+            {{ order.created_at|date:"M d, Y · h:i A" }}
           </div>
-          {% endif %}
-        </div>
+        {% endif %}
+
       </div>
 
-      <div style="border-top:0.5px solid #e8e8f0;padding-top:6px;margin-top:4px">
-        <div style="font-size:11px;color:#aaa;margin-top:2px">
-          <i class="bi bi-calendar2-plus" style="font-size:10px;color:#7F77DD"></i>
-          <span style="color:#666">Order placed:</span>
-          {{ order.created_at|date:"M d, Y · h:i A" }}
-        </div>
-        <div style="font-size:11px;color:#aaa;margin-top:2px">
-          <i class="bi bi-arrow-repeat" style="font-size:10px;color:#7F77DD"></i>
-          <span style="color:#666">Last updated:</span>
-          {{ order.updated_at|date:"M d, Y · h:i A" }}
-        </div>
+      <div class="d-flex gap-2 align-items-start pt-2">
+        <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> Back
+        </a>
+        <button class="btn btn-sm btn-primary mx-2" id="saveOrderBtn">
+          <i class="bi bi-check-lg"></i> Save changes
+        </button>
       </div>
 
-    {% else %}
-      <div style="font-size:10px;font-weight:600;color:#aaa;letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px">
-        <i class="bi bi-pencil-square"></i> Edit History
-      </div>
-      <div style="font-size:12px;color:#aaa;margin-bottom:6px">
-        <i class="bi bi-info-circle" style="color:#7F77DD"></i>
-        This order has not been edited yet.
-      </div>
-      <div style="font-size:11px;color:#aaa">
-        <i class="bi bi-calendar2-plus" style="font-size:10px;color:#7F77DD"></i>
-        <span style="color:#666">Placed:</span>
-        {{ order.created_at|date:"M d, Y · h:i A" }}
-      </div>
-    {% endif %}
-
-  </div>
-
-  <div class="d-flex gap-2 align-items-start">
-    <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-secondary">
-      <i class="bi bi-arrow-left"></i> Back
-    </a>
-    <button class="btn btn-sm btn-primary mx-2" id="saveOrderBtn">
-      <i class="bi bi-check-lg"></i> Save changes
-    </button>
-  </div>
-
+    </div>
 </div>
 
   <div class="row g-3">
     <div class="col-md-8 d-flex flex-column gap-3">
-      <div class="boxs">
+      <div class="boxs p-2">
         <p class="subtitle">Order Status</p>
         <div class="row g-3 mt-1">
           <div class="col-sm-6">
@@ -119,7 +121,7 @@
         </div>
       </div>
 
-      <div class="boxs">
+      <div class="boxs p-2">
         <p class="subtitle">Delivery Location</p>
         <div class="row g-3 mt-1 align-items-end">
 
@@ -156,7 +158,7 @@
         <div id="shippingMethodMsg" class="mt-2" style="display:none;font-size:12px"></div>
       </div>
 
-      <div class="boxs">
+      <div class="boxs p-2">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <p class="subtitle mb-0">Order Items</p>
           <small class="text-muted" id="itemCountLabel">
@@ -383,80 +385,33 @@
           </div>
 
           <!-- EDIT MODE -->
-          <div id="totalsForm"
-              style="display:none">
+          <div id="totalsForm" style="display:none">
+            <div class="d-flex flex-column gap-2 ms-auto" style="max-width:340px">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+              <label class="form-label small fw-medium mb-0" style="min-width:140px">Subtotal</label>
+              <input type="number" step="0.01" id="manualSubtotal" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.sub_total_after_discount }}">
+            </div>
 
-            <div class="d-flex flex-column gap-2 ms-auto"
-     style="max-width:340px">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+              <label class="form-label small fw-medium mb-0"style="min-width:140px">Coupon Discount</label>
+              <input type="number" step="0.01" id="manualCoupon" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.coupon_price|default:'0.00' }}">
+            </div>
 
-  <!-- Subtotal -->
-  <div class="d-flex align-items-center justify-content-between gap-2">
-    <label class="form-label small fw-medium mb-0"
-           style="min-width:140px">
-      Subtotal
-    </label>
+            <div class="d-flex align-items-center justify-content-between gap-2">
+              <label class="form-label small fw-medium mb-0" style="min-width:140px">Delivery Charge</label>
+              <input type="number" step="0.01" id="manualDelivery" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.shipping_charge }}">
+            </div>
 
-    <input type="number"
-           step="0.01"
-           id="manualSubtotal"
-           class="form-control form-control-sm text-end"
-           style="max-width:140px"
-           value="{{ order.sub_total_after_discount }}">
-  </div>
+            <div class="d-flex align-items-center justify-content-between gap-2">
+              <label class="form-label small fw-medium mb-0" style="min-width:140px">VAT & Tax</label>
+              <input type="number" step="0.01" id="manualVat" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ vat_gst }}">
+            </div>
 
-  <!-- Coupon -->
-  <div class="d-flex align-items-center justify-content-between gap-2">
-    <label class="form-label small fw-medium mb-0"
-           style="min-width:140px">
-      Coupon Discount
-    </label>
-
-    <input type="number"
-           step="0.01"
-           id="manualCoupon"
-           class="form-control form-control-sm text-end"
-           style="max-width:140px"
-           value="{{ order.coupon_price|default:'0.00' }}">
-  </div>
-
-  <!-- Delivery -->
-  <div class="d-flex align-items-center justify-content-between gap-2">
-    <label class="form-label small fw-medium mb-0"
-           style="min-width:140px">
-      Delivery Charge
-    </label>
-
-    <input type="number"
-           step="0.01"
-           id="manualDelivery"
-           class="form-control form-control-sm text-end"
-           style="max-width:140px"
-           value="{{ order.shipping_charge }}">
-  </div>
-
-  <!-- VAT -->
-  <div class="d-flex align-items-center justify-content-between gap-2">
-    <label class="form-label small fw-medium mb-0"
-           style="min-width:140px">
-      VAT & Tax
-    </label>
-
-    <input type="number"
-           step="0.01"
-           id="manualVat"
-           class="form-control form-control-sm text-end"
-           style="max-width:140px"
-           value="{{ vat_gst }}">
-  </div>
-
-  <!-- Buttons -->
-  <div class="d-flex justify-content-end gap-2 mt-2">
-    <button class="btn btn-sm btn-primary" id="saveTotalsBtn"><i class="bi bi-check-lg"></i>Update</button>
-    <button class="btn btn-sm btn-outline-secondary mx-1" id="cancelTotalsBtn">Cancel</button>
-  </div>
-
-</div>
-
+            <div class="d-flex justify-content-end gap-2 mt-2">
+              <button class="btn btn-sm btn-primary" id="saveTotalsBtn"><i class="bi bi-check-lg"></i>Update</button>
+              <button class="btn btn-sm btn-outline-secondary mx-1" id="cancelTotalsBtn">Cancel</button>
+            </div>
+          </div>
           </div>
 
         </div>
@@ -466,7 +421,7 @@
 
     <!-- RIGHT COLUMN -->
     <div class="col-md-4 d-flex flex-column gap-3">
-      <div class="boxs">
+      <div class="boxs p-2">
           <div class="mt-3">
               <p class="subtitle">Customer Info</p>
               <div class="border-bottom py-2 d-flex  align-items-center gap-3">
@@ -484,7 +439,7 @@
           </div>
       </div>
 
-      <div class="boxs">
+      <div class="boxs p-2">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <p class="subtitle mb-0">Shipping Address</p>
           <button class="btn btn-sm btn-outline-secondary" id="editAddressBtn" style="font-size:11px;padding:3px 10px">
@@ -561,7 +516,7 @@
         </div>
       </div>
 
-      <div class="boxs">
+      <div class="boxs p-2">
         <p class="subtitle">Order Summary</p>
         <div id="changeBanner" style="display:none" class="mb-2 p-2 rounded d-flex align-items-center justify-content-between" style="background:#EEEDFE;border:0.5px solid #AFA9EC">
           <span style="font-size:11px;color:#3C3489">⚠ Unsaved changes</span>
@@ -1076,10 +1031,10 @@ let rowKeyCounter = 0;
  
 function addProductToOrder(attrId, productId, name, size, color, price, image) {
   const existing = document.querySelector(`#orderItemsBody tr[data-product-id="${productId}"][data-is-new="true"]`);
-  if (existing) {
-    showToast('Product already added! Change variant in the table.', 'warning');
-    return;
-  }
+  //if (existing) {
+  //  showToast('Product already added! Change variant in the table.', 'warning');
+  //  return;
+  //}
  
   const rowKey = 'new_' + (++rowKeyCounter);
   newItems.push({ product_attribute_id: attrId, rowKey });
