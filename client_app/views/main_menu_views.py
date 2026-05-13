@@ -1,5 +1,6 @@
+import re
+from rapidfuzz import fuzz
 from unicodedata import category
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
@@ -278,47 +279,6 @@ def load_more_products(request):
         'has_more': products.count() == PRODUCT_LIMIT
     })
 
-# def products_page_view(request, pk):
-#     if request.user.is_authenticated:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
-#     else:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.all().values_list('product_id', flat=True)
-
-#     breadcrumbs = [
-#         {'name': 'Home', 'url': reverse('home_page_url')},
-#         {'name': 'Products', 'url': None},
-#     ]
-  
-#     products_obj = (
-#         admin_dashboard_models.Product.objects
-#         .filter(
-#             sub_sub_categories__id=pk,
-#             is_active=True,
-#         )
-#         .prefetch_related(
-#             Prefetch(
-#                 'product_attribute',
-#                 queryset=admin_dashboard_models.ProductAttribute.objects.filter(is_cover=True)
-#             )
-#         )
-#         .distinct()
-#     )
-    
-#     page = request.GET.get('page')
-#     paginator = Paginator(products_obj, 10)
-#     try:
-#         products_obj = paginator.page(page)
-#     except PageNotAnInteger:
-#         products_obj = paginator.page(1)
-#     except EmptyPage:
-#         products_obj = paginator.page(paginator.num_pages)
-
-#     context = {
-#         'obj_list': products_obj,
-#         'user_wishlist_ids': user_wishlist_ids,
-#         'breadcrumbs': breadcrumbs
-#     }
-#     return render(request, 'client/products/products.html', context)
 
 def products_page_view(request, pk):
     sub_sub_category = get_object_or_404(admin_dashboard_models.SubSubCategories, id=pk)
@@ -338,20 +298,6 @@ def products_page_view(request, pk):
         .order_by('-id')
     )
     
-    # products = (
-    #     admin_dashboard_models.Product.objects
-    #     .filter(
-    #         sub_sub_categories__id=pk,
-    #         is_active=True,
-    #     )
-    #     .prefetch_related(
-    #         Prefetch(
-    #             'product_attribute',
-    #             queryset=admin_dashboard_models.ProductAttribute.objects.filter(is_cover=True)
-    #         )
-    #     )
-    #     .distinct()
-    # )
     
     sub_sub_category = get_object_or_404(admin_dashboard_models.SubSubCategories, id=pk)
     sub_category = sub_sub_category.sub_categories
@@ -645,37 +591,6 @@ def submit_review_view(request):
         return JsonResponse({"success":True})
 
 
-
-
-# def category_products(request, category_id=None):
-
-#     category = None
-
-#     product_qs = admin_dashboard_models.Product.objects.prefetch_related(
-#         Prefetch(
-#             'product_varient',
-#             queryset=admin_dashboard_models.ProductVarient.objects.all(),
-#             to_attr='active_variants'
-#         )
-#     ).filter(is_active=True).order_by('-id')
-
-#     if category_id:
-#         category = get_object_or_404(
-#             admin_dashboard_models.Categories,
-#             id=category_id
-#         )
-#         product_qs = product_qs.filter(categories_id=category_id)
-
-#     paginator = Paginator(product_qs, 10)
-#     page_number = request.GET.get('page')
-#     products = paginator.get_page(page_number)
-
-#     context = {
-#         'category': category,
-#         'products': products
-#     }
-#     return render(request, 'client/products/category_products.html', context)
-
 def category_products(request, category_id=None):
     category = None
     products, category = [], []
@@ -836,42 +751,6 @@ def category_products(request, category_id=None):
     )
 
 
-# def most_popular_products(request):
-#     if request.user.is_authenticated:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
-#     else:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.all().values_list('product_id', flat=True)
-
-#     product_qs = admin_dashboard_models.Product.objects.prefetch_related(
-#         Prefetch(
-#             'product_varient',
-#             queryset=admin_dashboard_models.ProductVarient.objects.all(), to_attr='active_variants'
-#         )
-#     ).filter(is_popular=True, is_active=True).order_by('-id')
-
-#     paginator = Paginator(product_qs, 10)
-#     page_number = request.GET.get('page')
-#     products = paginator.get_page(page_number)
-
-#     context = {
-#         'products': products,
-#         'user_wishlist_ids': user_wishlist_ids,
-#         'page_title': 'Most Popular Products',
-#         'is_popular': True
-#     }
-
-#     # return render(
-#     #     request,
-#     #     'client/products/category_products.html',
-#     #     context
-#     # )
-#     return render(
-#         request,
-#         'client/filter/popular_product.html',
-#         context
-#     )
-
-
 def most_popular_products(request):
     products = admin_dashboard_models.Product.objects.filter(
         is_popular=True,
@@ -1015,36 +894,7 @@ def most_popular_products(request):
         'client/filter/filter_base.html',
         context
     )
-    
-# def best_deal_products(request):
-#     if request.user.is_authenticated:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
-#     else:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.all().values_list('product_id', flat=True)
 
-#     product_qs = admin_dashboard_models.Product.objects.prefetch_related(
-#         Prefetch(
-#             'product_varient',
-#             queryset=admin_dashboard_models.ProductVarient.objects.all(), to_attr='active_variants'
-#         )
-#     ).filter(is_best_deal=True, is_active=True).order_by('-id')
-
-#     paginator = Paginator(product_qs, 10)
-#     page_number = request.GET.get('page')
-#     products = paginator.get_page(page_number)
-
-#     context = {
-#         'products': products,
-#         'user_wishlist_ids': user_wishlist_ids,
-#         'page_title': 'Best Deal Products',
-#         'is_popular': True
-#     }
-
-#     return render(
-#         request,
-#         'client/products/best_deal_products.html',
-#         context
-#     )
 
 def best_deal_products(request):
     products = admin_dashboard_models.Product.objects.filter(
@@ -1189,25 +1039,6 @@ def best_deal_products(request):
         context
     )
 
-# def flash_sell_products(request):
-#     if request.user.is_authenticated:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
-#     else:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.all().values_list('product_id', flat=True)
-
-#     flash_sell_product = admin_dashboard_models.FlashSell.objects.prefetch_related('product__product_attribute').filter(side_slider__campaign_type='flash_sale').order_by('-id')
-#     paginator = Paginator(flash_sell_product, 10)
-#     page_number = request.GET.get('page')
-#     products = paginator.get_page(page_number)
-
-#     context = {
-#         'products': products,
-#         'flash_sell_product': flash_sell_product,
-#         'user_wishlist_ids': user_wishlist_ids,
-#         'page_title': 'Flash Sell Products',
-#     }
-
-#     return render(request,'client/products/flash_sell_products.html', context)
 
 def flash_sell_products(request):
     flashsale_ids = admin_dashboard_models.FlashSell.objects.filter(side_slider__campaign_type='flash_sale', product__is_active=True).values_list('product', flat=True)
@@ -1519,154 +1350,6 @@ def brand_wise_products_view(request, brand_id):
     )
 
 
-
-
-
-
-
-
-
-
-# def brand_wise_products_view(request, brand_id):
-#     brand = admin_dashboard_models.Brand.objects.get(id=brand_id)
-
-#     products = admin_dashboard_models.Product.objects.prefetch_related(
-#         'product_attribute'
-#     ).filter(
-#         product_varient__brand_id=brand_id
-#     ).order_by('-id')
-
-#     brand_product_qs = admin_dashboard_models.Product.objects.filter(
-#         product_varient__brand_id=brand_id
-#     )
-
-#     category_ids = brand_product_qs.values_list('categories_id', flat=True).distinct()
-#     sub_cat_ids = brand_product_qs.values_list('sub_categories_id', flat=True).distinct()
-#     sub_sub_cat_ids = brand_product_qs.values_list('sub_sub_categories_id', flat=True).distinct()
-
-#     categories_obj = admin_dashboard_models.Categories.objects.filter(id__in=category_ids)
-#     sub_categories_obj = admin_dashboard_models.SubCategories.objects.filter(id__in=sub_cat_ids)
-#     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.filter(id__in=sub_sub_cat_ids)
-#     brands_obj = admin_dashboard_models.Brand.objects.filter(id=brand_id)
-#     colors_obj = admin_dashboard_models.Color.objects.filter(product_color__product__product_varient__brand_id=brand_id).distinct()
-#     sizes_obj = admin_dashboard_models.Size.objects.filter(product_size__product__product_varient__brand_id=brand_id).distinct()
-
-#     categories = request.GET.getlist('category')
-#     sub_categories   = request.GET.getlist('sub_category')
-#     sub_sub_categories = request.GET.getlist('sub_sub_category')
-#     brands = request.GET.getlist('brand')
-#     colors = request.GET.getlist('color')
-#     sizes = request.GET.getlist('size')
-#     min_price = request.GET.get('min_price')
-#     max_price = request.GET.get('max_price')
-#     sort_by = request.GET.get('sort_by', 'default')
-
-#     if categories:
-#         products = products.filter(categories_id__in=categories)
-
-#     if sub_categories:
-#         products = products.filter(sub_categories_id__in=sub_categories)
-
-#     if sub_sub_categories:
-#         products = products.filter(sub_sub_categories_id__in=sub_sub_categories)
-
-#     if brands:
-#         products = products.filter(product_varient__brand_id__in=brands)
-
-#     if colors:
-#         products = products.filter(product_attribute__color_id__in=colors)
-
-#     if sizes:
-#         products = products.filter(product_attribute__size_id__in=sizes)
-
-#     if min_price and max_price:
-#         products = products.filter(
-#             product_attribute__final_price__gte=min_price,
-#             product_attribute__final_price__lte=max_price
-#         )
-#     elif min_price:
-#         products = products.filter(product_attribute__final_price__gte=min_price)
-#     elif max_price:
-#         products = products.filter(product_attribute__final_price__lte=max_price)
-
-#     products = products.distinct()
-
-#     if sort_by == 'most_recent':
-#         products = products.order_by('-created_at')
-#     elif sort_by in ('price_high_to_low', 'price_low_to_high'):
-#         products = products.annotate(
-#             sort_price=Coalesce(
-#                 F('cover_product_attribute__final_price'),
-#                 F('cover_product_attribute__discount_price'),
-#                 output_field=DecimalField()
-#             )
-#         )
-#         products = products.order_by(
-#             '-sort_price' if sort_by == 'price_high_to_low' else 'sort_price'
-#         )
-#     elif sort_by == 'name_a_to_z':
-#         products = products.order_by('product_name')
-#     elif sort_by == 'name_z_to_a':
-#         products = products.order_by('-product_name')
-
-#     paginator= Paginator(products, 12)
-#     page_number = request.GET.get('page')
-#     products = paginator.get_page(page_number)
-
-#     query_params = request.GET.copy()
-#     query_params.pop('page', None)
-
-#     context = {
-#         "products":products,
-#         "categories":categories_obj,
-#         "sub_categories":sub_categories_obj,
-#         "sub_sub_categories":sub_sub_categories_obj,
-#         "brands":brands_obj,
-#         "colors":colors_obj,
-#         "sizes":sizes_obj,
-#         "is_brand":True,
-#         "page_title":f"{brand.name} Products",
-#         "query_params":query_params.urlencode(),
-#         "selected_categories":categories,
-#         "selected_sub_categories":sub_categories,
-#         "selected_sub_sub_categories":sub_sub_categories,
-#         "selected_brands":brands,
-#         "selected_colors":colors,
-#         "selected_sizes":sizes,
-#         "brand":brand,
-#         "sort_by":sort_by,
-#     }
-
-#     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-#         return render(request, 'client/filter/common.html', context)
-
-#     return render(request, 'client/filter/filter_base.html', context)
-
-# def campaign_products_view(request, campaign_id):
-#     if request.user.is_authenticated:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
-#     else:
-#         user_wishlist_ids = admin_dashboard_models.Wishlist.objects.all().values_list('product_id', flat=True)
-
-#     campaign_id = admin_dashboard_models.SideSlider.objects.get(id=campaign_id)
-#     campaign_product_ids = admin_dashboard_models.FlashSell.objects.filter(side_slider__campaign_type="campaign",side_slider=campaign_id).values_list('product', flat=True)
-#     campaign_products = admin_dashboard_models.Product.objects.filter(id__in=list(campaign_product_ids))
-
-#     paginator = Paginator(campaign_products, 10)
-#     page_number = request.GET.get('page')
-#     products = paginator.get_page(page_number)
-
-#     context = {
-#         'products': products,
-#         'campaign_products': campaign_products,
-#         'user_wishlist_ids': user_wishlist_ids,
-#         'page_title': 'Campaign Products',
-#         'campaign':campaign_id,
-#     }
-
-#     return render(request,'client/products/campaign_product.html', context)
-
-
 def campaign_products_view(request, campaign_id):
     campaign_id = admin_dashboard_models.SideSlider.objects.get(id=campaign_id)
     campaign_product_ids = admin_dashboard_models.FlashSell.objects.filter(side_slider__campaign_type="campaign",side_slider=campaign_id).values_list('product', flat=True)
@@ -1835,68 +1518,102 @@ def categories_list(request):
 
 def product_search_view(request):
     search_words = request.GET.get('search', '').strip()
-    normalized_search = search_words.replace(" ", "").lower()
-    products = admin_dashboard_models.Product.objects.annotate(
-        normalized_category=Lower(
-            Replace('categories__name', Value(' '), Value(''))
-        ),
 
-        normalized_sub_category=Lower(
-            Replace('sub_categories__sub_cat_name', Value(' '), Value(''))
-        ),
+    def clean_text(text):
+        return ' '.join(re.sub(r'[^a-zA-Z0-9\s]', ' ', text).split())
 
-        normalized_sub_sub_category=Lower(
-            Replace('sub_sub_categories__sub_sub_cat_name', Value(' '), Value(''))
-        ),
+    def words_mostly_match(query, field_value, match_ratio=0.5):
+        query_words = clean_text(query).lower().split()
+        field_words = clean_text(field_value).lower().split()
 
-        normalized_product_name=Lower(
-            Replace('product_name', Value(' '), Value(''))
-        )
+        if not query_words:
+            return False
 
-    ).filter(
-        Q(normalized_category__icontains=normalized_search) |
-        Q(normalized_sub_category__icontains=normalized_search) |
-        Q(normalized_sub_sub_category__icontains=normalized_search) |
-        Q(normalized_product_name__icontains=normalized_search)
+        matched = 0
+        for q_word in query_words:
+            best = max(
+                (fuzz.ratio(q_word, f_word) for f_word in field_words),
+                default=0
+            )
+            if best >= 70:
+                matched += 1
 
-    ).distinct()
+        return (matched / len(query_words)) >= match_ratio
+
+    def score_field(query, field_value):
+        q = clean_text(query).lower()
+        f = clean_text(field_value).lower()
+
+        query_words = q.split()
+        field_words = f.split()
+
+        word_scores = []
+        for q_word in query_words:
+            best = max(
+                (fuzz.ratio(q_word, f_word) for f_word in field_words),
+                default=0
+            )
+            word_scores.append(best)
+
+        if not word_scores:
+            return 0
+
+        avg_word_score = sum(word_scores) / len(word_scores)
+
+        if avg_word_score < 40:
+            return 0
+
+        exact_bonus = 15 if q in f else 0
+        all_matched_bonus = 10 if all(s >= 75 for s in word_scores) else 0
+
+        return avg_word_score + exact_bonus + all_matched_bonus
+
+    def score_product(product, phrases):
+        product_name = product.product_name or ""
+        category = product.categories.name if product.categories else ""
+        sub_cat = product.sub_categories.sub_cat_name if product.sub_categories else ""
+        sub_sub_cat = product.sub_sub_categories.sub_sub_cat_name if product.sub_sub_categories else ""
+
+        fields = [
+            (product_name, 1.5),
+            (category, 1.2),
+            (sub_cat, 1.1),
+            (sub_sub_cat, 1.0),
+        ]
+
+        best_score = 0
+
+        for phrase in phrases:
+            for field_value, weight in fields:
+                if not words_mostly_match(phrase, field_value, match_ratio=0.7):
+                    continue
+
+                raw = score_field(phrase, field_value)
+                if raw > 0:
+                    weighted = raw * weight
+                    if weighted > best_score:
+                        best_score = weighted
+
+        return best_score
+
+    raw_phrases = search_words.split(',')
+    phrases = [clean_text(p) for p in raw_phrases if clean_text(p)]
+
+    if not phrases:
+        context = {'search_words': search_words, 'products': []}
+        return render(request, 'client/search_products/search.html', context)
+
+    all_products = list(admin_dashboard_models.Product.objects.select_related('categories', 'sub_categories', 'sub_sub_categories'))
+
+    scored_products = [(product, score_product(product, phrases))for product in all_products]
+    final_products = [product for product, score in sorted(scored_products, key=lambda x: x[1], reverse=True) if score > 0]
 
     context = {
         'search_words': search_words,
-        'products': products
+        'products': final_products
     }
 
     return render(request, 'client/search_products/search.html', context)
-
-# @login_required
-# def sub_category_product_show_view(request, sub_cat_id):
-#     sub_category = None
-
-#     product_qs = admin_dashboard_models.Product.objects.prefetch_related(
-#         Prefetch(
-#             'product_varient',
-#             queryset=admin_dashboard_models.ProductVarient.objects.all(),
-#             to_attr='active_variants'
-#         )
-#     ).filter(is_active=True).order_by('-id')
-
-#     if sub_cat_id:
-#         sub_category = get_object_or_404(
-#             admin_dashboard_models.SubCategories,
-#             id=sub_cat_id
-#         )
-#         product_qs = product_qs.filter(sub_categories_id=sub_cat_id)
-    
-
-#     paginator = Paginator(product_qs, 10)
-#     page_number = request.GET.get('page')
-#     products = paginator.get_page(page_number)
-    
-#     context = {
-#         'sub_category': sub_category,
-#         'products': products
-#     }
-#     return render(request,'client/products/sub_cat_products.html', context)
 
 
 def sub_category_product_show_view(request, sub_cat_id):
@@ -1916,14 +1633,6 @@ def sub_category_product_show_view(request, sub_cat_id):
     ).filter(is_active=True).order_by('-id')
 
     products = product_qs
-
-    # if sub_cat_id:
-    #     sub_category = get_object_or_404(
-    #         admin_dashboard_models.SubCategories,
-    #         id=sub_cat_id
-    #     )
-    #     category_id = sub_category.categories.id
-    #     products = product_qs.filter(sub_categories_id=sub_cat_id)
     
 
     categories = request.GET.getlist('category')
