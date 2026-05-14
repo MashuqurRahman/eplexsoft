@@ -1,0 +1,27 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Add Payment Method Logo{% endblock  %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Add Payment Method Logo</h5>
+    </div>
+
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.logo|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <button class="btn add-btn">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

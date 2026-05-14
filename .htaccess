@@ -2,6 +2,7 @@
 PassengerAppRoot "/home/odelltec/eplexsoft.odelltech.com"
 PassengerBaseURI "/"
 PassengerPython "/home/odelltec/virtualenv/eplexsoft.odelltech.com/3.9/bin/python"
+
 # DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
 # DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
 <IfModule Litespeed>

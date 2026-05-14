@@ -1,0 +1,1050 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %}Products{% endblock  %}
+{% block content %}
+    <section class="details-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-xxl-8">
+                    <form method="post">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            {% for crumb in breadcrumbs %}
+                                {% if crumb.url %}
+                                    <li class="breadcrumb-item">
+                                        <a href="{{ crumb.url }}">{{ crumb.name }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        {{ crumb.name }}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </nav>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="detailslider">
+                                <ul>
+                                    {% comment %} <li>
+                                        <img id="main-product-image" src="{{ item.cover_product_attribute.image.url }}">
+                                        <img id="main-product-image" src="{{ product.product.product_attribute.first.image.url }}">
+                                    </li> {% endcomment %}
+                                    {% comment %} <div class="zoom-container">
+                                        <img id="main-product-image" 
+                                            src="{{ item.cover_product_attribute.image.url }}">
+                                    </div> {% endcomment %}
+                                    
+                                    <div class="zoom-container">
+                                        <img id="main-product-image" src="" class="img-fluid">
+                                    </div>
+
+                                    <div class="gallery-wrapper mt-3">
+                                        <div id="thumbnail-container" class="d-flex gap-2 flex-wrap"></div>
+                                    </div>
+                                </ul>
+
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="detailscon">
+                                
+                                <h2>{{product.product.product_name}}</h2>
+                                <p>{{product.product.description}}</p>
+                                <div class="review-sold d-flex d-md-block align-items-center">
+                                    <ul class="open-review-modal mb-0 me-2" style="cursor:pointer; display: flex;">
+                                        {% for i in full_stars %}
+                                        <li><i class="bi bi-star-fill text-warning"></i></li>
+                                        {% endfor %}
+
+                                        {% if half_star %}
+                                        <li><i class="bi bi-star-half text-warning"></i></li>
+                                        {% endif %}
+
+                                        {% for i in empty_stars %}
+                                        <li><i class="bi bi-star text-muted"></i></li>
+                                        {% endfor %}
+                                        <li><p class="wishlistt mb-0" data-product-id="{{product.id}}"> ({{product.product.reviews_calculation.total_reviews}}) Ratings <span class="vrr"></span> {{product.product.total_sold_count.sold_qty|floatformat:0}} Sold  <span class="vrr"></span>MOQ: {{product.product.moq}}</p></li>
+
+                                    </ul>
+
+
+                                    
+                                </div>
+                                <div class="price">
+                                    <h3 id="product-price"></h3>
+                                </div>
+
+                                {% if product.brand %}
+                                    <span >Brand Name: <a href="{% url 'brand_wise_products' brand_id=product.brand.id %}" class="badge text-bg-danger" style="margin-bottom: 20px !important;"> {{product.brand}}</a></span>
+                                {% endif %}
+
+                                {% if attribute_list %}
+                                <div class="sizes">
+                                    <div class="tagname">
+                                        <p>Size:</p>
+                                    </div>
+
+                                    {% comment %} <div class="taglint">
+                                        {% for size in attribute_list %}
+                                        <div class="form-check form-check-inline">
+                                            <input
+                                                class="form-check-input"
+                                                type="radio"
+                                                name="size"
+                                                id="size{{ forloop.counter }}"
+                                                value="{{ size.id }}"
+                                            >
+                                            <label class="form-check-label" for="size{{ forloop.counter }}">
+                                                {{ size.size }}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div> {% endcomment %}
+                                    <div class="taglint">
+                                        {% for size in sizes %}
+                                        {% if size.size__id %}
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input variant-input" type="radio" name="size" 
+                                                id="size{{ size.size__id }}" value="{{ size.size__id }}" 
+                                                {% if forloop.first %}checked{% endif %}>
+                                            <label class="form-check-label" for="size{{ size.size__id }}">
+                                                {{ size.size__value }}
+                                            </label>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="sizes">
+                                    <div class="tagname">
+                                        <p>Color:</p>
+                                    </div>
+
+                                    {% comment %} <div class="taglint">
+                                        {% for attr in attribute_list %}
+                                        <div class="form-check form-check-inline">
+                                            <input
+                                                class="form-check-input color-radio"
+                                                type="radio"
+                                                name="color"
+                                                id="color{{ forloop.counter }}"
+                                                value="{{ attr.id }}"
+                                                data-image="{{ attr.image.url }}"
+                                                data-regular-price="{{ attr.regular_price }}"
+                                                data-discount-price="{{ attr.discount_price|default_if_none:'' }}"
+                                                data-stock="{{ attr.stock }}"
+                                                {% if attr.stock == 0 %}disabled{% endif %}
+                                            >
+                                            <label class="form-check-label {% if attr.stock == 0 %}text-muted{% endif %}"
+                                                for="color{{ forloop.counter }}">
+                                                {{ attr.color }}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div> {% endcomment %}
+
+                                    <div class="taglint">
+                                        {% for color in colors %}
+                                            {% if color.color__id %} <div class="form-check form-check-inline">
+                                                <input class="form-check-input variant-input" type="radio" name="color" 
+                                                    id="color{{ color.color__id }}" value="{{ color.color__id }}" 
+                                                    {% if forloop.first %}checked{% endif %}>
+                                                <label class="form-check-label" for="color{{ color.color__id }}">
+                                                    {{ color.color__name }}
+                                                </label>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <span id="stockID"> Stock: 10 </span>
+                                <div class="number" style="text-align: start !important;" data-cart-item-id="{{item.id}}">
+                                    <button type="button" class="minus-btn" style="cursor: pointer;">-</button>
+                                    <input type="text" class="qty-input" data-moq="{{product_obj.moq}}" data-stock="{{ attribute_obj.attribute_stock_status.remaining_stock }}" value="{{ product_obj.moq }}" />
+                                    <button type="button" class="plus-btn" style="cursor: pointer;">+</button>
+                                </div>
+
+                                <div class="buybtns mt-2 d-flex gap-1">
+                                    <a href="#" class="cusbtn add-to-cart-details" data-product-id="{{product.product.id}}" data-variant-id="{{ product.product.product_attribute.first.id }}"><i class="bi bi-bag-dash"></i> Add to Cart</a>
+                                    <a href="#" class="cusbtn2" id="buy_now_id">Buy Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+
+                    <!-- about-product -->
+                    <div class="about-product">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">About Product</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Reviews</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                                <div class="tab-con">
+                                    <p>{{product.product.description}}</p>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                                <div class="tab-con rating-container">
+                                    <div class="rating-container">
+
+                                    <h4 class="fw-bold">Ratings and Reviews</h4>
+                                    <hr>
+
+                                    <div class="row">
+
+                                        <!-- LEFT SIDE -->
+                                        <div class="col-lg-4">
+
+                                            <div class="rating-summary">
+
+                                                <h2 class="avg-rating">{{ product.product.reviews_calculation.average_rating|floatformat:"1" }}/5</h2>
+
+                                                <div class="stars review-sold">
+                                                    <ul>
+                                                        {% for i in full_stars %}
+                                                        <li><i class="bi bi-star-fill text-warning"></i></li>
+                                                        {% endfor %}
+
+                                                        {% if half_star %}
+                                                        <li><i class="bi bi-star-half text-warning"></i></li>
+                                                        {% endif %}
+
+                                                        {% for i in empty_stars %}
+                                                        <li><i class="bi bi-star text-muted"></i></li>
+                                                        {% endfor %}
+
+                                                    </ul>
+                                                </div>
+                                                <div class="total-percent">
+                                                    <span class="fw-bold" style="font-size: 19px;">{{ product.product.reviews_calculation.total_percent|floatformat:"0" }}% Rating</span>
+                                                </div>
+
+                                                {% comment %} <p>{{ product.product.reviews_calculation.total_reviews }} reviews</p> {% endcomment %}
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- RIGHT SIDE -->
+                                        <div class="col-lg-8">
+
+                                            <div class="rating-bars">
+
+                                                <div class="rating-row">
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+
+                                                    <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ product.product.reviews_calculation.rating_percent.5 }}%"></div>
+                                                    </div>
+
+                                                    <span>{{ product.product.reviews_calculation.rating_percent.5|floatformat:"0" }}%</span>
+                                                </div>
+
+                                                <div class="rating-row">
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+
+                                                    <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ product.product.reviews_calculation.rating_percent.4 }}%"></div>
+                                                    </div>
+
+                                                    <span>{{ product.product.reviews_calculation.rating_percent.4|floatformat:"0" }}%</span>
+                                                </div>
+
+                                                <div class="rating-row">
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+
+                                                    <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ product.product.reviews_calculation.rating_percent.3 }}%"></div>
+                                                    </div>
+
+                                                    <span>{{ product.product.reviews_calculation.rating_percent.3|floatformat:"0" }}%</span>
+                                                </div>
+
+                                                <div class="rating-row">
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+
+                                                    <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ product.product.reviews_calculation.rating_percent.2 }}%"></div>
+                                                    </div>
+
+                                                    <span>{{ product.product.reviews_calculation.rating_percent.2|floatformat:"0" }}%</span>
+                                                </div>
+
+                                                <div class="rating-row">
+                                                    <i class="bi bi-star-fill star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+                                                    <i class="bi bi-star star-small"></i>
+
+                                                    <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ product.product.reviews_calculation.rating_percent.1 }}%"></div>
+                                                    </div>
+
+                                                    <span>{{ product.product.reviews_calculation.rating_percent.1|floatformat:"0" }}%</span>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    {% if selected_reviews %}
+                                    <div class="selected-review container mt-5">
+                                        <h4 class="fw-bold mb-4">Customer Reviews</h4>
+
+                                        <div class="row g-4">
+                                            {% for review in selected_reviews %}
+                                                <div class="col-md-12 review-item {% if forloop.counter > 5 %}d-none extra-review{% endif %}">
+                                                    <div class="review-card p-4 shadow-sm h-100">
+                                                        {% if review.rating %}
+                                                        <div class="stars review-sold">
+                                                            <ul class="list-inline mb-0">
+                                                                {% for i in "12345" %}
+                                                                    {% if forloop.counter <= review.fullstar %}
+                                                                        <li class="list-inline-item">
+                                                                            <i class="bi bi-star-fill text-warning"></i>
+                                                                        </li>
+                                                                    {% else %}
+                                                                        <li class="list-inline-item">
+                                                                            <i class="bi bi-star text-warning"></i>
+                                                                        </li>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                        {% endif %}
+                                                        <div class="d-flex align-items-end mb-3">
+                                                            <div class="review-avatar">
+                                                                {% if review.user.name %}
+                                                                {{ review.user.name|first|upper }}
+                                                                {% else %}
+                                                                {{ review.user.email|first|upper }}
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="ms-3">
+                                                                <h6 class="mb-0 fw-semibold">{{ review.user.name|default:review.user.email }}</h6>
+                                                                <small class="text-muted">{{ review.product.product_name }}</small>
+                                                            </div>
+                                                        </div>
+                                                        <p class="review-text">"{{ review.review }}"</p>
+                                                        <div class="review-date text-muted small">{{ review.created_at|date:"M d, Y" }}</div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+
+                                            {% if selected_reviews|length > 5 %}
+                                                <div class="text-center mt-4">
+                                                    <button id="seeMoreBtn" class="btn btn-outline-primary px-4">See More Reviews</button>
+                                                </div>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- about-product -->
+
+                </div>
+                <div class="col-xxl-4">
+                    {% comment %} <div class="delivary">
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'assets/img/money.svg' %}" alt="icons">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p>Delivery charge</p>
+                                <h5>৳ {{delivery_charge.initial_charge|default:"0"}}</h5>
+                            </div>
+                        </div>
+                        <div class="d-flex ">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'assets/img/clock.svg' %}" alt="icons">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p>Estimated delivery</p>
+                                <h5>2-4 days</h5>
+                            </div>
+                        </div>
+
+                    </div> {% endcomment %}
+                    <div class="populers boxs">
+                    <h3 class="subtile3">Similar Product</h3>
+                    <div class="customscroll">
+                    {% if similar_product_obj %}
+                            {% for item in similar_product_obj %}
+                            
+                            <div class="d-flex populeritem mb-3" onclick="window.location='{% url 'product_details_page_url' item.id %}'" style="cursor: pointer;">
+                                <div class="flex-shrink-0">
+                                    <img src="{{ item.cover_product_attribute.image.url }}" alt="icons">
+                                </div>
+                                <div class="flex-grow-1 ms-3 productcon">
+                                    <a href="{% url 'product_details_page_url' item.id %}">{{ item.product_name }}</a>
+                                    {% if item.cover_product_attribute.final_discount.total_discount %}
+                                        <h5>৳ {{ item.cover_product_attribute.product_final_price  }} <del>৳ {{ item.cover_product_attribute.regular_price }}</del></h5>
+                                    {% else %}
+                                        <h5>৳ {{ item.cover_product_attribute.regular_price }}</h5>
+                                    {% endif %}
+                                    {% comment %} <div class="starsold">
+                                        <p><i class="bi bi-star-fill"></i> 0</p>
+                                        <div class="vr"></div>
+                                        <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                                    </div> {% endcomment %}
+
+                                    <div class="starsold review-sold">
+                                        <ul>
+                                            {% for i in item.reviews_calculation.full_stars %}
+                                            <li><i style="font-size: 12px;" class="bi bi-star-fill text-warning"></i></li>
+                                            {% endfor %}
+
+                                            {% if item.reviews_calculation.half_star %}
+                                            <li><i style="font-size: 12px;"class="bi bi-star-half text-warning"></i></li>
+                                            {% endif %}
+
+                                            {% for i in item.reviews_calculation.empty_stars %}
+                                            <li><i style="font-size: 12px;"class="bi bi-star text-muted"></i></li>
+                                            {% endfor %}
+                                            <li style="color: #64748b !important;">({{item.reviews_calculation.total_reviews}})</li>
+                                        </ul>
+                                        <div class="vr"></div>
+                                        <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                                    </div>
+                                    
+                                    {% comment %} {% if item.product_stock_status.flag %}
+                                        <span> Stock: {{item.product_stock_status.stock_qty}} </span>
+                                    {% else %}
+                                        <span class="text-danger"> Out of stock </span>
+                                    {% endif %} {% endcomment %}
+
+                                    
+                                </div>
+                            </div>
+                            
+                            {% endfor %}
+                            {% else %}
+                            <div class="customscroll">
+                                <div class="populeritem mb-3">
+                                    <h5 class="text-center">Products not found</h5>
+                                </div>
+                            </div>
+                            {% endif %}
+                            </div>
+
+                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Review Modal -->
+
+    <div class="modal fade" id="reviewModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Write Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="reviewForm">
+
+                    <input type="hidden" id="ratingValue" name="rating">
+                    <input type="hidden" name="product_id" value="{{product.product.id}}">
+
+                    <div class="mb-3">
+
+                        <label>Your Rating</label>
+
+                        <div class="rating-stars">
+                            <i class="bi bi-star star" data-value="1"></i>
+                            <i class="bi bi-star star" data-value="2"></i>
+                            <i class="bi bi-star star" data-value="3"></i>
+                            <i class="bi bi-star star" data-value="4"></i>
+                            <i class="bi bi-star star" data-value="5"></i>
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Review</label>
+                        <textarea name="review" class="form-control"></textarea>
+                    </div>
+
+                    <button class="btn btn-primary">
+                        Submit Review
+                    </button>
+
+                </form>
+
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock  %}
+
+{% block JS %}
+<script>
+
+    {% if messages %}
+        {% for message in messages %}
+            Toastify({
+                text: "{{ message|escapejs }}",
+                duration: 4000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "{% if message.tags == 'errors' %}red{% else %}rgb(244, 67, 54){% endif %}"
+            }).showToast();
+        {% endfor %}
+    {% endif %}
+
+
+    $(document).on('click', '.loves', function(){
+        let heart = $(this);
+        let productId = heart.closest('.wishlistt').data('product-id');
+
+        $.ajax({
+            url: '{% url "add_to_wishlist_url" %}',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function(response) {
+                if(response.status === 'added'){
+                    heart.removeClass('bi-heart').addClass('bi-heart-fill text-danger');
+                }
+                else if(response.status === 'removed'){
+                    heart.removeClass('bi-heart-fill text-danger').addClass('bi-heart')
+                }
+            }
+        });
+    });
+
+    // Review Modal JS
+    var isLoggedIn = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
+    $(document).on('click', '.open-review-modal', function(){
+        if(isLoggedIn){
+            $('#reviewModal').modal('show');
+        }
+        else {
+            $('#logins').modal('show');
+        }
+    });
+
+    $(document).on("click",".star",function(){
+
+        let rating = $(this).data("value");
+
+        $("#ratingValue").val(rating);
+        $(".star").removeClass("bi-star-fill text-warning").addClass("bi-star");
+        $(".star").each(function(){
+            if($(this).data("value") <= rating){
+
+                $(this).removeClass("bi-star").addClass("bi-star-fill text-warning");
+
+            }
+        });
+    });
+
+    $('#reviewForm').submit(function(e){
+        e.preventDefault();
+
+        $.ajax({
+            url: "{% url 'submit_review_url' %}",
+            type: "POST",
+            data: $(this).serialize(),
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            success: function(response){
+                if (response.success) {
+                    Toastify({
+                        text: "Review submitted successfully!",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4caf50"
+                    }).showToast();
+                    $('#reviewModal').modal('hide');
+                    window.location.reload();
+                } else {
+                    Toastify({
+                        text: response.message || "Please login to submit a review.",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#f44336"
+                    }).showToast();
+                }
+            }
+        });
+    
+    });
+
+    document.getElementById("seeMoreBtn")?.addEventListener("click", function(){
+        document.querySelectorAll(".extra-review").forEach(function(review){
+            review.classList.remove("d-none");
+        });
+        this.style.display = "none";
+    });
+
+</script>
+
+
+<script>
+    const buy_now_product_URL = "{% url 'buy_now_product_url' 0 %}"
+    const product_details_URL = "{% url 'product_details_page_url' product.id %}"
+    $(document).ready(function() {
+        let attribute_id = false
+        updateProductVariant();
+
+        $("#buy_now_id").click(function(e) {
+            e.preventDefault();
+
+            var qty         = parseInt($('.qty-input').val());
+            var moq         = parseInt($('.qty-input').data('moq')) || 1;
+            var stock       = parseInt($('.qty-input').data('stock')) || 0;
+            var buy_now_url = buy_now_product_URL.replace("0", attribute_id);
+            buy_now_url    += "?qty=" + qty;
+
+            window.location.href = buy_now_url;
+        });
+
+
+
+
+    function updateProductVariant() {
+        let variantId = "{{ product.id }}"; 
+        let colorId = $("input[name='color']:checked").val();
+        let sizeId = $("input[name='size']:checked").val();
+
+        if (colorId && sizeId) {
+            $.ajax({
+                url: "{% url 'get_variant_data' %}", 
+                method: "GET",
+                data: {
+                    'variant_id': variantId,
+                    'color_id': colorId,
+                    'size_id': sizeId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        attribute_id = response.attribute_id
+
+                        $('.qty-input').data('stock', response.stock_qty);
+                        $('.qty-input').attr('max', response.stock_qty);
+
+                        let moq = parseInt($('.qty-input').data('moq')) || 1;
+                        $('.qty-input').val(moq);
+
+                        $('#main-product-image').attr('src', response.primary_image);
+                        $('#thumbnail-container').html('');
+
+                        response.gallery_images.forEach(function(img){
+                            $('#thumbnail-container').append(`
+                                <img src="${img.url}" class="thumb-img" style="width:70px;height:70px;cursor:pointer;border:1px solid #ddd;">
+                            `);
+                        })
+
+                        $(document).on('click', '.thumb-img', function(){
+                            $('#main-product-image').attr('src', $(this).attr('src'));
+                        });
+
+
+
+                        
+                        const newImgUrl = response.image_url;
+                        $('#main-product-image').attr('src', response.image_url);
+                        $('#lightSlider img').attr('src', newImgUrl);
+                        $('#stockID').html(`Stock: ${response.stock_qty}`)
+                        let priceHtml = "";
+                        if (response.discount_price == response.regular_price) {
+                            priceHtml = `৳ ${response.regular_price}`;
+                        } else {
+                            priceHtml = `৳ ${response.discount_price} <del class="text-muted" style="font-size: 0.8em;">৳ ${response.regular_price}</del> <span class="badge text-bg-danger"> ${ response.discount_percent } % OFF</span>`;
+                        }
+                        $('#product-price').html(priceHtml);
+
+                        let buyNowBaseUrl = "{% url 'buy_now_product_url' 0 %}";
+                        let newBuyNowUrl = buyNowBaseUrl.replace('0', response.attribute_id);
+                        
+                        // $('.cusbtn2').attr('href', newBuyNowUrl);
+                        // $('.add-to-cart').attr('data-variant-id', response.attribute_id);
+
+                        if (response.stock <= 0) {
+                            $('.buybtns').css('opacity', '0.5').css('pointer-events', 'none');
+                            $('#product-price').append(' <span class="text-danger" style="font-size: 0.5em;">(Out of Stock)</span>');
+                        } else {
+                            $('.buybtns').css('opacity', '1').css('pointer-events', 'auto');
+                        }
+
+                    } else {
+    
+                        $('#product-price').html('<span class="text-muted" style="font-size: 0.7em;">Not Available</span>');
+                        $('.buybtns').css('opacity', '0.5').css('pointer-events', 'none');
+                    }
+                },
+                error: function() {
+                    console.log("Error fetching variant data.");
+                }
+            });
+        }
+    };
+
+
+
+    $('.variant-input').on('change', function() {
+        updateProductVariant();
+    });
+
+
+    $(document).on('click', '.add-to-cart-details', function(e) {
+        e.preventDefault();
+
+        var productId = $(this).attr('data-product-id');
+        var quantity  = parseInt($('.qty-input').val());
+        console.log("quantity", quantity)
+        var btn       = $(this);
+
+        // Disable to prevent double click
+        btn.css('pointer-events', 'none').css('opacity', '0.7');
+
+        $.ajax({
+            url: "{% url 'add_to_cart_url' %}",
+            type: "POST",
+            data: {
+                'attribute_id':        attribute_id,
+                'product_id':          productId,
+                'quantity':            quantity,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#cart-count').text('(' + response.item_count + ')');
+                    Toastify({
+                        text: `✓ ${response.product_name} (${response.color} / ${response.size}) added to cart!`,
+                        duration: 3000, close: true,
+                        gravity: "top", position: "right",
+                        backgroundColor: "#4caf50"
+                    }).showToast();
+                    setTimeout(function() {
+                        location.href = product_details_URL;
+                    }, 1500);
+                } else {
+                    Toastify({
+                        text: response.message || 'Could not add to cart.',
+                        duration: 4000, close: true,
+                        gravity: "top", position: "right",
+                        backgroundColor: "#f44336"
+                    }).showToast();
+                    btn.css('pointer-events', 'auto').css('opacity', '1');
+                }
+            },
+            error: function(xhr) {
+                var msg = 'Something went wrong.';
+                try {
+                    var r = JSON.parse(xhr.responseText);
+                    if (r.message) msg = r.message;
+                } catch(e) {}
+                Toastify({
+                    text: msg, duration: 4000,
+                    gravity: "top", position: "right",
+                    backgroundColor: "#f44336"
+                }).showToast();
+                btn.css('pointer-events', 'auto').css('opacity', '1');
+            }
+        });
+    });
+});
+</script>
+<script>
+    const container = document.querySelector('.zoom-container');
+    const img = document.getElementById('main-product-image');
+
+    container.addEventListener('mousemove', function(e) {
+        const rect = container.getBoundingClientRect();
+        
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const xPercent = (x / rect.width) * 100;
+        const yPercent = (y / rect.height) * 100;
+
+        img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+        img.style.transform = "scale(2.5)";
+    });
+
+    container.addEventListener('mouseleave', function() {
+        img.style.transform = "scale(1)";
+    });
+</script>
+<script>
+    $('.plus-btn').click(function() {
+    let productDiv = $(this).closest('.number'); 
+    let cartItemId = productDiv.data('cart-item-id');
+    let qtyInput = productDiv.find('.qty-input');      
+    let quantity = parseInt(qtyInput.val());
+    let stockQty = parseInt(qtyInput.data('stock'));
+
+    
+    
+    if(quantity<stockQty){
+
+        quantity += 1;
+        qtyInput.val(quantity);
+
+    }
+    else{
+        Toastify({
+                text: "Item quantity reached to the stock limit.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+    }
+ 
+   
+ 
+
+    fetch("{% url 'ajax_update_cart_quantity' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            quantity: quantity,
+            cartItemId: cartItemId
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const vat = parseFloat(data.total_vat || 0);
+            const gst = parseFloat(data.total_gst || 0);
+            const tax = parseFloat(data.total_tax_amount || 0);
+            
+            document.getElementById("total-payable").innerText =`৳ ${parseFloat(data.total_payable).toFixed(2)}`;
+            let cartItemHTMLId = '#cartItemId_'+cartItemId
+            $(cartItemHTMLId).html(`
+                            <h5>
+                                <p class="text-muted">
+                                    (${data.counter} X ${data.cart_item_unit_price.toFixed(2)})
+                                    = ৳ ${parseFloat(data.cart_item_total_price).toFixed(2)}
+                                </p>
+                            </h5>
+                        `);
+
+            $("#subtotal").html(`৳ ${data.subtotal}` )
+            $("#subtotal_after_discount").html(`৳ ${data.subtotal_after_discount}` )
+            $("#discount").html(`৳ ${data.discount.toFixed(2)}` )
+
+
+            $("#id_total_vat").html(`৳ ${vat.toFixed(2)}` )
+            $("#id_total_gst").html(`৳ ${gst.toFixed(2)}` )
+            $("#id_total_tax_amount").html(`৳ ${tax.toFixed(2)}` )
+
+
+        } else {
+            Toastify({
+                text: data.message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+        }
+    })
+    .catch(err => console.error(err));
+
+
+});
+
+$('.minus-btn').click(function() {
+    let productDiv = $(this).closest('.number');  
+    let cartItemId = productDiv.data('cart-item-id');    
+    let qtyInput = productDiv.find('.qty-input');        
+    let quantity = parseInt(qtyInput.val());
+    let minQty = parseInt(qtyInput.data('moq'));
+
+    if(quantity > minQty){
+        quantity -= 1;
+        qtyInput.val(quantity);
+    }
+    else{
+        Toastify({
+                text: "Quantity cannot be less than MOQ",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+    }
+ 
+ 
+
+    fetch("{% url 'ajax_update_cart_quantity' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            quantity: quantity,
+            cartItemId: cartItemId
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const vat = parseFloat(data.total_vat || 0);
+            const gst = parseFloat(data.total_gst || 0);
+            const tax = parseFloat(data.total_tax_amount || 0);
+
+            document.getElementById("total-payable").innerText =`৳ ${parseFloat(data.total_payable).toFixed(2)}`;
+
+            let cartItemHTMLId = '#cartItemId_'+cartItemId
+            $(cartItemHTMLId).html(`
+                            <h5>
+                                <p class="text-muted">
+                                    (${data.counter} X ${data.cart_item_unit_price})
+                                    = ৳ ${parseFloat(data.cart_item_total_price).toFixed(2)}
+                                </p>
+                            </h5>
+                        `);
+
+            $("#subtotal").html(`৳ ${data.subtotal}` )
+            $("#subtotal_after_discount").html(`৳ ${data.subtotal_after_discount}` )
+            $("#discount").html(`৳ ${data.discount}` )
+
+            $("#id_total_vat").html(`৳ ${vat.toFixed(2)}` )
+            $("#id_total_gst").html(`৳ ${gst.toFixed(2)}` )
+            $("#id_total_tax_amount").html(`৳ ${tax.toFixed(2)}` )
+           
+        } else {
+            Toastify({
+                text: data.message,
+                duration: 3000,
+                gravity: "top",
+                close: true,
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+        }
+    })
+    .catch(err => console.error(err));
+
+
+});
+
+
+</script>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.get("login_success")) {
+    Toastify({
+      text: "Logged in successfully!",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      close: true,
+      backgroundColor: "#28a745"
+    }).showToast();
+  };
+
+  if (urlParams.get("open_login_modal")) {
+    Toastify({
+      text: "Registration successful! Please log in to continue.",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      close: true,
+      backgroundColor: "#28a745"
+    }).showToast();
+  };
+
+  if (urlParams.get("logout")) {
+    Toastify({
+      text: "Logged out successfully!",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      close: true,
+      backgroundColor: "#28a745"
+    }).showToast();
+  };
+
+
+
+</script>
+
+
+
+    {% if request.GET.open_login_modal %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var loginModal = new bootstrap.Modal(document.getElementById('logins'));
+            loginModal.show();
+            var emailInput = document.getElementById('loginEmail');
+            if(emailInput) {
+                emailInput.value = "{{ request.GET.email|default:'' }}";
+            }
+        });
+    </script>
+    {% endif %}
+    
+    {% if open_login_modal %}
+        <script>
+            const loginModal = new bootstrap.Modal(document.getElementById('logins'));
+            loginModal.show();
+        </script>
+    {% endif %}
+
+    {% if open_register_modal %}
+        <script>
+            const registerModal = new bootstrap.Modal(document.getElementById('registration'));
+            registerModal.show();
+        </script>
+    {% endif %}
+{% endblock  %}

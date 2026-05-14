@@ -1,0 +1,41 @@
+<table class="table table-bordered" id="search_items">
+    <thead>
+        <tr>
+            <th class="text-center">SL No</th>
+            <th>Category Name</th>
+            <th>Sub Category Name</th>
+            <th>Position</th>
+            <th>Has Sub Sub Category</th>
+            <th>Description</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if obj_list %}
+        {% for obj in obj_list %}
+        <tr>
+            <td class="text-center">{{forloop.counter}}</td>
+            <td>{{obj.categories}}</td>
+            <td>{{obj.sub_cat_name}}</td>
+            <td>Column: {{obj.column}}, Position: {{obj.position}}</td>
+            <td>{{obj.has_sub_sub_cat}}</td>
+            <td>{{obj.description|default:"N/A"}}</td>
+            <td>
+                <a href="{% url 'update_sub_categories_url' obj.id %}" class="edit_btn" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                <a href="{% url 'delete_sub_categories_url' obj.id %}" class="delete_btn" title="Delete" 
+                    onclick="SweetDelete(event, this.href)">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center">Data is not found</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>

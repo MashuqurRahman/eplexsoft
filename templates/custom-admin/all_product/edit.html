@@ -1,0 +1,71 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Update Product{% endblock  %}
+
+{% block content %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <section class="boxs">
+        <h6 class="subtitle">Update Product</h6>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.product|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.brand|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.color|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.size|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.unit|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.regular_price|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.discount_price|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.sku|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.stock_qty|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.status|as_crispy_field }}
+                </div>
+            </div>
+            <div class="submit_btn text-center pt-3 pb-4">
+                <button type="submit">Update</button>
+            </div>
+        </form>
+
+    </section>
+{% endblock  %}
+
+{% block JS %}
+
+{% endblock  %}

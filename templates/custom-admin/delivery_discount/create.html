@@ -1,0 +1,36 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Add Delivery Discount{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Add Delivery Discount</h5>
+    </div>
+
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.flat_delivery|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.discount_price|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.min_price|as_crispy_field }}
+                </div>
+            </div>
+            <div class="text-center pt-3 pb-4">
+                <button type="submit" class="btn add-btn">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+
+{% endblock  %}

@@ -1,0 +1,673 @@
+{% extends "client_base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}Checkout{% endblock  %}
+
+{% block content %}
+<div class="modal fade" id="orderSuccessModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Order Successful 🎉</h5>
+      </div>
+      <div class="modal-body">
+        <p>Your order has been placed successfully.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'home_page_url' %}" class="btn btn-primary">Go to Home</a>
+      </div>
+    </div>
+  </div>
+</div>
+    <form action="" method="post">
+    {% csrf_token %}
+    <section class="checkout-area">
+            <div class="containers">
+                <div class="row">
+                    <div class="col-md-7 col-lg-8">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'home_page_url' %}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="#">Cart</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                            </ol>
+                        </nav>
+                        
+                        <div class="checkout-item">
+                            <div class="title d-flex justify-content-between align-items-center mb-3">
+                                <h2>Checkout</h2>
+                                <p>({{cart_items|length}} items)</p>
+                            </div>
+                            <p>{{cart_items.vat_gst_amount}}</p>
+                            {% for item in cart_items %}
+                            <div class="d-flex populeritem cart_items mb-3">
+                                <div class="flex-shrink-0">
+                                    <img src="{{item.product_attribute.image.url}}" alt="icons">
+                                </div>
+                                <div class="flex-grow-1 ms-3 productcon">
+                                    
+                                    <a href="#">{{item.product_attribute.product.product_name}} </a>
+                                    {% if item.product_attribute.final_discount.total_discount %}
+                                        <h5>৳ {{ item.product_attribute.product_final_price }} <del>৳ {{ item.product_attribute.regular_price }} </del> </h5>
+                                            
+                                    {% else %}
+                                        <h5>৳ {{ item.product_attribute.regular_price }}</h5>
+                                    {% endif %}
+                                    <span id="cartItemId_{{item.id}}">
+                                         <h5> <p class="text-muted">({{item.quantity}} X {{ item.product_attribute.product_final_price|floatformat:2 }} = {{item.cart_item_total_price|floatformat:2}})</p>
+                                        </h5> 
+                                    </span>
+                                    
+
+                                    <div class="starsold">
+                                        <p>Size: {{ item.product_attribute.size.value }} , Color: {{ item.product_attribute.color.name }}</p> </br>
+                                        
+                                        {% if item.product_attribute.attribute_stock_status.status %}
+                                        <p> In Stock : {{ item.product_attribute.attribute_stock_status.remaining_stock }} </p>
+                                        
+                                        {% else %}
+                                        <span style = "color: red"> **This item is currently out of stock. Please remove the product to proceed with checkout</span>
+                                        {% endif%}
+
+                                        <div class="vr"></div>
+                                        
+                                        <button type="button" class="item-delete number checkout" data-cart-item-id="{{item.id}}"><i class="bi bi-trash3-fill" style="color: red;"></i></button>
+
+                                        <div class="number" data-cart-item-id="{{item.id}}">
+
+                                            <button type="button" class="minus-btn" style="cursor: pointer;">-</button>
+
+                                            <input type="text" class="qty-input" data-moq="{{item.product_attribute.product.moq}}" data-stock="{{ item.product_attribute.attribute_stock_status.remaining_stock }}" value="{{ item.quantity }}" readonly />
+
+                                            <button type="button" class="plus-btn" style="cursor: pointer;">+</button>
+                                            
+                                        </div>
+                                        
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="shiping">
+                            <div class="shiptitle d-flex justify-content-between align-items-center mb-3">
+                                <h3>Shipping Address</h3>
+                                {% comment %} <a href="#" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Change</a> {% endcomment %}
+                            </div>
+                            {% comment %} <div class="d-flex populeritem shipadd mb-3">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <h4>Home</h4>
+                                </div>
+                                <div class="flex-grow-1 ms-3 productcon">
+                                    <a href="#">My Personal</a>
+                                    <p>880156763524</p>
+                                    <p>6B, Dhaka, Bangladesh, A-23S76</p>
+                                </div>
+                            </div> {% endcomment %}
+                            <div class="populeritem shipadd mb-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{form.full_name|as_crispy_field}}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{form.phone_no|as_crispy_field}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{form.city|as_crispy_field}}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{form.upozila|as_crispy_field}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{form.thana|as_crispy_field}}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{form.postal_code|as_crispy_field}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {{form.address_line|as_crispy_field}}
+                                    </div>
+                                </div>
+
+                                <h5 class="mb-3 fw-bold">Shipping Methods</h5>
+                                
+                                <div id="shipping-methods">
+                                    <label class="shipping-option d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <input type="radio" id='shipping_me' name="shipping_method" value="inside_dhaka" {% if cart_items.first.cart.delivery_location == 'inside_dhaka' %}checked{% endif %} required>
+                                            <div class="ms-3">
+                                                <strong>Inside Dhaka</strong>
+                                                <p class="mb-0 text-muted">Delivery in 1–2 days</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <label class="shipping-option d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <input type="radio" name="shipping_method" value="outside_dhaka" {% if cart_items.first.cart.delivery_location == 'outside_dhaka' %}checked{% endif %} required>
+                                            <div class="ms-3">
+                                                <strong>Outside Dhaka</strong>
+                                                <p class="mb-0 text-muted">Delivery in 2–4 days</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+                        {% comment %} <div class="shiping mb-4">
+                            <div class="shiptitle d-flex justify-content-between align-items-center mb-2">
+                                <h3>Note <span>(Optional)</span> </h3>
+                            </div>
+                            <textarea class="form-control" name="note" id="exampleFormControlTextarea1" rows="3" placeholder="Write your note here..."></textarea>
+                        </div> {% endcomment %}
+                        <!-- about-product -->
+                        <div class="about-product Method">
+                            <div class="shiptitle d-flex justify-content-between align-items-center mb-3">
+                                <h3>Payment Method </h3>
+                            </div>
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                                        <label class="checks">
+                                            Cash on delivery
+                                            <input type="radio" checked="checked" name="payment_method" value="cash_payment">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                                        
+                                        <label class="checks">
+                                            Credit or Debit Card
+                                            <input type="radio" name="payment_method" value="card_payment">
+                                            <span class="checkmark"></span>
+                                        </label> 
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+
+                                </div>
+                                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                                    <div class="tab-con">
+                                        <p>Available Payment Gateways</p>
+                                        <label class="checks">
+                                            <img src="{% static 'assets/img/Stripe.png' %}" alt="icon">
+                                            <input type="radio" checked="checked" name="card">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <label class="checks">
+                                            <img src="{% static 'assets/img/PayPal.png' %}" alt="icon">
+                                            <input type="radio" name="card">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <label class="checks">
+                                            <img src="{% static 'assets/img/Razorpay.png' %}" alt="icon">
+                                            <input type="radio" name="card">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <label class="checks">
+                                            <img src="{% static 'assets/img/Bkash.png' %}" alt="icon">
+                                            <input type="radio" name="card">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <label class="checks">
+                                            <img src="{% static 'assets/img/QiCard.png' %}" alt="icon">
+                                            <input type="radio" name="card">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <label class="checks">
+                                            <img src="{% static 'assets/img/PayTabs.png' %}" alt="icon">
+                                            <input type="radio" name="card">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- about-product -->
+
+                    </div>
+                    <div class="col-md-5 col-lg-4">
+                        <div class="Summary">
+                            <div class="shiptitle d-flex justify-content-between align-items-center mb-3">
+                                <h3>Order Summary</h3>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                <span>Subtotal </span>
+                                <span id="subtotal">৳ {{cart.subtotal|floatformat:2}}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                <span>Discount </span>
+                                <span id="discount">৳ {{cart.cart_discount|floatformat:2}}</span>
+                            </div>
+                            <div class="border-bottom"></div>
+                            <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                <span>Subtotal After Discount </span>
+                                <span id="subtotal_after_discount">৳ {{cart.subtotal_after_discount|floatformat:2}}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                <span>Shipping Charge </span>
+                                <strong id="delivery-charge">৳ {{total_delivery_charge}}</strong>
+                            </div>
+                            <div class="taxx">
+                                <p>VAT & Taxes Summary</p>
+                                <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                    <span>VAT </span>
+                                    <span id="id_total_vat">৳ {{ cart.vat_gst_amount.total_vat|floatformat:2 }}</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                    <span>GST </span>
+                                    <span id="id_total_gst">৳ {{ cart.vat_gst_amount.total_gst|floatformat:2 }}</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                    <span>Total Tax Amount:</span>
+                                    <span id="id_total_tax_amount">৳ {{ cart.vat_gst_amount.total_tax_amount|floatformat:2 }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                <span>Coupon Discount</span>
+                                <span id="coupon-discount">৳ {{ cart.vat_gst_amount.coupon_discount_price}}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between gap-2 py-2">
+                                <b>Total Payable</b>
+                                <b id="total-payable">৳ {{total_payable|floatformat:2}}</b>
+                            </div>
+                            
+
+                            <div class="row forms g-3 mb-3">
+                                <div class="col-md-8">
+                                    <input name="coupon_code" type="text" value="{% if cart.coupon %}{{cart.coupon.code}}{% endif %}" id="coupon-code" class="form-control" placeholder="Have a coupon?">
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="apply-coupon" type="button" class="cusbtn2">Apply </button>
+                                </div>
+                                <input type="hidden" name="coupon_obj" id="coupon_obj_id">
+                                <div class="col-md-12">
+                                    <button class="cusbtn2" type="submit" {% if out_of_stock %}disabled {% endif %}>Place Order </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+    </section>
+    </form>
+
+{% endblock  %}
+
+{% block JS %}
+<script>
+  {% if messages %}
+    {% for message in messages %}
+      Toastify({
+        text: "{{ message }}",
+        duration: 3000,
+        close: true,
+        gravity: "top", 
+        position: "right", 
+        backgroundColor: "{% if message.tags == 'success' %}#4CAF50{% elif message.tags == 'error' %}#F44336{% else %}#333{% endif %}",
+      }).showToast();
+    {% endfor %}
+  {% endif %}
+</script>
+
+
+ <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const applyBtn = document.getElementById("apply-coupon");
+    const shippingRadios = document.querySelectorAll("input[name='shipping_method']");
+
+    function applyCouponAndShipping(trigger = "auto") {
+        // const couponCode = document.getElementById("coupon-code").value.trim();
+        // const shippingMethod = document.querySelector("input[name='shipping_method']:checked");
+        const couponCodeInput = document.getElementById("coupon-code");
+        const shippingMethod = document.querySelector("input[name='shipping_method']:checked");
+
+        const couponCode = trigger === "change" ? "" : couponCodeInput.value.trim();
+
+        if (!shippingMethod) {
+            Toastify({
+                text: "Please select a shipping method",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+            return;
+        }
+
+        if (!couponCode && trigger === "click") {
+            Toastify({
+                text: "Please enter a coupon code",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+            return;
+        }
+
+        fetch("{% url 'apply_coupon' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                coupon_code: couponCode,
+                shipping_method: shippingMethod.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("coupon_obj_id").value = data.coupon_id || "";
+
+                document.getElementById("delivery-charge").innerText =
+                    `৳ ${parseFloat(data.total_delivery_charge).toFixed(2)}`;
+
+                document.getElementById("coupon-discount").innerText =
+                    `৳ ${parseFloat(data.coupon_discount || 0).toFixed(2)}`; 
+
+                document.getElementById("total-payable").innerText =
+                    `৳ ${parseFloat(data.total_after_coupon).toFixed(2)}`;
+
+                document.getElementById("id_total_vat").innerText =
+                    `৳ ${parseFloat(data.total_vat ?? 0).toFixed(2)}`; 
+
+                document.getElementById("id_total_gst").innerText =
+                    `৳ ${parseFloat(data.total_gst ?? 0).toFixed(2)}`;
+
+                document.getElementById("id_total_tax_amount").innerText =
+                    `৳ ${parseFloat(data.total_tax_amount ?? 0).toFixed(2)}`;
+
+                if (trigger === "click") {
+                    Toastify({
+                        text: "Coupon applied successfully!",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4CAF50",
+                    }).showToast();
+                }
+            } else {
+                Toastify({
+                    text: data.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#F44336",
+                }).showToast();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Toastify({
+                text: "Something went wrong!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+        });
+    }
+
+    applyBtn.addEventListener("click", function () {
+        applyCouponAndShipping("click");
+    });
+
+    shippingRadios.forEach(radio => {
+        radio.addEventListener("change", function () {
+            applyCouponAndShipping("change");
+        });
+    });
+});
+</script> 
+
+<script>
+
+$('.plus-btn').click(function() {
+    let productDiv = $(this).closest('.number'); 
+    let cartItemId = productDiv.data('cart-item-id');
+    let qtyInput = productDiv.find('.qty-input');      
+    let quantity = parseInt(qtyInput.val());
+    let stockQty = parseInt(qtyInput.data('stock'));
+
+    
+    
+    if(quantity<stockQty){
+
+        quantity += 1;
+        qtyInput.val(quantity);
+
+    }
+    else{
+        Toastify({
+                text: "Item quantity reached to the stock limit.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+    }
+ 
+   
+ 
+
+    fetch("{% url 'ajax_update_cart_quantity' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            quantity: quantity,
+            cartItemId: cartItemId
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const vat = parseFloat(data.total_vat || 0);
+            const gst = parseFloat(data.total_gst || 0);
+            const tax = parseFloat(data.total_tax_amount || 0);
+            
+            document.getElementById("total-payable").innerText =`৳ ${parseFloat(data.total_payable).toFixed(2)}`;
+            let cartItemHTMLId = '#cartItemId_'+cartItemId
+            $(cartItemHTMLId).html(`
+                            <h5>
+                                <p class="text-muted">
+                                    (${data.counter} X ${data.cart_item_unit_price.toFixed(2)})
+                                    = ৳ ${parseFloat(data.cart_item_total_price).toFixed(2)}
+                                </p>
+                            </h5>
+                        `);
+
+            $("#subtotal").html(`৳ ${data.subtotal}` )
+            $("#subtotal_after_discount").html(`৳ ${data.subtotal_after_discount}` )
+            $("#discount").html(`৳ ${data.discount.toFixed(2)}` )
+
+
+            $("#id_total_vat").html(`৳ ${vat.toFixed(2)}` )
+            $("#id_total_gst").html(`৳ ${gst.toFixed(2)}` )
+            $("#id_total_tax_amount").html(`৳ ${tax.toFixed(2)}` )
+
+
+        } else {
+            Toastify({
+                text: data.message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+        }
+    })
+    .catch(err => console.error(err));
+
+
+});
+
+$('.minus-btn').click(function() {
+    let productDiv = $(this).closest('.number');  
+    let cartItemId = productDiv.data('cart-item-id');    
+    let qtyInput = productDiv.find('.qty-input');        
+    let quantity = parseInt(qtyInput.val());
+    let minQty = parseInt(qtyInput.data('moq'));
+
+    if(quantity > minQty){
+        quantity -= 1;
+        qtyInput.val(quantity);
+    }
+    else{
+        Toastify({
+                text: "Quantity cannot be less than MOQ",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+    }
+ 
+ 
+
+    fetch("{% url 'ajax_update_cart_quantity' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            quantity: quantity,
+            cartItemId: cartItemId
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const vat = parseFloat(data.total_vat || 0);
+            const gst = parseFloat(data.total_gst || 0);
+            const tax = parseFloat(data.total_tax_amount || 0);
+
+            document.getElementById("total-payable").innerText =`৳ ${parseFloat(data.total_payable).toFixed(2)}`;
+
+            let cartItemHTMLId = '#cartItemId_'+cartItemId
+            $(cartItemHTMLId).html(`
+                            <h5>
+                                <p class="text-muted">
+                                    (${data.counter} X ${data.cart_item_unit_price})
+                                    = ৳ ${parseFloat(data.cart_item_total_price).toFixed(2)}
+                                </p>
+                            </h5>
+                        `);
+
+            $("#subtotal").html(`৳ ${data.subtotal}` )
+            $("#subtotal_after_discount").html(`৳ ${data.subtotal_after_discount}` )
+            $("#discount").html(`৳ ${data.discount}` )
+
+            $("#id_total_vat").html(`৳ ${vat.toFixed(2)}` )
+            $("#id_total_gst").html(`৳ ${gst.toFixed(2)}` )
+            $("#id_total_tax_amount").html(`৳ ${tax.toFixed(2)}` )
+           
+        } else {
+            Toastify({
+                text: data.message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#F44336",
+            }).showToast();
+        }
+    })
+    .catch(err => console.error(err));
+
+
+});
+
+$(document).on('click', '.item-delete', function (e) {
+    e.preventDefault();
+
+    var cartItemId = $(this).data('cart-item-id');
+    var cartRow = $(this).closest('.cartlist');
+
+    $.ajax({
+        url: "{% url 'delete_product_from_cart_url' %}",
+        type: "POST",
+        data: {
+            'cart_item_id': cartItemId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+
+        if (response.success) {
+            
+            cartRow.slideUp(300, function () {
+                $(this).remove();
+                $('#cart-total').text('৳ ' + response.cart_total);
+                $('#cart-count').text(response.item_count);
+                if (response.is_empty) {
+                    $('.offcanvas-body').html(`
+                        <div class="cartlist">
+                            <h6 class="text-center fw-bold" style="color: red">
+                                There is no product in cart
+                            </h6>
+                        </div>
+                    `);
+
+                    $('#cart-total').text('৳ 0');
+                    $('.checkout').addClass('disabled').attr('href', 'javascript:void(0)');
+                }
+            });
+
+            Toastify({
+                text: "Product removed from your cart.",
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#f44336",
+                stopOnFocus: true
+            }).showToast();
+            if (!response.is_empty) {
+                localStorage.setItem('openCart', 'true');
+                location.reload();
+            } else {
+                localStorage.removeItem('openCart');
+                window.location.href = "{% url 'home_page_url' %}"
+            }
+
+  
+        }
+    }
+    });
+});
+
+</script>
+
+{% if request.GET.order_success %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var myModal = new bootstrap.Modal(
+            document.getElementById('orderSuccessModal')
+        );
+        myModal.show();
+    });
+</script>
+{% endif %}
+{% endblock  %}

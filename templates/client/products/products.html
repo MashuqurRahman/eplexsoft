@@ -1,0 +1,212 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %}Products{% endblock  %}
+
+{% block content %}
+
+    {% comment %} <!-- filter -->
+    <section class="filter-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="filters">
+                        <p><a href="#"><i class="bi bi-chevron-left"></i> Back </a> {{product_obj|length}} items found</p>
+                        <button class="filter" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"><i class="bi bi-funnel"></i> Filter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> {% endcomment %}
+    <!-- filter -->
+    <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+
+    <!-- products -->
+    <section class="products-area">
+        <div class="containers">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    {% for crumb in breadcrumbs %}
+                        {% if crumb.url %}
+                            <li class="breadcrumb-item">
+                                <a href="{{ crumb.url }}">{{ crumb.name }}</a>
+                            </li>
+                        {% else %}
+                            <li class="breadcrumb-item active" aria-current="page">
+                                {{ crumb.name }}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>
+            </nav>
+
+            <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+                <!-- products -->
+                {% for item in obj_list %}
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist" data-product-id="{{item.id}}">
+                            {% if item.cover_product_attribute.final_discount.total_discount%}
+                                <span style="position: relative; display: inline-block; float: right;">
+                                    <img style="width: 60px; margin-right: 6px;" src="{% static 'assets/img/red.png' %}" alt="">
+                                    <span class="discount_prices">
+                                        {{ item.cover_product_attribute.final_discount.total_discount_percentage }}% <br> OFF
+                                    </span>
+                                </span>
+                            {% endif %}
+                            {% comment %} <i class="loves bi {% if item.id in user_wishlist_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i> {% endcomment %}
+                        </div>
+
+                        <div class="productimg">
+                            <a href="{% url 'product_details_page_url' item.id %}">
+                                <img src="{{ item.cover_product_attribute.image.url }}" alt="product img">
+                            </a>
+                        </div>
+                    
+                        <div class="productcon">
+                            <a href="{% url 'product_details_page_url' item.id %}">
+                                {{ item.product_name }}
+                            </a>
+
+                            {% if item.cover_product_attribute.final_discount.total_discount %}
+                                <h5>৳ {{ item.cover_product_attribute.product_final_price  }} <del>৳ {{ item.cover_product_attribute.regular_price }}</del></h5>
+                            {% else %}
+                                <h5>৳ {{ item.cover_product_attribute.regular_price }}</h5>
+                            {% endif %}
+
+                            {% comment %} <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i> {{item.reviews_calculation.average_rating|floatformat:"1" }} ({{item.reviews_calculation.total_reviews}})</p>
+                                <div class="vr"></div>
+                                <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                            </div> {% endcomment %}
+
+                            <div class="starsold review-sold">
+                                <ul class="open-review-modal" style="cursor:pointer">
+                                    {% for i in item.reviews_calculation.full_stars %}
+                                    <li><i style="font-size: 12px;" class="bi bi-star-fill text-warning"></i></li>
+                                    {% endfor %}
+
+                                    {% if item.reviews_calculation.half_star %}
+                                    <li><i style="font-size: 12px;"class="bi bi-star-half text-warning"></i></li>
+                                    {% endif %}
+
+                                    {% for i in item.reviews_calculation.empty_stars %}
+                                    <li><i style="font-size: 12px;"class="bi bi-star text-muted"></i></li>
+                                    {% endfor %}
+                                    <li style="color: #64748b !important;">({{item.reviews_calculation.total_reviews}})</li>
+                                </ul>
+                                <div class="vr"></div>
+                                <p>{{item.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                            </div>
+
+                            {% comment %} <p class="small">
+
+                                {% if item.product_stock_status.flag %}
+                                    <span class="text-success">Stock: {{item.product_stock_status.stock_qty}}</span>
+                                {% else %}
+                                    <span class="text-danger">Out of stock</span>
+                                {% endif %}
+                            </p> {% endcomment %}
+                        </div>
+                        <div class="buybtn">
+                            {% comment %} <a href="javascript:void(0)" class="add-to-cart" data-product-id="{{item.id}}" data-variant-id="{{ item.product_attribute.first.id }}"> <i class="bi bi-bag-check"></i></a>
+                            {% if varient.stock > 0 and variant.stock >= item.moq %}
+                            <a href="{% url 'buy_now_product_url' item.product_attribute.first.id %}">Buy now</a>
+                            {% else %}
+                            <a href="javascript:void(0)">Buy now</a>
+                            {% endif %} {% endcomment %}
+
+                            <a href="{% url 'product_details_page_url' item.id %}">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- products -->
+            </div>
+
+            <div class="table-footer">
+                {% if obj_list.has_other_pages %}
+                    <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-end">
+                        {% if obj_list.has_previous %}
+                        <li class="page-item" >
+                                <a href="?page={{ obj_list.previous_page_number }}" class="page-link" tabindex="-1">Previous</a>
+                            </li>
+                        {% if obj_list.number > 3 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">1</a>
+                        </li>
+                            {% if obj_list.number > 4 %}
+
+                            <li class="page-item">
+                            <span class="page-link">...</span>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                        {% endif %}
+
+                        {% for num in obj_list.paginator.page_range %}
+                        {% if obj_list.number == num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% elif num > obj_list.number|add:'-3' and num < obj_list.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if obj_list.has_next %}
+                        {% if obj_list.number < obj_list.paginator.num_pages|add:'-3' %}
+                            <li class="page-item">
+                            <span class="page-link">...</span>
+                            </li>
+                            <li class="page-item">
+                            <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                            </li>
+                        {% elif obj_list.number < obj_list.paginator.num_pages|add:'-2' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item">
+                        <a href="?page={{ obj_list.next_page_number }}" class="page-link">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>  
+                </nav> 
+                {% endif %}  
+            </div>
+
+        </div>
+    </section>
+    <!-- products -->
+
+{% endblock  %}
+
+{% block JS %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on('click', '.loves', function(){
+        let heart = $(this);
+        let productId = heart.closest('.wishlist').data('product-id');
+
+        $.ajax({
+            url: '{% url "add_to_wishlist_url" %}',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function(response) {
+                if(response.status === 'added'){
+                    heart.removeClass('bi-heart').addClass('bi-heart-fill text-danger');
+                }
+                else if(response.status === 'removed'){
+                    heart.removeClass('bi-heart-fill text-danger').addClass('bi-heart')
+                }
+            }
+        });
+    });
+</script>
+{% endblock  %}

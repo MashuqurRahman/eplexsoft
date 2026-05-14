@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        .header {
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header-table {
+            width: 100%;
+        }
+
+        .header-table td {
+            vertical-align: top;
+        }
+
+        .company-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .invoice-title {
+            text-align: right;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .address-section {
+            margin-bottom: 20px;
+        }
+
+        .address-table {
+            width: 100%;
+        }
+
+        .address-table td {
+            vertical-align: top;
+            width: 50%;
+        }
+
+        .info-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        .info-table td {
+            padding: 6px;
+            border: 1px solid #000;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .items-table th,
+        .items-table td {
+            border: 1px solid #000;
+            padding: 6px;
+        }
+
+        .items-table th {
+            background: #f0f0f0;
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .summary-table {
+            width: 40%;
+            float: right;
+            border-collapse: collapse;
+        }
+
+        .summary-table td {
+            padding: 6px;
+            border: 1px solid #000;
+        }
+
+        .summary-table .total {
+            font-weight: bold;
+        }
+
+        .footer {
+            clear: both;
+            margin-top: 60px;
+        }
+
+        .signature {
+            width: 200px;
+            border-top: 1px solid #000;
+            text-align: center;
+            margin-top: 40px;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td>
+                    <div class="company-name">{{site_setting.company_name|default:"N/A"}}</div>
+                    <div>{{site_setting.address|default:"N/A"}}</div>
+                    <div>Email: {{site_setting.email|default:"N/A"}}</div>
+                    <div>Phone: {{site_setting.phone|default:"N/A"}}</div>
+                </td>
+                <td class="invoice-title">
+                    INVOICE
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Address -->
+    <div class="address-section">
+        <table class="address-table">
+            <tr>
+                <td>
+                    <strong>Bill To:</strong><br>
+                    {{ order.shipping_address.full_name }}<br>
+                    {{ order.shipping_address.address_line }}<br>
+                    Phone: {{ order.shipping_address.phone_no }}<br>
+                </td>
+                <td>
+                    <strong>Invoice Details:</strong><br>
+                    Order No: #{{ order.order_no }}<br>
+                    Invoice Date: {{ order.created_at|date:"d M Y" }}<br>
+                    Payment Method: {% if order.payment_method == 'cash_payment' %}Cash{% else %}Card{% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Items -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>SL</th>
+                <th>Item Name</th>
+                <th>Size/Color</th>
+                <th>Qty</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td class="text-center">{{ forloop.counter }}</td>
+                <td>{{ item.product.product_name }}</td>
+                <td class="text-center">{{ item.product_attribute.size }} / {{ item.product_attribute.color }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-right">{{ item.product_attribute.product_final_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Summary -->
+    <table class="summary-table">
+        <tr>
+            <td>Sub Total</td>
+            <td class="text-right"> {{ order.sub_total_after_discount }}</td>
+        </tr>
+        <tr>
+            <td>Delivery Charge</td>
+            <td class="text-right"> {{ order.shipping_charge }}</td>
+        </tr>
+        <tr>
+            <td>VAT & Tax</td>
+            <td class="text-right"> {{ vat_gst }}</td>
+        </tr>
+        <tr class="total">
+            <td>Total Amount</td>
+            <td class="text-right"> {{ order.total_payable }}</td>
+        </tr>
+    </table>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Thanks for your business.</p>
+        <div class="signature">Authorized Signature</div>
+    </div>
+
+</div>
+
+</body>
+</html>

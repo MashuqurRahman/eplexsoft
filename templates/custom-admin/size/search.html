@@ -1,0 +1,37 @@
+<table class="table table-bordered" id="search_items">
+    <thead>
+        <tr>
+            <th class="text-center" style="width: 10%;">SL No</th>
+            <th>Size</th>
+            {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+            <th class="text-center">Action</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% if obj_list %}
+        {% for obj in obj_list %}
+        <tr>
+            <td class="text-center" style="width: 10%;">{{forloop.counter}}</td>
+            <td>{{obj.value}}</td>
+            {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+            <td>
+                <a href="{% url 'update_size_url' obj.id %}" class="edit_btn" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                <a href="{% url 'delete_size_url' obj.id %}" class="delete_btn" title="Delete" 
+                    onclick="SweetDelete(event, this.href)">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center">Data is not found</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>

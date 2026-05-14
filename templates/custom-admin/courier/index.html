@@ -1,0 +1,174 @@
+{% extends "admin_base.html" %}
+{% block title %}Courier Info List{% endblock %}
+{% block content %}
+
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="fw-bold">Courier Info List</h5>
+        {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+        <a href="{% url 'courier_create_url' %}" class="btn add-btn btn-sm">+ Courier</a>
+        {% endif %}
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="7" class="text-center">SteadFast Courier Informations</th>
+                </tr>
+                <tr>
+                    <th>SL No.</th>
+                    <th>API Key</th>
+                    <th>Secret Key</th>
+                    <th>Base URL</th>
+                    <th>Status</th>
+                    <th>Created Time</th>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in obj_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ obj.api_key }}</td>
+                    <td>{{ obj.secret_key }}</td>
+                    <td>{{ obj.base_url }}</td>
+                    <td>{{ obj.status }}</td>
+                    <td>{{ obj.created_at }}</td>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <td>
+                        <a href="{% url 'courier_update_url' obj.id %}" class="edit_btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a href="{% url 'courier_delete_url' obj.id %}" class="delete_btn" title="Delete" 
+                            onclick="SweetDelete(event, this.href)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">Data not found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if pathao_list %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="7" class="text-center">Pathao Courier Informations</th>
+                </tr>
+                <tr>
+                    <th>SL No.</th>
+                    <th>API Key</th>
+                    <th>Secret Key</th>
+                    <th>Base URL</th>
+                    <th>Status</th>
+                    <th>Created Time</th>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in pathao_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ obj.api_key }}</td>
+                    <td>{{ obj.secret_key }}</td>
+                    <td>{{ obj.base_url }}</td>
+                    <td>{{ obj.status }}</td>
+                    <td>{{ obj.created_at }}</td>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <td>
+                        <a href="{% url 'pathao_courier_update_url' obj.id %}" class="edit_btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a href="{% url 'pathao_courier_delete_url' obj.id %}" class="delete_btn" title="Delete" 
+                            onclick="SweetDelete(event, this.href)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">Data not found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% if redx_list %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="7" class="text-center">RedX Courier Informations</th>
+                </tr>
+                <tr>
+                    <th>SL No.</th>
+                    <th>API Key</th>
+                    <th>Pickup Store Id</th>
+                    <th>Pickup Phone</th>
+                    <th>Status</th>
+                    <th>Created Time</th>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in redx_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ obj.api_key }}</td>
+                    <td>{{ obj.pickup_store_id }}</td>
+                    <td>{{ obj.pickup_phone }}</td>
+                    <td>{{ obj.status }}</td>
+                    <td>{{ obj.created_at }}</td>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <td>
+                        <a href="{% url 'redx_courier_update_url' obj.id %}" class="edit_btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a href="{% url 'redx_courier_delete_url' obj.id %}" class="delete_btn" title="Delete" 
+                            onclick="SweetDelete(event, this.href)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">Data not found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

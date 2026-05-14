@@ -1,0 +1,808 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Dashboard{% endblock  %}</title>
+    <!-- Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Responsive Website Design, landing page, Portfolio, Business, E-commerce">
+    {% comment %} <meta name="description" content="Responsive Website Design & Development"> {% endcomment %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="rebots" content="index, archive">
+    <link rel="canonical" href="https://www.example.com">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!--favicon icon-->
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %}">
+
+    <!-- CSS style links-->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/color_theme.css' %}">
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {% block Style %}
+
+
+    {% endblock Style %}
+
+    <style>
+        :root {
+            --primary-color: {{ PRIMARY_COLOR }};
+            --secondary-color: {{ SECONDARY_COLOR }};
+        }
+        .container-fluid {
+            display: inline-block !important;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-color {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .bg-primary-custom {
+            background-color: var(--primary-color);
+        }
+        .text-primary-custom {
+            color: var(--primary-color);
+        }
+
+
+        table.table-bordered {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table.table-bordered th {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: 400;
+        }
+        table.table-bordered td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            color: #687387;
+            font-size: 15px;
+            font-weight: 400;
+        }
+        table.table-bordered th{
+            font-weight: bold;
+        }
+        table.table-bordered thead th {
+            background-color: var(--primary-color) !important;
+        }
+        .submit_btn button {
+            background: var(--primary-color) !important;
+            padding: 7px 18px;
+            border-radius: 22px;
+            transition: .2s;
+        }
+
+        .submit_btn button:hover{
+            background: var(--primary-color) !important;
+            color: white;
+            padding: 7px 18px;
+            border-radius: 22px;
+        }
+
+        .view_btn i {
+            background: #158234;
+            padding: 6px 6px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .profile_btn i {
+            background: #158234;
+            padding: 6px 6px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .edit_btn i {
+            background: #006aff;
+            padding: 6px 6px;
+            border-radius: 5px;
+            color: white;
+        }
+        .delete_btn i {
+            background: red;
+            padding: 6px 6px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        th:last-child, td:last-child {
+            white-space: nowrap;
+            width: 1%;
+        }
+        a.page-link {
+            color: sienna;
+        }
+
+        /* admin left pannel */
+        .menu ul li a:hover {
+            background: var(--secondary-color) !important;
+            color: white;
+            -webkit-transition: all 0.3s ease-in;
+            -o-transition: all 0.3s ease-in;
+            transition: all 0.3s ease-in;
+        }
+
+        .menu ul li a.active {
+            background-color: var(--primary-color) !important;
+            color: white;
+        }
+        /* #eb2e61 */
+
+        /* search */
+        .input-group-text {
+            background-color: var(--primary-color) !important;
+            border: var(--bs-border-width) solid var(--primary-color) !important;
+        }
+        /* order-management */
+        .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+            background-color: var(--primary-color) !important;
+        }
+        /* download invoice */
+        .bumns button.active {
+            background: var(--primary-color) !important;
+            border: 1px solid var(--primary-color) !important;
+            color: white;
+        }
+        .bumns button.active a {
+            color: white;
+        }
+        a.btn.add-btn.btn-sm,
+        .btn.add-btn.btn-sm,
+        .btn.add-btn {
+            background: var(--primary-color) !important;
+            color: white;
+        }
+
+        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+            background-color: var(--secondary-color) !important;
+            color: #000;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        input:checked+.slider {
+            background-color: var(--primary-color) !important;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    {% if request.user.is_superuser or request.user.role == 'central_admin' or request.user.role == 'section_admin' or request.user.role == 'employee' %}
+    <!-- main-area -->
+    <section class="main-area">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <!-- menu -->
+                    <div class="menu-area fixed-menu" id="sidebarMenu">
+                        <div class="closes"><i class="bi bi-x-circle"></i></div>
+
+                        <!-- logo -->
+                        <div class="logo">
+                            <a href="{% url 'home_page_url' %}">
+                            
+
+
+                        {% if site_setting %}
+                            <img class="small-logo" style="width: {{ site_setting.logo_width }}px !important; height: {{ site_setting.logo_height }}px !important;" src="{{ site_setting.logo.url }}" alt="logo">
+                            <img class="big-logo" style="width: {{ site_setting.logo_width }}px !important; height: {{ site_setting.logo_height }}px !important;"  src="{{ site_setting.logo.url }}" alt="logo">
+                        {% else %}
+                            <img class="small-logo" src="{% static 'assets/img/odelltech_logo.png' %}" alt="logo">
+                            <img class="big-logo" src="{% static 'assets/img/odelltech_logo.png' %}" alt="logo">
+                        {% endif %}
+                            </a>
+                        </div>
+                        <!-- logo -->
+                        <nav class="menu">
+                            <ul>
+                                <li>
+                                    <a href="{% url 'admin_dashboard_url' %}"><i class="bi bi-house-door-fill"></i> <span class="hide-item">Dashboard </span></a>
+                                </li>
+                                {% if "order_management_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li>
+                                        <a href="{% url 'order_list' %}"
+                                            class="{% if request.resolver_match.url_name in 'order_list order_list_by_status order_detail order_edit_url' %} active {% endif %}">
+                                            <i class="bi bi-bag-check"></i> &nbsp;Order Management
+                                        </a>
+                                    </li> 
+                                {% endif %} 
+                                {% comment %} {% if "campaign_management_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li>
+                                        <a href="{% url 'campaign_list' %}"
+                                            class="{% if request.resolver_match.url_name in 'campaign_list campaign_create campaign_update campaign_delete' %}active{% endif %}">
+                                            <i class="bi bi bi-recycle"></i> <span class="hide-item"> Campaign </span>
+                                        </a>
+                                    </li>
+                                {% endif %} {% endcomment %}
+                                {% if "slider_management_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li>
+                                        <a href="{% url 'slider_list' %}" class="{% if request.resolver_match.url_name in 'slider_list slider_create slider_update' %}active{% endif %}"><i class="bi bi-bag-dash"></i> <span class="hide-item"> Slider Image </span></a>
+                                    </li>
+                                {% endif %}
+
+
+                                {% comment %}
+                                <li>
+                                    <a href="#"><i class="bi bi-recycle"></i> <span class="hide-item">POS Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                    <!-- sub-menu -->
+                                    <ul class="sub-menu">
+                                        <li><a href="pos.html">POS</a></li>
+                                        <li><a href="pos-sales.html">POS Sales History</a></li>
+                                        <li><a href="pos-draft.html">POS Draft</a></li>
+                                    </ul>
+                                    <!-- sub-menu -->
+
+                                </li>
+
+                                <li><a href="#"><i class="bi bi-bag-dash"></i> <span class="hide-item"> Refund Management </span> </a>
+                                </li>
+
+                                <li><a href="javascript:void(0)"><i class="bi bi-chat-left-dots"></i> <span class="hide-item"> Conversations </span></a>
+
+                                </li> {% endcomment %}
+
+                                {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'section_admin' %}
+                                    <li class="{% if request.resolver_match.url_name in 'all_employee_url' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-people"></i> <span class="hide-item">Employee Management</span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                        <!-- sub-menu -->
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name in 'all_employee_url add_employee_url update_employee_url employee_profile_url' %}display: block; background: var(--primary-color) !important; {% endif %}">
+                                            <li><a style="{% if request.resolver_match.url_name in 'all_employee_url add_employee_url update_employee_url employee_profile_url' %}color: white !important; {% endif %}" href="{% url 'all_employee_url' %}"><span class="hide-item">Employee List</span></a></li>
+                                        </ul>
+                                        <!-- sub-menu -->
+                                    </li>
+                                {% endif %}
+
+                                {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'section_admin' %}
+                                    <li class="{% if request.resolver_match.url_name in 'permission_list' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-people"></i> <span class="hide-item">Permission Management</span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                        <!-- sub-menu -->
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name in 'permission_list permission_create' %}display: block; background: var(--primary-color) !important;{% endif %}">
+                                            <li><a style="{% if request.resolver_match.url_name in 'permission_list permission_create' %}color: white !important; {% endif %}" href="{% url 'permission_list' %}"><span class="hide-item">Permission List</span></a></li>
+                                        </ul>
+                                        <!-- sub-menu -->
+                                    </li>
+                                {% endif %}
+
+                                {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'employee' or request.user.role == 'section_admin' %}
+                                    <li class="{% if request.resolver_match.url_name in 'categories_list_url sub_categories_index_url sub_sub_cat_index_url' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-columns-gap"></i> <span class="hide-item">Category Management</span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name in 'categories_list_url add_categories_url edit_categories_url sub_categories_index_url add_sub_categories_url update_sub_categories_url sub_sub_cat_index_url add_sub_sub_categories_url update_sub_sub_categories_url' %}display: block;{% endif %}">
+
+                                            <li class="{% if request.resolver_match.url_name == 'categories_list_url' or request.resolver_match.url_name == 'add_categories_url' or request.resolver_match.url_name == 'edit_categories_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'categories_list_url' or request.resolver_match.url_name == 'add_categories_url' or request.resolver_match.url_name == 'edit_categories_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'add_categories_url' or request.resolver_match.url_name == 'edit_categories_url' %}color: white !important;{% endif %}" href="{% url 'categories_list_url' %}">All Category</a>
+                                            </li>
+
+                                            <li class="{% if request.resolver_match.url_name == 'sub_categories_index_url' or request.resolver_match.url_name == 'add_sub_categories_url' or request.resolver_match.url_name == 'update_sub_categories_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'sub_categories_index_url' or request.resolver_match.url_name == 'add_sub_categories_url' or request.resolver_match.url_name == 'update_sub_categories_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'add_sub_categories_url' or request.resolver_match.url_name == 'update_sub_categories_url' %}color: white !important;{% endif %}" href="{% url 'sub_categories_index_url' %}">All Sub Category</a>
+                                            </li>
+
+                                            <li class="{% if request.resolver_match.url_name == 'sub_sub_cat_index_url' or request.resolver_match.url_name == 'add_sub_sub_categories_url' or request.resolver_match.url_name == 'update_sub_sub_categories_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'sub_sub_cat_index_url' or request.resolver_match.url_name == 'add_sub_sub_categories_url' or request.resolver_match.url_name == 'update_sub_sub_categories_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'add_sub_sub_categories_url' or request.resolver_match.url_name == 'update_sub_sub_categories_url' %}color: white !important;{% endif %}" href="{% url 'sub_sub_cat_index_url' %}">All Sub Sub Category</a>
+                                            </li>
+
+                                        </ul>
+                                    </li>
+                                {% endif %}
+
+                                {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'employee' or request.user.role == 'section_admin' %}
+                                    <li class="{% if request.resolver_match.url_name == 'products_list_url' or request.resolver_match.url_name == 'add_product_url' or request.resolver_match.url_name == 'update_product_url' or request.resolver_match.url_name == 'product_details_url' or request.resolver_match.url_name == 'product_attribute_create_url' or request.resolver_match.url_name == 'product_attribute_update_url' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-boxes"></i> <span class="hide-item">Product Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name == 'products_list_url' or request.resolver_match.url_name == 'add_product_url' or request.resolver_match.url_name == 'update_product_url' or request.resolver_match.url_name == 'product_details_url' or request.resolver_match.url_name == 'product_attribute_create_url' or request.resolver_match.url_name == 'product_attribute_update_url' %}display: block;{% endif %}">
+                                            <li class="{% if request.resolver_match.url_name == 'products_list_url' or request.resolver_match.url_name == 'add_product_url' or request.resolver_match.url_name == 'update_product_url' or request.resolver_match.url_name == 'product_details_url' or request.resolver_match.url_name == 'product_attribute_create_url' or request.resolver_match.url_name == 'product_attribute_update_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'products_list_url' or request.resolver_match.url_name == 'add_product_url' or request.resolver_match.url_name == 'update_product_url' or request.resolver_match.url_name == 'product_details_url' or request.resolver_match.url_name == 'product_attribute_create_url' or request.resolver_match.url_name == 'product_attribute_update_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'add_product_url' or request.resolver_match.url_name == 'update_product_url' or request.resolver_match.url_name == 'product_details_url' or request.resolver_match.url_name == 'product_attribute_create_url' or request.resolver_match.url_name == 'product_attribute_update_url' %}color: white !important;{% endif %}" href="{% url 'products_list_url' %}">All Product</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                                {% if "product_variant_management" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li class="{% if request.resolver_match.url_name == 'brand_list_url' or request.resolver_match.url_name == 'add_brand_url' or request.resolver_match.url_name == 'update_brand_url' or request.resolver_match.url_name == 'color_list_url' or request.resolver_match.url_name == 'add_color_url' or request.resolver_match.url_name == 'update_color_url' or request.resolver_match.url_name == 'size_list_url' or request.resolver_match.url_name == 'add_size_url' or request.resolver_match.url_name == 'update_size_url' or request.resolver_match.url_name == 'unit_list_url' or request.resolver_match.url_name == 'add_unit_url' or request.resolver_match.url_name == 'update_unit_url' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-diagram-2"></i> <span class="hide-item">Product Variant Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name == 'brand_list_url' or request.resolver_match.url_name == 'add_brand_url' or request.resolver_match.url_name == 'update_brand_url' or request.resolver_match.url_name == 'color_list_url' or request.resolver_match.url_name == 'add_color_url' or request.resolver_match.url_name == 'update_color_url' or request.resolver_match.url_name == 'size_list_url' or request.resolver_match.url_name == 'add_size_url' or request.resolver_match.url_name == 'update_size_url' or request.resolver_match.url_name == 'unit_list_url' or request.resolver_match.url_name == 'add_unit_url' or request.resolver_match.url_name == 'update_unit_url' %}display: block;{% endif %}">
+
+                                            <li class="{% if request.resolver_match.url_name == 'brand_list_url' or request.resolver_match.url_name == 'add_brand_url' or request.resolver_match.url_name == 'update_brand_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'brand_list_url' or request.resolver_match.url_name == 'add_brand_url' or request.resolver_match.url_name == 'update_brand_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'add_brand_url' or request.resolver_match.url_name == 'update_brand_url' %}color: white !important;{% endif %}" href="{% url 'brand_list_url' %}">Brand</a>
+                                            </li>
+
+                                            <li class="{% if request.resolver_match.url_name == 'color_list_url' or request.resolver_match.url_name == 'add_color_url' or request.resolver_match.url_name == 'update_color_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'color_list_url' or request.resolver_match.url_name == 'add_color_url' or request.resolver_match.url_name == 'update_color_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'add_color_url' or request.resolver_match.url_name == 'update_color_url' %}color: white !important;{% endif %}" href="{% url 'color_list_url' %}">Color</a>
+                                            </li>
+
+                                            <li class="{% if request.resolver_match.url_name == 'size_list_url' or request.resolver_match.url_name == 'add_size_url' or request.resolver_match.url_name == 'update_size_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'size_list_url' or request.resolver_match.url_name == 'add_size_url' or request.resolver_match.url_name == 'update_size_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'add_size_url' or request.resolver_match.url_name == 'update_size_url' %}color: white !important;{% endif %}" href="{% url 'size_list_url' %}">Size</a>
+                                            </li>
+
+                                            <li class="{% if request.resolver_match.url_name == 'unit_list_url' or request.resolver_match.url_name == 'add_unit_url' or request.resolver_match.url_name == 'update_unit_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'unit_list_url' or request.resolver_match.url_name == 'add_unit_url' or request.resolver_match.url_name == 'update_unit_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'add_unit_url' or request.resolver_match.url_name == 'update_unit_url' %}color: white !important;{% endif %}" href="{% url 'unit_list_url' %}">Unit</a>
+                                            </li>
+
+                                        </ul>
+                                    </li>
+                                {% endif %}
+
+                                {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'section_admin' or request.user.role == 'employee' %}
+                                    <li class="{% if request.resolver_match.url_name == 'flash_sell_index_url' or request.resolver_match.url_name == 'flash_sell_create_url' or request.resolver_match.url_name == 'flash_sell_update_url' or request.resolver_match.url_name == 'campaign_list' or request.resolver_match.url_name == 'campaign_create' or request.resolver_match.url_name == 'campaign_update' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-cpu"></i> <span class="hide-item">Promotion Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name == 'flash_sell_index_url' or request.resolver_match.url_name == 'flash_sell_create_url' or request.resolver_match.url_name == 'flash_sell_update_url' or request.resolver_match.url_name == 'campaign_list' or request.resolver_match.url_name == 'campaign_create' or request.resolver_match.url_name == 'campaign_update' %}display: block;{% endif %}">
+
+                                            <li class="{% if request.resolver_match.url_name == 'flash_sell_index_url' or request.resolver_match.url_name == 'flash_sell_create_url' or request.resolver_match.url_name == 'flash_sell_update_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'flash_sell_index_url' or request.resolver_match.url_name == 'flash_sell_create_url' or request.resolver_match.url_name == 'flash_sell_update_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'flash_sell_create_url' or request.resolver_match.url_name == 'flash_sell_update_url' %}color: white !important;{% endif %}" href="{% url 'flash_sell_index_url' %}">Flash Sale</a>
+                                            </li>
+
+                                            <li class="{% if request.resolver_match.url_name == 'campaign_list' or request.resolver_match.url_name == 'campaign_create' or request.resolver_match.url_name == 'campaign_update' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'campaign_list' or request.resolver_match.url_name == 'campaign_create' or request.resolver_match.url_name == 'campaign_update' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'campaign_create' or request.resolver_match.url_name == 'campaign_update' %}color: white !important;{% endif %}" href="{% url 'campaign_list' %}">Campaign</a>
+                                            </li>
+
+                                        </ul>
+                                    </li>
+                                {% endif %}
+
+                                {% if request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li class="{% if request.resolver_match.url_name == 'review_list_url' or request.resolver_match.url_name == 'update_review_url' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-yelp"></i> <span class="hide-item">Review Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name == 'review_list_url' or request.resolver_match.url_name == 'update_review_url' %}display: block;{% endif %}">
+
+                                            <li class="{% if request.resolver_match.url_name == 'review_list_url' or request.resolver_match.url_name == 'update_review_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'review_list_url' or request.resolver_match.url_name == 'update_review_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'update_review_url' %}color: white !important;{% endif %}" href="{% url 'review_list_url' %}">Review List</a>
+                                            </li>
+
+                                        </ul>
+                                    </li>
+                                {% endif %}
+
+                                {% if "delivery_management" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li class="{% if request.resolver_match.url_name == 'delivery_charge_index_url' or request.resolver_match.url_name == 'delivery_charge_create_url' or request.resolver_match.url_name == 'delivery_charge_update_url' or request.resolver_match.url_name == 'delivery_discount_index_url' or request.resolver_match.url_name == 'delivery_discount_create_url' or request.resolver_match.url_name == 'delivery_discount_update_url' or request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-truck"></i> <span class="hide-item">Delivery Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name == 'delivery_charge_index_url' or request.resolver_match.url_name == 'delivery_charge_create_url' or request.resolver_match.url_name == 'delivery_charge_update_url' or request.resolver_match.url_name == 'delivery_discount_index_url' or request.resolver_match.url_name == 'delivery_discount_create_url' or request.resolver_match.url_name == 'delivery_discount_update_url' or request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}display: block;{% endif %}">
+
+                                            <li class="{% if request.resolver_match.url_name == 'delivery_charge_index_url' or request.resolver_match.url_name == 'delivery_charge_create_url' or request.resolver_match.url_name == 'delivery_charge_update_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'delivery_charge_index_url' or request.resolver_match.url_name == 'delivery_charge_create_url' or request.resolver_match.url_name == 'delivery_charge_update_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'delivery_charge_create_url' or request.resolver_match.url_name == 'delivery_charge_update_url' %}color: white !important;{% endif %}" href="{% url 'delivery_charge_index_url' %}">Delivery Charge</a>
+                                            </li>
+
+                                            <li class="{% if request.resolver_match.url_name == 'delivery_discount_index_url' or request.resolver_match.url_name == 'delivery_discount_create_url' or request.resolver_match.url_name == 'delivery_discount_update_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'delivery_discount_index_url' or request.resolver_match.url_name == 'delivery_discount_create_url' or request.resolver_match.url_name == 'delivery_discount_update_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'delivery_discount_create_url' or request.resolver_match.url_name == 'delivery_discount_update_url' %}color: white !important;{% endif %}" href="{% url 'delivery_discount_index_url' %}">Delivery Discount</a>
+                                            </li>
+
+                                            <li class="{% if request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'courier_index_url' or request.resolver_match.url_name == 'courier_create_url' or request.resolver_match.url_name == 'courier_update_url' %}color: white !important;{% endif %}" href="{% url 'courier_index_url' %}">Courier</a>
+                                            </li>
+
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                                {% if "report_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li class="{% if request.resolver_match.url_name in 'stock_report_url order_report_url' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-book"></i> <span class="hide-item">Report Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name in 'stock_report_url order_report_url' %}display: block;{% endif %}">
+                                            <li class="{% if request.resolver_match.url_name in 'stock_report_url' %}active{% endif %}"><a href="{% url 'stock_report_url' %}">Stock Report</a></li>
+                                            <li class="{% if request.resolver_match.url_name in 'order_report_url' %}active{% endif %}"><a href="{% url 'order_report_url' %}">Order Report</a></li>
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                                {% if "coupon_management" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li class="{% if request.resolver_match.url_name in 'coupon_index_url' %}active{% endif %}">
+                                        <a href="javascript:void(0)"><i class="bi bi-archive"></i> <span class="hide-item">Coupon Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name in 'coupon_index_url coupon_create_url coupon_update_url' %}display: block; background: var(--primary-color) !important;{% endif %}">
+                                            <li class="{% if request.resolver_match.url_name in 'coupon_index_url coupon_create_url coupon_update_url' %}active {% endif %}"><a style="{% if request.resolver_match.url_name in 'coupon_create_url coupon_update_url' %}color: white !important; {% endif %}" href="{% url 'coupon_index_url' %}">Coupon</a></li>
+                                        </ul>
+                                    </li>
+                                {% endif %}
+
+                                {% comment %} <li><a href="{% url 'admin_contact_url' %}"><i class="bi bi-chat-left-dots"></i> <span class="hide-item"> Conversations </span></a> </li> {% endcomment %}
+
+                                {% if "theme_change_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                <li class="{% if request.resolver_match.url_name in 'theme_settings theme_setting_url' %}active{% endif %}">
+                                    <a href="javascript:void(0)"><i class="bi bi-palette-fill"></i> <span class="hide-item">Theme Settings </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                    <ul class="sub-menu" style="{% if request.resolver_match.url_name in 'theme_settings theme_setting_url' %}display: block;{% endif %}">
+                                        <li class="{% if request.resolver_match.url_name in 'theme_settings' %}active{% endif %}"><a href="{% url 'theme_settings' %}">Admin Theme Colors</a></li>
+                                        <li class="{% if request.resolver_match.url_name in 'theme_setting_url' %}active{% endif %}"><a href="{% url 'theme_setting_url' %}">User Theme Colors</a></li>
+                                    </ul>
+                                </li>
+                                {% endif %}
+
+
+                                {% if "company_info_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                <li class="{% if request.resolver_match.url_name == 'site_setting_list' or request.resolver_match.url_name == 'site_setting_create' or request.resolver_match.url_name == 'site_setting_update' or request.resolver_match.url_name == 'terms_and_conditions_index_url' or request.resolver_match.url_name == 'terms_and_conditions_create_url' or request.resolver_match.url_name == 'terms_and_conditions_update_url' or request.resolver_match.url_name == 'privecy_and_policy_index_url' or request.resolver_match.url_name == 'payment_method_logo_list' or request.resolver_match.url_name == 'payment_method_logo_create' or request.resolver_match.url_name == 'payment_method_logo_update' or request.resolver_match.url_name == 'about_us_index_url' or request.resolver_match.url_name == 'about_us_create_url' or request.resolver_match.url_name == 'about_us_update_url' %}active{% endif %}">
+                                    <a href="javascript:void(0)"><i class="bi bi-crosshair"></i> <span class="hide-item">Business Settings </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+                                    <ul class="sub-menu" style="{% if request.resolver_match.url_name == 'site_setting_list' or request.resolver_match.url_name == 'site_setting_create' or request.resolver_match.url_name == 'site_setting_update' or request.resolver_match.url_name == 'terms_and_conditions_create_url' or request.resolver_match.url_name == 'terms_and_conditions_update_url' or request.resolver_match.url_name == 'terms_and_conditions_index_url' or request.resolver_match.url_name == 'privecy_and_policy_index_url' or request.resolver_match.url_name == 'payment_method_logo_list' or request.resolver_match.url_name == 'payment_method_logo_create' or request.resolver_match.url_name == 'payment_method_logo_update' or request.resolver_match.url_name == 'about_us_index_url' or request.resolver_match.url_name == 'about_us_create_url' or request.resolver_match.url_name == 'about_us_update_url'  %}display: block;{% endif %}">
+
+                                        <li class="{% if request.resolver_match.url_name == 'site_setting_list' or request.resolver_match.url_name == 'site_setting_create' or request.resolver_match.url_name == 'site_setting_update' %}active{% endif %}"
+                                            style="{% if request.resolver_match.url_name == 'site_setting_list' or request.resolver_match.url_name == 'site_setting_create' or request.resolver_match.url_name == 'site_setting_update' %}background: var(--primary-color) !important;{% endif %}">
+                                            <a style="{% if request.resolver_match.url_name == 'site_setting_list' or request.resolver_match.url_name == 'site_setting_create' or request.resolver_match.url_name == 'site_setting_update' %}color: white !important;{% endif %}" href="{% url 'site_setting_list' %}">Company Info</a>
+                                        </li>
+
+                                        <li class="{% if request.resolver_match.url_name == 'about_us_index_url' or request.resolver_match.url_name == 'about_us_create_url' or request.resolver_match.url_name == 'about_us_update_url' %}active{% endif %}"
+                                            style="{% if request.resolver_match.url_name == 'about_us_index_url' or request.resolver_match.url_name == 'about_us_create_url' or request.resolver_match.url_name == 'about_us_update_url' %}background: var(--primary-color) !important;{% endif %}">
+                                            <a style="{% if request.resolver_match.url_name == 'about_us_index_url' or request.resolver_match.url_name == 'about_us_create_url' or request.resolver_match.url_name == 'about_us_update_url' %}color: white !important;{% endif %}" href="{% url 'about_us_index_url' %}">About Us</a>
+                                        </li>
+
+                                        <li class="{% if request.resolver_match.url_name == 'terms_and_conditions_index_url' or request.resolver_match.url_name == 'terms_and_conditions_create_url' or request.resolver_match.url_name == 'terms_and_conditions_update_url' %}active{% endif %}"
+                                            style="{% if request.resolver_match.url_name == 'terms_and_conditions_index_url' or request.resolver_match.url_name == 'terms_and_conditions_create_url' or request.resolver_match.url_name == 'terms_and_conditions_update_url' %}background: var(--primary-color) !important;{% endif %}">
+                                            <a style="{% if request.resolver_match.url_name == 'terms_and_conditions_index_url' or request.resolver_match.url_name == 'terms_and_conditions_create_url' or request.resolver_match.url_name == 'terms_and_conditions_update_url' %}color: white !important;{% endif %}" href="{% url 'terms_and_conditions_index_url' %}">Terms & Conditions</a>
+                                        </li>
+
+                                        <li class="{% if request.resolver_match.url_name == 'payment_method_logo_list' or request.resolver_match.url_name == 'payment_method_logo_create' or request.resolver_match.url_name == 'payment_method_logo_update' %}active{% endif %}"
+                                            style="{% if request.resolver_match.url_name == 'payment_method_logo_list' or request.resolver_match.url_name == 'payment_method_logo_create' or request.resolver_match.url_name == 'payment_method_logo_update' %}background: var(--primary-color) !important;{% endif %}">
+                                            <a style="{% if request.resolver_match.url_name == 'payment_method_logo_list' or request.resolver_match.url_name == 'payment_method_logo_create' or request.resolver_match.url_name == 'payment_method_logo_update' %}color: white !important;{% endif %}" href="{% url 'payment_method_logo_list' %}">Payment Method Logo</a>
+                                        </li>
+
+                                    </ul>
+                                </li>
+                                {% endif %}
+
+
+
+
+
+                                {% comment %} {% if "company_info_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li>
+                                        <a href="{% url 'site_setting_list' %}"><i class="fa fa-cog"></i> <span class="hide-item"> Company Info </span></a>
+                                        <a href="{% url 'terms_and_conditions_index_url' %}"><i class="bi bi-crosshair"></i> <span class="hide-item"> Terms & Conditions </span></a>
+                                        <a href="{% url 'privecy_and_policy_index_url' %}"><i class="bi bi-shield-check"></i> <span class="hide-item"> Privacy Policy </span></a>
+                                    </li>
+                                {% endif %} {% endcomment %}
+
+                                {% if "update_just_for_you_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}
+                                    <li>
+                                        <a href="{% url 'update_just_for_you' %}"><i class="bi bi-arrow-up-square"></i> <span class="hide-item"> Update Just For You </span></a>
+                                    </li>
+                                {% endif %}
+
+                                {% comment %} <li>
+                                    <a href="#"><i class="bi bi-megaphone"></i> <span class="hide-item">Promotion Management </span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
+
+                                    <!-- sub-menu -->
+                                    <ul class="sub-menu">
+                                        <li><a href="#">Brand</a></li>
+                                        <li><a href="#">Color</a></li>
+                                        <li><a href="#">Size</a></li>
+                                        <li><a href="#">Unit</a></li>
+                                    </ul>
+                                    <!-- sub-menu -->
+                                </li>
+
+                                <li><a href="#"><i class="bi bi-gear-wide-connected"></i> <span class="hide-item">Settings </span></a></li> {% endcomment %}
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- menu -->
+
+
+                    <!-- main-contents -->
+                    <div class="dashboard-content">
+
+                        <!-- header-area -->
+                        <div class="header-con">
+                            <div class="row align-items-center">
+                                <div class="col-5 col-md-4">
+                                    <div class="titles">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <span class="mob"><i class="bi bi-layout-sidebar"></i></span>
+                                                <span class="menuwidth"> <i class="bi bi-layout-sidebar"></i></span>
+                                            </div>
+                                            <div class="flex-grow-1 ms-1">
+                                                <h2> Welcome Back
+                                                    {% if request.user.role  %}
+                                                        {{request.user.get_role_display}}
+                                                    {% else %}
+                                                        Super Admin
+                                                    {% endif %}
+                                                </h2>
+                                                <p class="welcome-subtext">Monitor your business analytics and statistics.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-7 col-md-8">
+                                    <div class="users">
+                                        <div class="dropdown">
+                                            {% comment %} <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-bell"></i> 
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    9
+                                                    <span class="visually-hidden">unread messages</span>
+                                                </span>
+                                            </button> {% endcomment %}
+                                            <ul class="dropdown-menu dropdown-menu-end">
+
+                                                <div class="notification">
+                                                    <div class="noti-top">
+                                                        <p>Notifications</p>
+                                                        <a href="#">Marks all as read</a>
+                                                    </div>
+                                                    <div class="noti-body">
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                        <a href="#" class="d-flex">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="bi bi-shop"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5>Product Updated Request <span>4 months ago</span></h5>
+                                                                <p>Product Updated Request from Echo Mart</p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="noti-footer">
+                                                        <a href="#">View All Notifications</a>
+                                                    </div>
+                                                </div>
+                                            </ul>
+                                        </div>
+                                        <div class="dropdown useradmin">
+                                            <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <p> 
+                                                    {% if request.user.name %}
+                                                        {{ request.user.name }}
+                                                    {% else %}
+                                                        {{request.user.email}}
+                                                    {% endif %}
+                                                
+                                                    <span>
+                                                        {% if request.user.role  %}
+                                                            {{request.user.get_role_display}}
+
+                                                        {% else %}
+                                                            Super Admin
+                                                        {% endif %}
+                                                    </span>
+                                                </p>
+                                                <img src="{% static 'assets/img/profile.jpg' %}" alt="profile">
+                                            </button>
+
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <div class="d-flex mb-2">
+                                                    <div class="flex-shrink-0">
+                                                        <img src="{% static 'assets/img/profile.jpg' %}" alt="profile">
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        {% if request.user.name%}
+                                                            <h5>{{ request.user.name }}</h5>
+                                                        {% else %}
+                                                            <h5>{{ request.user.email }}</h5>
+                                                        {% endif %}
+                                                        {% comment %} <a href="" class="editpro">Edit Profile</a> {% endcomment %}
+                                                    </div>
+                                                </div>
+
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'user_profile_view_url' %}">
+                                                        <i class="bi bi-person-circle"></i> Profile
+                                                    </a>
+                                                </li>
+                                                {% comment %} <li>
+                                                    <a class="dropdown-item" href="">
+                                                        <i class="bi bi-gear-wide"></i> Settings
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="">
+                                                        <i class="bi bi-unlock"></i> Change Password
+                                                    </a>
+                                                </li> {% endcomment %}
+                                                <li>
+                                                    <form action="{% url 'admin_logout_url' %}" method="post">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="dropdown-item p-0">
+                                                            <i class="bi bi-box-arrow-right"></i> Logout
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- header-area -->
+
+                        {% block content %}
+                        
+                        
+                        
+                        
+                        {% endblock  %}
+
+
+
+
+
+
+                    </div>
+                    <!-- main-contents -->
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- main-area -->
+
+    {% else %}
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+        <div class="permission-card">
+            <div class="icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+
+            <h1>Permission Denied</h1>
+            <p>
+                You do not have the required privileges to access this admin section.
+                If you believe this is an error, please contact the system administrator.
+            </p>
+
+            <a href="{% url 'home_page_url' %}" class="btn btn-outline-secondary me-2">
+                Go Back
+            </a>
+        </div>
+    </div>
+
+    {% endif %}
+
+
+
+
+
+    <!-- Js script links-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'assets/js/code.jquery.com_jquery-3.7.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/apexcharts.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'assets/js/select2.min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+    <script>
+        var options = {
+            series: [{
+                data: [21, 22, 10, 15, 45, 23]
+            }],
+            chart: {
+                height: 320,
+                type: 'bar',
+                width: '100%',
+            },
+            colors: ['#5B93FF', '#14B2D4', '#F7AE33'],
+            plotOptions: {
+                bar: {
+                    columnWidth: '20%',
+                    distributed: true,
+                    endingShape: 'rounded',
+                    borderRadius: 6,
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            legend: {
+                show: false,
+            },
+            xaxis: {
+                categories: [2020, 2021, 2022, 2023, 2024, 2025]
+            }
+        };
+        var chart = new ApexCharts(document.querySelector("#Orders"), options);
+        chart.render();
+
+
+        var options = {
+            series: [44, 55, 34],
+            chart: {
+                width: '100%',
+                height: 320,
+                type: 'donut',
+            },
+            colors: ['#5B93FF', '#14B2D4', '#FF8F6B'],
+            dataLabels: {
+                enabled: false
+            },
+            labels: ['Customer', ' Shop', 'Rider'],
+            legend: {
+                show: true,
+                position: 'bottom',
+                horizontalAlign: 'center'
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#Overview"), options);
+        chart.render();
+    </script>
+
+    <script>
+        const sidebar = document.getElementById("sidebarMenu");
+
+        window.addEventListener("load", function () {
+            const savedScroll = localStorage.getItem("sidebarScroll");
+            if (savedScroll && sidebar) {
+                sidebar.scrollTop = savedScroll;
+            }
+        });
+
+        document.querySelectorAll("#sidebarMenu a").forEach(link => {
+            link.addEventListener("click", function () {
+                localStorage.setItem("sidebarScroll", sidebar.scrollTop);
+            });
+        });
+    </script>
+
+
+    {% block JS %}
+    
+    {% endblock  %}
+
+
+
+</body>
+
+</html>

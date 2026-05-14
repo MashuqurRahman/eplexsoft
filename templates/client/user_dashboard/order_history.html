@@ -1,0 +1,143 @@
+{% extends "user_dashboard_base.html" %}
+{% load static %}
+{% block title %}User Order History{% endblock  %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <ul class="nav nav-pills mb-3 flex-nowrap overflow-auto">
+        {% for key, label in status_list %}
+            <li class="nav-item">
+                <a class="nav-link 
+                    {% if active_status == key or not active_status and key == 'all' %}
+                        active
+                    {% endif %}"
+                href="{% if key == 'all' %}
+                            {% url 'user_order_list_url' %}
+                        {% else %}
+                            {% url 'user_order_list_by_status' key %}
+                        {% endif %}">
+                    {{ label }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class='fw-bold'>Order ID</th>
+                            <th class='fw-bold'>Order Date</th>
+                            <th class='fw-bold'>Customer Name</th>
+                            <th class='fw-bold'>Total</th>
+                            <th class='fw-bold'>Payment Status</th>
+                            <th class='fw-bold'>Order Status</th>
+                            <th class='fw-bold'>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_no }}</td>
+                            <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                            <td>{{ order.shipping_address.full_name }}</td>
+                            <td>৳ {{order.total_payable}}</td>
+                            <td>{{ order.get_payment_status_display }}</td>
+                            <td>
+                                <span class="badge order-status
+                                    {% if order.order_status == 'pending' %}bg-primary
+                                    {% elif order.order_status == 'confirmed' %}bg-info
+                                    {% elif order.order_status == 'cancelled' %}bg-warning
+                                    {% elif order.order_status == 'shipped' %}bg-secondary
+                                    {% elif order.order_status == 'returned' %}bg-dark
+                                    {% elif order.order_status == 'delivered' %}bg-success
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ order.get_order_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-btns text-center">
+                                    <a href="{% url 'user_order_detail_url' order.id %}" 
+                                        class="action-btn action-view"
+                                        title="View Order">
+                                            <i class="bi bi-eye"></i>
+                                    </a>
+
+                                {% comment %} <a href="{% url 'order_invoice_download' order.id %}" 
+                        
+                                    class="action-btn action-download"
+                                    title="Download Invoice">
+                                        <i class="fa-solid fa-download"></i>
+                                    </a> {% endcomment %}
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No Orders Found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+
+</div>
+
+{% endblock  %}
+
+{% block JS %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const csrftoken = "{{ csrf_token }}";
+
+        function updateCartTotalFromServer(total) {
+            document.getElementById("cart-total").innerText = "৳ " + total;
+        }
+
+        document.querySelectorAll(".plus, .minus").forEach(btn => {
+            btn.addEventListener("click", function () {
+
+                const cartItem = this.closest(".cartlist");
+                const cartItemId = cartItem.dataset.cartItemId;
+                const qtyInput = cartItem.querySelector(".qty-input");
+
+                let qty = parseInt(qtyInput.value);
+
+                if (this.classList.contains("plus")) {
+                    qty += 1;
+                } else {
+                    if (qty <= 1) return;
+                    qty -= 1;
+                }
+                qtyInput.value = qty;
+
+                fetch("{% url 'update_cart_qty_url' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrftoken,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        cart_item_id: cartItemId,
+                        quantity: qty
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        updateCartTotalFromServer(data.cart_total);
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock  %}

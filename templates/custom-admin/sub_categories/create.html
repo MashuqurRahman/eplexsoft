@@ -1,0 +1,94 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Add Sub Categories{% endblock  %}
+
+{% block content %}
+
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <section class="boxs">
+        <h6 class="subtitle">Add Sub Categories</h6>
+        <hr>
+        <form id="submit_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.categories|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.sub_cat_name|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.description|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.image|as_crispy_field }}
+                </div>
+            </div>
+
+            <hr>
+            <h6 class="fw-bold position">Position align</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.column|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.position|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.has_sub_sub_cat|as_crispy_field }}
+                </div>
+            </div>
+            <div class="text-center pt-3 pb-4">
+                <button id="submit_btn" type="submit" class="btn add-btn">Submit</button>
+            </div>
+        </form>
+
+    </section>
+{% endblock  %}
+
+{% block JS %}
+<script>
+$(document).ready(function() {
+    $("#submit_btn").click(function(){
+        $(this).prop('disabled', true);
+        $("#submit_form").submit();
+    })
+    
+    $('#id_categories').select2({
+        allowClear: true,
+        width: '100%'
+    });
+});
+    
+    document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function(e) {
+        // disable the button immediately
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Submitting...";
+
+        // enable again after 3 seconds
+        setTimeout(function() {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit";
+        }, 3000);
+    });
+});
+</script>
+{% endblock  %}

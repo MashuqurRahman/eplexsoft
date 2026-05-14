@@ -1,0 +1,67 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Admin Theme Colors Settings{% endblock  %}
+
+{% block content %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <div class="card">
+        <div class="card-header">
+            <h6 class="subtitle">Admin Theme Colors Settings</h6>
+        </div>
+
+        <div class="card-body">
+
+            <h5>Current Color</h5>
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="p-4 text-white text-center"
+                        style="background: {{ theme.primary_color }}; border: 1px solid gray;">
+                        Primary <br> {{ theme.primary_color }}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="p-4 text-center "
+                        style="background: {{ theme.secondary_color }}; border: 1px solid gray;">
+                        Secondary <br> {{ theme.secondary_color }}
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4">
+                        {{ form.primary_color.label_tag }}
+                        {{ form.primary_color }}
+                    </div>
+
+                    <div class="col-md-4">
+                        {{ form.secondary_color.label_tag }}
+                        {{ form.secondary_color }}
+                    </div>
+                </div>
+
+                <button class="add-btn btn mt-3">
+                    Save And Update
+                </button>
+            </form>
+
+        </div>
+    </div>
+{% endblock  %}
+
+{% block JS %}
+
+{% endblock  %}

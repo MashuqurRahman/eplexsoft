@@ -1,0 +1,74 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <h6 class="subtitle">Site Settings</h6>
+        {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+        <a href="{% url 'site_setting_create' %}" class="btn add-btn btn-sm">
+            + Add New
+        </a>
+        {% endif %}
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Logo</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Active</th>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <th width="150">Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in settings %}
+                <tr>
+                    <td>{{ s.company_name }}</td>
+                    <td class="site-setting-img">
+                        <img src="{{ s.logo.url }}" height="40">
+                    </td>
+                    <td>{{ s.email }}</td>
+                    <td>{{ s.phone }}</td>
+                    <td>
+                        {% if s.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <td>
+                        <a href="{% url 'site_setting_update' s.id %}" class="btn btn-sm add-btn">Edit</a>
+                        <a href="{% url 'site_setting_delete' s.id %}"
+                        class="btn btn-sm btn-danger"
+                        onclick="return confirm('Are you sure?')">
+                        Delete
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="15" class="text-center">No data found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
