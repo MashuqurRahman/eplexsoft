@@ -126,10 +126,7 @@ def admin_login_view(request):
         user = authenticate(request, email=user_obj.email, password=password)
         if user is None:
             errors['password'] = "Incorrect password"
-            return render(request, "accounts/login.html", {
-                "errors": errors,
-                "password": password,
-            }) 
+            return render(request, "accounts/login.html", {"errors": errors, "password": password}) 
         
         login(request, user)
 
