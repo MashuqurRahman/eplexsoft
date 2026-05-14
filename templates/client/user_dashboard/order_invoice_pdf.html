@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #333;
+        }
+        /* Dashboard Colors */
+        .text-primary { color: #0d6efd; }
+        .text-muted { color: #6c757d; }
+        .fw-bold { font-weight: bold; }
+        
+        /* Layout Containers */
+        .header { margin-bottom: 20px; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
+        .section-title {
+            background-color: #f8f9fa;
+            padding: 8px;
+            font-weight: bold;
+            border-bottom: 2px solid #0d6efd;
+            margin-bottom: 10px;
+        }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; }
+        .items-table th {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+            padding: 8px;
+        }
+        .items-table td {
+            padding: 8px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        /* Columns for Info Boxes (Replacing Bootstrap Grid) */
+        .info-column { width: 48%; vertical-align: top; }
+        .spacer { width: 4%; }
+
+        /* Summary Box */
+        .summary-table td { padding: 4px; }
+        .grand-total { font-size: 14px; border-top: 1px solid #333; padding-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <table style="width: 100%;">
+            <tr>
+                <td>
+                    <h1 style="margin: 0;">Order Details</h1>
+                    <p class="text-muted">Order No: #{{ order.order_no }}</p>
+                </td>
+                <td style="text-align: right;">
+                    <p class="fw-bold" style="margin-bottom: 0;">{{site_setting.company_name|default:"N/A"}}</p>
+                    <p class="text-muted">Order Date: {{ order.created_at|date:"M d, Y" }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table style="margin-bottom: 20px; background-color: #fdfdfd; border: 1px solid #eee;">
+        <tr>
+            <td style="padding: 10px; border-right: 1px solid #eee;">
+                <label class="text-muted fw-bold">ORDER ID</label><br>
+                <span>{{ order.order_no }}</span>
+            </td>
+            <td style="padding: 10px; border-right: 1px solid #eee;">
+                <label class="text-muted fw-bold">STATUS</label><br>
+                <span class="text-primary">{{ order.get_order_status_display }}</span>
+            </td>
+            <td style="padding: 10px; border-right: 1px solid #eee;">
+                <label class="text-muted fw-bold">PAYMENT METHOD</label><br>
+                <span>{% if order.payment_method == 'cash_payment' %}Cash On Delivery{% else %}Card{% endif %}</span>
+            </td>
+            <td style="padding: 10px;">
+                <label class="text-muted fw-bold">TOTAL</label><br>
+                <span class="fw-bold">{{ order.total_payable }}</span>
+            </td>
+        </tr>
+    </table>
+
+    <div class="section-title">PRODUCTS PURCHASED</div>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 50%;">Product</th>
+                <th style="width: 20%;">Size/Color</th>
+                <th style="width: 10%;">Qty</th>
+                <th style="width: 20%; text-align: right;">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.product.product_name }}</td>
+                <td>{{ item.product_attribute.size }} / {{ item.product_attribute.color }}</td>
+                <td>{{ item.quantity }}</td>
+                <td style="text-align: right;">{{ item.product_attribute.product_final_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table style="margin-top: 15px;">
+        <tr>
+            <td style="width: 60%;"></td>
+            <td style="width: 40%;">
+                <table class="summary-table">
+                    <tr>
+                        <td class="text-muted">Subtotal:</td>
+                        <td style="text-align: right;"> {{ order.sub_total_after_discount }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Shipping:</td>
+                        <td style="text-align: right;">{{ order.shipping_charge }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Discount:</td>
+                        <td style="text-align: right;"> {{ order.coupon_price }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">VAT & Tax:</td>
+                        <td style="text-align: right;">{{ vat_gst }}</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td class="fw-bold">Grand Total:</td>
+                        <td class="fw-bold text-primary" style="text-align: right;"> {{ order.total_payable }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <table style="margin-top: 30px;">
+        <tr>
+            {% comment %} <td class="info-column">
+                <div class="section-title">CUSTOMER INFO</div>
+                <p><strong>{{ order.user.name|default:"N/A" }}</strong></p>
+                <p class="text-muted">{{ order.user.email }}</p>
+                <p class="text-muted">{{ order.user.phone }}</p>
+            </td>
+            <td class="spacer"></td> {% endcomment %}
+            <td>
+                <div class="section-title">SHIPPING DETAILS</div>
+                <p><strong>Name: {{ order.shipping_address.full_name }}</strong></p>
+                <p>Phone: {{ order.shipping_address.phone_no }}</p>
+                <p>Post Code: {{ order.shipping_address.postal_code }}</p>
+                <p>Thana: {{ order.shipping_address.thana }}, City: {{ order.shipping_address.city }}</p>
+                <p>Address: {{ order.shipping_address.address_line }}</p>
+                
+                
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,1128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Home{% endblock  %} - Ecommerce</title>
+    <!-- Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Responsive Website Design, landing page, Portfolio, Business, E-commerce">   
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="rebots" content="index, archive">
+    <link rel="canonical" href="https://www.example.com">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {% comment %} <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> {% endcomment %}
+    {% comment %} <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"> {% endcomment %}
+    <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Math&display=swap" rel="stylesheet">
+    
+    <!--favicon icon-->
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %}">
+
+    <!-- CSS style links-->
+
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/responsive_all.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    {% block Style %}
+    <style>
+        :root {
+            --footer-color: {{ FOOTER_COLOR }};
+            --notification-color: {{ NOTIFICATION_COLOR }};
+            --price-color: {{ PRICE_COLOR }};
+            --button-color: {{ BUTTON_COLOR }};
+        }
+        .badge {
+            padding: 0.5em 0.8em;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        .mobile-menu li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .mobile-menu a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+
+        .mobile-menu .collapse a {
+            font-size: 14px;
+        }
+
+        .sub-sub-category {
+            display: flex;
+            align-items: center;
+            gap: 0px;
+        }
+
+        .subsub-img {
+            width: 30px;
+            height: 30px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* view all button */
+        .viewall a {
+            display: inline-block;
+            color: white;
+            font-size: 16px;
+            background: var(--button-color) !important;
+            padding: 3px 10px;
+            border-radius: 4px;
+            line-height: 1.5;
+        }
+
+        /* theme settings */
+        .footer-area {
+            background: var(--footer-color) !important;
+            padding: 50px 0 30px 0;
+        }
+        .text-bg-danger {
+            color: #fff !important;
+            background-color: var(--notification-color) !important;
+        }
+        .input-group-text {
+            background-color: var(--notification-color) !important;
+            border: var(--bs-border-width) solid var(--notification-color) !important;
+        }
+        .bg-danger {
+            background-color: var(--notification-color) !important;
+        }
+        .productcon h5 {
+            color: var(--price-color) !important;
+        }
+        .buybtn a {
+            color: var(--button-color) !important;
+            border: 1px solid var(--button-color) !important;
+        }
+        .products:hover {
+            border: 1px solid var(--button-color) !important;
+        }
+        .price h3 {
+            color: var(--price-color) !important;
+        }
+        .taglint .form-check-input:checked~.form-check-label {
+            background: var(--button-color) !important;
+            color: #fff;
+        }
+        .cusbtn2 {
+            background: var(--button-color) !important;
+            border: 1px solid var(--button-color) !important;
+        }
+        a.cusbtn {
+            color: var(--button-color) !important;
+        }
+        .cusbtn {
+            background: #fff;
+            color: var(--button-color) !important;
+            border: 1px solid var(--button-color) !important;
+        }
+        .cusbtn:hover {
+            background: var(--button-color) !important;
+            color: white !important;
+        }
+        .shipping-option input[type="radio"]:checked {
+            accent-color: var(--button-color) !important;
+        }
+        .checks input:checked~.checkmark {
+            background-color: var(--button-color) !important;
+        }
+        .cartlist p {
+            color: var(--price-color) !important;
+        }
+        .offcanvas-title i {
+            color: var(--notification-color) !important;
+        }
+        .dropdown-menu li:hover {
+            border: 1px solid var(--button-color) !important;
+        }
+        .categori-slider .items:hover {
+            border: 1px solid var(--button-color) !important;
+        }
+        .categori-slider .items:hover p {
+            color: var(--button-color) !important;
+        }
+        .buybtn a:hover {
+            color: white !important;
+            background-color: var(--button-color) !important;
+            transition: .2s;
+        }
+        .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+            color: var(--button-color) !important;
+        }
+        .populeritem h5 {
+            color: var(--price-color) !important;
+        }
+        .form-control:focus {
+            border-color: var(--notification-color) !important;
+        }
+
+        .customermenu .menu ul li a:hover {
+            color: var(--notification-color) !important;
+            background: #eef0f5;
+        }
+
+        /* terms condition adn privacy policy */
+        .description p {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .description h1,
+    .description h2,
+    .description h3 {
+        font-weight: bold;
+        margin: 12px 0 6px;
+    }
+
+    .description ul {
+        padding-left: 20px;
+        margin-bottom: 10px;
+    }
+
+    .description li {
+        margin-bottom: 5px;
+    }
+
+    .description strong {
+        font-weight: bold;
+    }
+
+    .description em {
+        font-style: italic;
+    }
+
+    .description u {
+        text-decoration: underline;
+    }
+
+    .description {
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    /* FLOATING CHAT ICONS CSS */
+    .chat-icons{
+        position: fixed;
+        bottom: 60px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 9999;
+    }
+
+    .chat-icon{
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: white;
+        font-size: 26px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: transform 0.3s;
+    }
+
+    .chat-icon.whatsapp{
+        background: #25D366;
+    }
+
+    .chat-icon.messenger{
+        background: #0084FF;
+    }
+
+    .chat-icon:hover{
+        transform: scale(1.1);
+    }
+
+
+    </style>
+    {% endblock Style %}
+</head>
+<body>
+    <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+
+    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="staticBackdropLabel"><i class="bi bi-bag-dash-fill"></i> My Cart
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            {% if cart_items %}
+            {% for item in cart_items %}
+            <div class="cartlist" data-cart-item-id="{{ item.id }}" data-price="{{ item.price }}">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <img src="{{ item.product_attribute.image.url }}" alt="product_image">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <button class="delete" data-cart-item-id="{{item.id}}"><i class="bi bi-trash3-fill"></i></button>
+                        {% if item.product.product_varient.brand %}
+                        <span>{{ item.product.product_varient.brand }}</span>
+                        {% endif %}
+                        <h4>{{item.product.product_name}}</h4>
+                        {% if item.product_attribute.final_discount.total_discount %}
+                        <p>৳ {{ item.product_attribute.product_final_price }}
+                            <del>৳ {{ item.product_attribute.regular_price }}</del>
+                        </p>
+                        {% else %}
+                        <p>৳ {{ item.product_attribute.regular_price }}</p>
+                        {% endif %}
+                        <div class="d-flex gap-2 mb-3 mt-1">
+                            <span class="badge bg-light text-dark border fw-normal">Color: <strong>{{item.product_attribute.color}}</strong></span>
+                            <span class="badge bg-light text-dark border fw-normal">Size: <strong>{{item.product_attribute.size}}</strong></span>
+                        </div>
+                        <div class="d-flex gap-2 mb-3 mt-1">
+                            {% if item.product_attribute.attribute_stock_status.status %}
+                                <span class="badge bg-light text-dark border fw-normal">Stock: <strong>{{item.product_attribute.attribute_stock_status.remaining_stock}}</strong></span>
+                            {% else %}
+                                <span class=" bg-light text-danger fw-normal">Out of Stock </strong></span>
+                            {% endif %}
+                        </div>                        
+                        {% comment %} <div class="number">
+                            <span class="minus">-</span>    
+                            <input type="text" class="qty-input" value="{{ item.quantity }}" readonly />
+                            <span class="plus">+</span>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="cartlist" data-cart-item-id="{{ item.id }}" data-price="{{ item.price }}">
+                <div>
+                    <h6 class="text-center fw-bold" style="color: red">There is no product in cart</h6>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="checkoutbtn">
+            {% comment %} <div class="amout">
+                <h4>Cart Amount</h4>
+                <h4 id="cart-total" class="fw-bold">৳ {{ cart_total }}</h4>
+            </div> {% endcomment %}
+            {% if cart_items %}
+            <a href="{% url 'product_checkout_url' %}" class="cusbtn2 checkout">Checkout</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!--Login Modal -->
+    <div class="modal fade" id="logins" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Welcome!</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="login-form">
+                        {% if success %}
+                            <div class="alert alert-success">{{ success }}</div>
+                        {% endif %}
+
+                        <h5>Please login to your account</h5>
+                        <form class="row g-3" method="POST" action="{% url 'user_auth' %}">
+                            <input type="hidden" name="form_type" value="login">
+                            <input type="hidden" name='next' value="{{next}}">
+                            <input type="hidden" name='current_url' value="{{request.path}}">
+                            {% csrf_token %}
+                            <div class="col-12">
+                                <label for="Email" class="form-label">Email<span style="color: red;">*</span></label>
+                                <input type="text" name="email" class="form-control" id="email" placeholder="Enter Email">
+                                {% if login_errors.email %}
+                                    <small class="text-danger" style="font-size: 14px;">{{ login_errors.email }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-12 position-relative">
+                                <label for="password" class="form-label">Password<span style="color: red;">*</span></label>
+                                <input type="password" name="password" class="form-control" id="password" placeholder="Enter Password">
+                                <span class="eye" onclick="showHidePassword()">
+                                    <i class="bi bi-eye-slash"  id="togglePassword"></i>
+                                </span>
+                                {% if login_errors.password %}
+                                    <small class="text-danger" style="font-size: 14px;">{{ login_errors.password }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="mt-2">
+                                    <a href="{% url 'password_reset' %}" class="text-primary" style="font-size: 14px;">Forgot Password?</a>
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" class="cusbtn2">Login</button>
+                                <p>Don’t have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#registration">Sign Up</a> </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal fade" id="registration" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Welcome!</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="login-form">
+                        <h5>Please create your account</h5>
+                        <form class="row g-3" method="POST" action="{% url 'user_auth' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="register">
+                            <input type="hidden" name='next' value="{{next}}">
+                            <input type="hidden" name='current_url' value="{{request.path}}">
+
+                            <div class="col-12">
+                                <label for="email" class="form-label">Email<span style="color: red;">*</span></label>
+                                <input type="email" name="email" class="form-control" id="email" placeholder="Enter Email" required>
+
+                                {% if errors.email %}
+                                    <small class="text-danger" style="font-size: 14px;">{{ errors.email }}</small>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12 position-relative">
+                                <label for="password" class="form-label">Password<span style="color: red;">*</span></label>
+                                <input type="password" name="password" class="form-control" id="passwords"
+                                    placeholder="Enter Password" required>
+
+                                <span class="eye" onclick="togglePassword('passwords', 'togglePasswords')">
+                                    <i class="bi bi-eye-slash" id="togglePasswords"></i>
+                                </span>
+                            </div>
+
+
+                            <div class="col-12 position-relative">
+                                <label for="confirm_password" class="form-label">Confirm Password<span style="color: red;">*</span></label>
+                                <input type="password" name="confirm_password" class="form-control"
+                                    id="confirm_password" placeholder="Confirm Password" required>
+
+                                <span class="eye" onclick="togglePassword('confirm_password', 'toggleConfirmPassword')">
+                                    <i class="bi bi-eye-slash" id="toggleConfirmPassword"></i>
+                                </span>
+
+                                {% if errors.confirm_password %}
+                                    <small class="text-danger" style="font-size: 14px;">{{ errors.confirm_password }}</small>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="cusbtn2">Sign Up</button>
+                                <p>Already have an account? 
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#logins">Login</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- top-heading -->
+    {% comment %} <section class="top-heading">
+        <div class="containers">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="helpline">
+                        <p>Contact: 01711257498</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="language">
+                        <select class="form-select form-select-sm" aria-label="Small select example">
+                            <option selected>USD, $</option>
+                            <option value="1">Tk ৳</option>
+                        </select>
+
+                        <select class="form-select form-select-sm" aria-label="Small select example">
+                            <option selected>English</option>
+                            <option value="2">Bnagla</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> {% endcomment %}
+    <!-- top-heading -->
+
+    <!-- header -->
+    <header class="header-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="navigation">
+                        <nav class="navbar navbar-expand-xl">
+                            <div class="container-fluid menubar p-0">
+                                <a class="navbar-brand" href="{% url 'home_page_url' %}">
+                                    {% if site_setting %}
+                                        <img class="small-logo" src="{{ site_setting.logo.url }}" alt="logo">
+                                        <img class="big-logo" src="{{ site_setting.logo.url }}" alt="logo">
+                                    {% else %}
+                                        <img class="small-logo" src="{% static 'assets/img/odelltech_logo.png' %}" alt="logo">
+                                        <img class="big-logo" src="{% static 'assets/img/odelltech_logo.png' %}" alt="logo">
+                                    {% endif %}
+                                </a>
+                                <div class="nav-item cart-icons">
+                                    <a href="#" class="nav-link position-relative"
+                                        data-bs-toggle="offcanvas"
+                                        data-bs-target="#staticBackdrop"
+                                        aria-controls="staticBackdrop">
+                                        <i class="bi bi-bag-dash"></i>
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            {{cart_items|length}}
+                                        </span>
+                                    </a>
+                                </div>
+                            
+                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <div class="nav-item user-info">
+                                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-center">
+                                        {% comment %} <li class="nav-item">
+                                            <a href="{% url 'product_wishlist_url' %}"></a>
+                                            <a href="javascript:void(0)">
+                                                <button type="button" class="position-relative">
+                                                    <i class="bi bi-heart"></i>
+                                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                        {{wish_list|length}}
+                                                        <span class="visually-hidden">unread messages</span>
+                                                    </span>
+                                                </button>
+                                            </a>
+                                        </li> {% endcomment %}
+
+                                        <li class="nav-item dropdown">
+                                            {% if user.is_authenticated %}
+                                                <a style="color: black;" class="nav-link dropdown-toggle user-info" href="#" role="button" data-bs-toggle="dropdown">
+                                                    <i class="bi bi-person"></i> 
+                                                    <span class="user-icon-name">
+                                                        {% if user.name %}
+                                                            {{user.name}}
+                                                        {% else %}
+                                                            {{ user.email }}
+                                                        {% endif %}
+                                                    </span>
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="{% url 'user_dashboard_url' %}">Dashboard</a></li>
+                                                    {% if request.user.role != 'customer' %}
+                                                        <li><a class="dropdown-item" href="{% url 'admin_dashboard_url' %}">Admin Dashboard</a></li>
+
+                                                    
+                                                    {% endif %}
+                                                    {% comment %} <li><a class="dropdown-item" href="">My Profile</a></li>
+                                                    <li><a class="dropdown-item" href="">Change Password</a></li> {% endcomment %}
+                                                    <li>
+                                                        <form method="POST" action="{% url 'logout_url' %}">
+                                                            {% csrf_token %}
+                                                            <button class="dropdown-item" type="submit">Logout</button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            {% else %}
+                                                <a style="color: black;" class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logins">
+                                                    <span class="user-icon-name">Login </span><i class="bi bi-person"></i>
+                                                </a>
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                {% comment %} <div class="input-group search-bar">
+                                    <input id="search_products" name="is_search" type="text" class="form-control" placeholder="Search product" aria-label="Search product" aria-describedby="basic-addon2">
+                                    <span id="search_btn" class="input-group-text" id="basic-addon2"><i class="bi bi-search"></i></span>
+                                </div> {% endcomment %}
+                                 
+                                <form method="GET" action="{% url 'product_search_url' %}">
+                                    <div class="input-group search-bar">
+                                        <input type="text" name="search" class="form-control" placeholder="Search product..." value="{{ request.GET.search }}">
+                                        <button id="search_btn" class="input-group-text" type="submit">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                                
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                    
+                                    <ul class="submenus mobile-menu d-xl-none">
+
+                                        {% for category in categories %}
+                                        <li class="mobile-category-item">
+
+                                            <div class="d-flex justify-content-between align-items-center">
+
+                                                <a href="{% url 'category_products' category.id %}" class="{% if current_category_id == category.id %} active_mega_menu {% endif %}">
+                                                    {{ category.name }}
+                                                </a>
+
+                                                <button class="btn p-0"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#mobileCategory{{ category.id }}">
+                                                    <i class="bi bi-chevron-down"></i>
+                                                </button>
+
+                                            </div>
+
+                                            <ul class="collapse list-unstyled ps-3"
+                                                id="mobileCategory{{ category.id }}">
+
+                                                {% for sub in category.sub_categories.all %}
+                                                <li>
+
+                                                    <div class="d-flex justify-content-between align-items-center">
+
+                                                        <a href="{% url 'sub_category_products_shows_url' sub.id %}" class="{% if current_sub_category_id == sub.id %} active_mega_menu {% endif %}">
+                                                            {{ sub.sub_cat_name }}
+                                                        </a>
+                                                        {% if sub.has_sub_sub_cat %}
+                                                        <button class="btn p-0"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#mobileSub{{ sub.id }}">
+                                                            <i class="bi bi-chevron-right"></i>
+                                                        </button>
+                                                        {% endif %}
+
+                                                    </div>
+
+                                                    <ul class="collapse list-unstyled ps-3"
+                                                        id="mobileSub{{ sub.id }}">
+
+                                                        {% for subsub in sub.sub_sub_categories.all %}
+                                                        <li class="sub-sub-category d-flex">
+                                                            {% if subsub.image %}
+                                                                <img src="{{ subsub.image.url }}" alt="{{ subsub.sub_sub_cat_name }}" class="subsub-img no-zoom">
+                                                            {% endif %} &nbsp;
+                                                            <a href="{% url 'products_page_url' subsub.id %}" class="{% if current_sub_sub_category_id == subsub.id %} active_mega_menu {% endif %} me-2">
+                                                                {{ subsub.sub_sub_cat_name }}
+                                                            </a>
+                                                        </li>
+                                                        {% endfor %}
+
+                                                    </ul>
+
+                                                </li>
+                                                {% endfor %}
+
+                                            </ul>
+
+                                        </li>
+                                        {% endfor %}
+
+                                    </ul>
+
+
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="submenus-area ">
+                        <div class="submenus-content">
+                            <a href="{% url 'home_page_url' %}" class="nav-link {% if request.resolver_match.url_name == 'home_page_url' %} active_mega_menu {% endif %}" style="font-size: 18px !important;">
+                                <i class="bi bi-grid"></i> Home
+                            </a>
+                        </div>
+                        <ul class="submenus">
+                            {% for category in categories %}
+                            <li class="mega-drop-down">
+                                <a href="{% url 'category_products' category.id %}" 
+                                    class="{% if current_category_id == category.id %}active_mega_menu{% endif %}" 
+                                    style="font-size: 18px !important;">
+                                    <i class="fa fa-list"></i> {{ category.name }}
+                                </a>
+
+                                <div class="animated fadeIn mega-menu pt-2">
+                                    <div class="mega-menu-wrap" style="padding: 4px 70px; box-shadow: 0 -3px 3px -2px rgba(0, 0, 0, 0.15)">
+                                        <div class="row">
+
+                                            {% for col_num in "1234" %}
+                                            <div class="col-md-3">
+                                                <ul class="icon-des" >
+
+                                                    {% for sub in category.sub_categories.all %}
+                                                    {% if sub.column == col_num %}
+
+                                                    <li class="sub-category-title">
+                                                        <strong class="fw-bold">
+                                                            <a href="{% url 'sub_category_products_shows_url' sub.id %}"
+                                                                class="{% if current_sub_category_id == sub.id %}active_mega_menu{% endif %}"
+                                                                style="font-size: 16px !important;">
+                                                                <i class="fa fa-list"></i> {{ sub.sub_cat_name }}
+                                                            </a>
+                                                        </strong>
+                                                    </li>
+
+                                                    {% for subsub in sub.sub_sub_categories.all %}
+                                                    <li class="sub-sub-category d-flex align-items-center">
+                                                        {% if subsub.image %}
+                                                            <img src="{{ subsub.image.url }}" alt="{{ subsub.sub_sub_cat_name }}" class="subsub-img no-zoom">
+                                                        {% endif %}
+                                                        <a href="{% url 'products_page_url' subsub.id %}"
+                                                                class="{% if current_sub_sub_category_id == subsub.id %}active_mega_menu{% endif %}"
+                                                                style="font-size: 16px !important;">
+                                                            {{ subsub.sub_sub_cat_name }}
+                                                        </a>
+                                                    </li>
+                                                    {% endfor %}
+
+                                                    {% endif %}
+                                                    {% endfor %}
+
+                                                </ul>
+                                            </div>
+                                            {% endfor %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- header -->
+
+
+
+
+
+
+
+    <!-- MAIN CONTENT BLOCK -->
+     
+    {% block content %}
+    <main class="main-contents"></main>
+    {% endblock  %}
+
+    
+
+
+
+
+
+    <!-- footer -->
+    <footer class="footer-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-grid">
+                        <div class="fologo">
+                            {% comment %} {% if site_setting and site_setting.is_active == True %}
+                            <a href="#"><img src="{{site_setting.logo.url}}" alt="logo"></a>
+                            {% else %}
+                            <a href="#"><img src="{% static 'assets/img/footer_logo.png' %}" alt="logo"></a>
+                            {% endif %} {% endcomment %}
+                            <a href="#"><img src="{% static 'assets/img/footer_loogo.png' %}" alt="logo"></a>
+                            <p>{{site_setting.company_moto}}</p>
+                            <h5><i class="bi bi-telephone-fill"></i> {{site_setting.phone}}</h5>
+                            <h5><i class="bi bi-envelope-fill"></i> {{site_setting.email}}</h5>
+                            {% if site_setting.address %}
+                            <h5><i class="bi bi-geo-alt-fill"></i> {{site_setting.address}}</h5>
+                            {% endif %}
+                        </div>
+                        {% if site_setting and site_setting.facebook or site_setting.youtube or site_setting.whatsapp %}         
+                            <ul class="social">
+                                {% if site_setting.facebook %}
+                                    <li><a href="{{ site_setting.facebook }}"><i class="bi bi-facebook"></i></a></li>
+                                {% endif %}
+                                {% if site_setting.linkedin %}
+                                    <li><a href="{{ site_setting.linkedin }}"><i class="bi bi-linkedin"></i></a></li>
+                                {% endif %}
+                                {% if site_setting.youtube %}
+                                    <li><a href="{{ site_setting.youtube }}"><i class="bi bi-youtube"></i></a></li>
+                                {% endif %}
+                                {% if site_setting.instagram %}
+                                    <li><a href="{{ site_setting.instagram }}"><i class="bi bi-instagram"></i></a></li>
+                                {% endif %}
+                                {% if site_setting.tiktok %}
+                                    <li><a href="{{ site_setting.tiktok }}"><i class="bi bi-tiktok"></i></a></li>
+                                {% endif %}
+                                {% if site_setting.xhandle %}
+                                    <li><a href="{{ site_setting.xhandle }}"><i class="bi bi-twitter-x"></i></a></li>
+                                {% endif %}
+                                {% if site_setting.whatsapp %}
+                                    <li><a href="{{ site_setting.whatsapp }}"><i class="bi bi-whatsapp"></i></a></li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-grid">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="{% url 'all_products' %}">Products</a></li>
+                            <li><a href="{% url 'most_popular_products' %}">Most Popular</a></li>
+                            <li><a href="{% url 'best_deal_products' %}">Best Deal</a></li>
+                            {% comment %} <li><a href="#">Blogs</a></li> {% endcomment %}
+                            {% comment %} <li><a href="#">Become a Seller</a></li> {% endcomment %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-grid">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="{% url 'client_about_us_url' %}">About us</a></li>
+                            {% comment %} <li><a href="{% url 'contact_page_url' %}">Contact</a></li> {% endcomment %}
+                            <li><a href="{% url 'client_terms_and_conditino_url' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'client_privecy_and_policy_url' %}">Privacy Policy</a></li>
+                            <li><a href="{% url 'client_return_and_refund_url' %}">Return and Refund Policy</a></li>
+                            <li><a href="{% url 'client_warranty_policy_url' %}">Warranty Policy</a></li>
+                            <li><a href="{% url 'client_emi_policy_url' %}">EMI Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-grid">
+                        {% if site_setting %}
+                            <h4>Payment Methods</h4>
+                            <div class="appsdown">
+                                <ul>
+                                    {% if payment_logos %}
+                                        {% for logo in payment_logos %}
+                                            <li>
+                                                <a href="{{ logo.link }}" target="_blank">
+                                                    <img src="{{ logo.logo.url }}" alt="payment_logo" class="payment-logo">
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="containers">
+            <div class="copyright">
+                <p>© <script>document.write(new Date().getFullYear())</script> All right reserved.</p>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <a href="#" class="scrolltotop"><i class="bi bi-arrow-up-circle"></i></a>
+        </div>
+    </footer>
+
+    <!-- FLOATING CHAT ICONS -->
+    <div class="chat-icons">
+        <a href="https://wa.me/{{site_setting.whatsapp_no}}" target="_blank" class="chat-icon whatsapp">
+            <i class="bi bi-whatsapp"></i>
+        </a>
+
+        <a href="{{site_setting.messenger}}" target="_blank" class="chat-icon messenger">
+            <i class="bi bi-messenger"></i>
+        </a>
+
+    </div>
+
+
+    <!-- footer -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'assets/js/code.jquery.com_jquery-3.7.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'assets/js/select2.min.js' %}"></script>
+    <script src="{% static 'assets/js/imagepreviewer.min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+    <!-- JAVASCRIPT BLOCK -->
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    {% if request.GET.open_login_modal %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var loginModal = new bootstrap.Modal(document.getElementById('logins'));
+            loginModal.show();
+            var emailInput = document.getElementById('loginEmail');
+            if(emailInput) {
+                emailInput.value = "{{ request.GET.email|default:'' }}";
+            }
+        });
+    </script>
+    {% endif %}
+    {% if open_login_modal %}
+        <script>
+            const loginModal = new bootstrap.Modal(document.getElementById('logins'));
+            loginModal.show();
+        </script>
+    {% endif %}
+
+    {% if open_register_modal %}
+        <script>
+            const registerModal = new bootstrap.Modal(document.getElementById('registration'));
+            registerModal.show();
+        </script>
+    {% endif %}
+
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            } else {
+                input.type = "password";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            }
+        }
+
+        function showHidePassword() {
+            const toggle = document.getElementById("togglePassword");
+            const password = document.getElementById("password");
+
+            const type = password.getAttribute("type") === "password" ? "text" : "password";
+            password.setAttribute("type", type);
+
+            toggle.classList.toggle("bi-eye");
+            toggle.classList.toggle("bi-eye-slash");
+        }
+
+        // $(document).on('click', '.btn-close', function () {
+        //     location.reload();
+        // });
+
+        // Add to cart
+        $(document).ready(function() {
+            $(document).on('click', '.add-to-cart', function(e) {
+                e.preventDefault();
+                
+                var productId = $(this).attr('data-product-id');
+                var variantId = $(this).attr('data-variant-id'); 
+
+                if (!variantId) {
+                    Toastify({ text: "Please select size and color", backgroundColor: "#ff9800" }).showToast();
+                    return;
+                }
+
+                $.ajax({
+                    url: "{% url 'add_to_cart_url' %}",
+                    type: "POST",
+                    data: {
+                        'product_id': productId,
+                        'variant_id': variantId,
+                        'quantity': quantity,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+
+                            $('#cart-count').text('(' + response.item_count + ')');
+
+                            Toastify({
+                                text: `Added: ${response.product_name} (${response.color}/${response.size})`,
+                                duration: 3000,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "#4caf50"
+                            }).showToast();
+                            setTimeout(function(){
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            Toastify({
+                                text: response.message || "Stock error",
+                                backgroundColor: "#f44336"
+                            }).showToast();
+                        }
+                    }
+                });
+            });
+        });
+
+        // Delete from cart
+
+        $(document).on('click', '.delete', function (e) {
+            e.preventDefault();
+
+            var cartItemId = $(this).data('cart-item-id');
+            var cartRow = $(this).closest('.cartlist');
+
+            $.ajax({
+                url: "{% url 'delete_product_from_cart_url' %}",
+                type: "POST",
+                data: {
+                    'cart_item_id': cartItemId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+
+                if (response.success) {
+                    $('#cart-total').text('৳ ' + response.cart_total);
+                    $('#cart-count').text(response.item_count);
+                    cartRow.slideUp(300, function () {
+                        $(this).remove();
+                        
+                        if (response.is_empty) {
+                            $('.offcanvas-body').html(`
+                                <div class="cartlist">
+                                    <h6 class="text-center fw-bold" style="color: red;">
+                                        There is no product in cart
+                                    </h6>
+                                </div>
+                            `);
+                            $('#cart-total').text('৳ 0');
+                            if (response.is_empty) {
+                                window.location.href = "{% url 'home_page_url' %}"; 
+                            }
+                            
+                            
+                        }
+                    });
+
+                    Toastify({
+                        text: "Product removed from your cart.",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#f44336",
+                        stopOnFocus: true
+                    }).showToast();
+
+                }
+            }
+            });
+        });
+
+        // product checkout 
+
+        $(document).on('click', '.checkout', function(){
+            
+        });
+
+        window.addEventListener("scroll", function() {
+            document.querySelector(".header-area").classList.toggle("scrolled", window.scrollY > 50);
+        });
+        
+    </script>
+
+    <!-- cart item total -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie("csrftoken");
+
+
+    function updateCartTotalFromServer(total) {
+        const totalElem = document.getElementById("cart-total");
+        if (totalElem) {
+            totalElem.innerText = "৳ " + total;
+        }
+    }
+
+    
+});
+
+</script> 
+
+<script>
+    var redirect_url = "{% url 'home_page_url' %}"
+    var ajax_search_url = "{% url 'product_search_url' %}"
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const registerModal = document.getElementById('registration');
+        const loginModal = document.getElementById('logins');
+
+        registerModal.addEventListener('show.bs.modal', function () {
+            const form = registerModal.querySelector('form');
+            form.reset();
+            registerModal.querySelectorAll('.text-danger').forEach(el => el.remove());
+        });
+
+        loginModal.addEventListener('show.bs.modal', function () {
+            const form = loginModal.querySelector('form');
+            form.reset();
+
+            loginModal.querySelectorAll('.text-danger').forEach(el => el.remove());
+        });
+    });
+
+    $("#search_products").keypress(function (e) { 
+        if (e.keyCode == 13){
+            $("#search_btn").click();
+        }
+    });
+    $("#search_btn").click(function () { 
+        if($("#search_products").val())
+            $.ajax({                       
+                url: ajax_search_url,                   
+                data: {
+                    'product_id': $("#search_products").val()     
+                },
+                success: function (data) {   
+                    $("#product_list").html(data);  
+                }
+            });
+        else
+            location.href = redirect_url
+  
+    });
+</script>
+
+
+{% block JS %}
+
+{% endblock  %}
+
+
+</body>
+</html>

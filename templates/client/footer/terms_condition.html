@@ -1,0 +1,19 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %}Terms & Condition{% endblock %}
+
+{% block content %}
+    <div class="containers">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="contact-area">
+                    {% for obj in obj_list %}
+                        <div class="description">
+                            {{ obj.description|safe }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Employee Profile{% endblock  %}
+{% block Style %}
+<style>
+    .page-center {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f4f6fb;
+    }
+    .profile-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 30px;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .avatar {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: #6c63ff;
+        color: #fff;
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+    }
+
+    .profile-header h3 {
+        margin-bottom: 0;
+        font-weight: 600;
+    }
+
+    .profile-info {
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #eaeaea;
+    }
+
+    .info-row span {
+        font-weight: 500;
+        color: #555;
+    }
+
+    .info-row strong {
+        color: #222;
+    }
+
+    .role-badge {
+        background: #6c63ff;
+        color: #fff !important;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+</style>
+{% endblock Style %}
+
+{% block content %}
+<div class="page-center">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="avatar"><i class="fas fa-user" aria-hidden="true"></i></div>
+            <h3>{{employee.name|default:"N/A"}}</h3>
+        </div>
+
+        <div class="profile-info">
+            <div class="info-row">
+                <span>Email</span>
+                <strong>{{employee.email}}</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Phone</span>
+                <strong>{{employee.phone}}</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Gender</span>
+                <strong>{{employee.get_gender_display}}</strong>
+            </div>
+
+
+            <div class="info-row border-0">
+                <span>Role</span>
+                <span class="role-badge">{{employee.get_role_display}}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock  %}
+
+{% block JS %}
+
+{% endblock  %}

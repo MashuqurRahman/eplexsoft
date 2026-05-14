@@ -1,0 +1,446 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Orders Details{% endblock  %}
+
+{% block content %}
+<div>
+    <div class="order-details">
+        <div class="row">
+            <div class="col-md-8">
+                <!-- boxs -->
+                
+                <div class="boxs p-2">
+                    <div class="py-2 d-flex justify-content-between align-items-center gap-3">
+                        <p class="subtitle">Order Info</p>
+                        <a href="{% url 'order_list' %}" class="btn add-btn"><i class="bi bi-arrow-left"></i> Back</a>
+                    </div>
+                    <div class="border-bottom py-2 d-flex justify-content-between align-items-center gap-3">
+                        <p>Change Order Status </p>
+                        <div class="dropdown useradmin status">
+                            <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ order.order_status|title}}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item order-status" data-status="pending" data-order="{{ order.id }}">Pending</a></li>
+                                <li><a class="dropdown-item order-status" data-status="confirmed" data-order="{{ order.id }}">Confirm</a></li>
+                                <li><a class="dropdown-item order-status" data-status="shipped" data-order="{{ order.id }}">Shipped</a></li>
+                                <li><a class="dropdown-item order-status" data-status="delivered" data-order="{{ order.id }}">Delivered</a></li>
+                                <li><a class="dropdown-item order-status" data-status="cancelled" data-order="{{ order.id }}">Cancelled</a></li>
+                                <li><a class="dropdown-item order-status" data-status="returned" data-order="{{ order.id }}">Returned</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class=" py-2 d-flex justify-content-between align-items-center gap-3">
+                        <p>Payment Status </p>
+                        <label class="switch">
+                            <input type="checkbox" id="paymentToggle"
+                                data-order="{{ order.id }}"
+                                {% if order.payment_status == 'paid' %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <hr>
+                <!-- boxs -->
+
+                <div class="boxs p-2">
+                    <p class="subtitle">Delivery Location</p>
+                    <div class="row g-3 mt-1 align-items-end">
+
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-medium">Shipping Method</label>
+                            <select id="shippingMethodSelect" class="form-select form-select-sm">
+                                <option value="inside_dhaka"
+                                    {% if order.shipping_method == 'inside_dhaka' %}selected{% endif %}>
+                                    Inside Dhaka
+                                </option>
+                                <option value="outside_dhaka"
+                                    {% if order.shipping_method == 'outside_dhaka' %}selected{% endif %}>
+                                    Outside Dhaka
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <label class="form-label small fw-medium">Current Charge</label>
+                            <div class="fw-medium" style="font-size:13px;padding:5px 0" id="shippingChargeDisplay">
+                                ৳ {{ order.shipping_charge }}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2 text-end">
+                            <button class="btn btn-sm btn-outline-primary w-100" id="updateShippingMethodBtn">
+                                <i class="bi bi-arrow-repeat"></i> Update
+                            </button>
+                        </div>
+
+                    </div>
+                    <div id="shippingMethodMsg" class="mt-2" style="display:none;font-size:12px"></div>
+                </div>
+                <hr>
+
+                <!-- .boxs -->
+                <div class="boxs p-2">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between">
+                        <p class="subtitle">Order Details</p>
+                        <div class="bumns">
+                            <button><a href="{% url 'download_order_details' order.id %}"><i class="bi bi-cloud-arrow-down"></i> Payment Slip</a></button>
+                            <button class="invoice active"><a href="{% url 'order_invoice_download_url' order.id %}"><i class="bi bi-cloud-arrow-down"></i> Download Invoice</a></button>
+                        </div>
+                    </div>
+                    <div class="card-body border-top pt-3 mt-2">
+                        <div class="d-flex gap-3 flex-wrap align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="order-item">
+                                    <label class="label">Order Id:</label>
+                                    <span class="value">{{ order.order_no }}</span>
+                                </div>
+                                <div class="order-item">
+                                    <label class="label">Payment Status:</label>
+                                    <span class="value" id="payment_status_id">{{ order.get_payment_status_display }}</span>
+                                </div>
+                                <div class="order-item">
+                                    <label class="label">Payment Method:</label>
+                                    {% if order.payment_method == 'cash_payment' %}
+                                    <span class="value">Cash Payment</span>
+                                    {% else %}
+                                    <span class="value">Card Payment</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="item-divider"></div>
+
+                            <div class="flex-grow-1">
+                                <div class="order-item">
+                                    <label class="label">Order Status:</label>
+                                    <span class="value">{{order.get_order_status_display }}</span>
+                                </div>
+                                <div class="order-item">
+                                    <label class="label">Order Date:</label>
+                                    <span class="value">{{order.created_at }}</span>
+                                </div>
+                                <div class="order-item">
+                                    <label class="label">Delivery Date:</label>
+                                    <span class="value" id="delivery_date_id">{{order.delivery_date|default:"N/A"}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive-xl my-4">
+                            <table class="table mytable">
+                                <thead>
+                                    <tr>
+                                        <th>SL</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Size</th>
+                                        <th>Color</th>
+                                        <th>Price</th>
+                                        {% comment %} <th class="text-end">Total</th> {% endcomment %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in product_item_obj %}
+                                    <tr>
+                                        <td>{{forloop.counter}}</td>
+                                        <td>
+                                            <div class="d-flex gap-1 align-items-center">
+                                                <img src="{{item.product_attribute.image.url}}" alt="" width="40" height="40" loading="lazy">
+                                                <span>{{item.product.product_name}}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{item.quantity}}</td>
+                                        <td>{{item.product_attribute.size}}</td>
+                                        <td>{{item.product_attribute.color}}</td>
+                                        <td>{{item.product_attribute.product_final_price}}</td>
+                                        {% comment %} <td class="text-end">
+                                            $2400
+                                        </td> {% endcomment %}
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        <div class="grandtotal max-300 ms-auto d-flex flex-column gap-1">
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div>Sub Total After Discount</div>
+                                <div>৳ {{order.sub_total_after_discount}}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div>Coupon Discount</div>
+                                <div>৳ {{order.coupon_price}}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div>Delivery Charge</div>
+                                <div id="delivery_charge_display">৳ {{order.shipping_charge}}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div>VAT &amp; Tax</div>
+                                <div>৳ {{vat_gst}}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2 border-top pt-1 mt-1">
+                                <div class="fw-bold">Grand Total</div>
+                                <div class="fw-bold" id="grand_total_display">৳ {{order.total_payable}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- .boxs -->
+            </div>
+
+
+            <div class="col-md-4">
+
+                <!-- .boxs -->
+                
+                <div class="boxs p-2 customer-info">
+                    <div class="mt-3">
+                        <p class="subtitle">Customer Info</p>
+                        <div class="border-bottom py-2 d-flex  align-items-center gap-3">
+                            <p>Name: </p>
+                            <p><b>{{order.user.name|default:"N/A"}}</b></p>
+                        </div>
+                        <div class=" py-2 d-flex  align-items-center gap-3">
+                            <p>E-mail: </p>
+                            <p><b>{{order.user.email|default:"N/A"}}</b></p>
+                        </div>
+                        <div class=" py-2 d-flex  align-items-center gap-3">
+                            <p>Phone: </p>
+                            <p><b>{{order.user.phone|default:"N/A"}}</b></p>
+                        </div>
+                    </div>
+                </div>
+                <!-- .boxs -->
+                 <hr>
+
+
+                <!-- .boxs -->
+                <div class="boxs p-2">
+                    <p class="subtitle">Shipping Address</p>
+                    <div class=" mt-3">
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Name: </span>
+                            <span class="fw-medium">{{order.shipping_address.full_name}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Phone: </span>
+                            <span class="fw-medium">{{order.shipping_address.phone_no}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">City: </span>
+                            <span class="fw-medium">{{order.shipping_address.city}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Upazila: </span>
+                            <span class="fw-medium">{{order.shipping_address.upozila}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Thana: </span>
+                            <span class="fw-medium">{{order.shipping_address.thana}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Address: </span>
+                            <span class="fw-medium">{{order.shipping_address.address_line}}</span>
+                        </div>
+                        {% comment %} <div class="d-flex gap-2 border-bottom align-items-center justify-content-between flex-wrap py-12">
+                            <div>
+                                <span class="text-color">Road No: </span>
+                                <span class="fw-medium"></span>,
+                            </div>
+                            <div>
+                                <span class="text-color">Flat No: </span>
+                                <span class="fw-medium">6B</span>,
+                            </div>
+                            <div>
+                                <span class="text-color">House No: </span>
+                                <span class="fw-medium"></span>
+                            </div>
+                        </div> {% endcomment %}
+
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Post Code: </span>
+                            <span class="fw-medium">{{order.shipping_address.postal_code}}</span>
+                        </div>
+                        {% comment %} <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Address Line: </span>
+                            <span class="fw-medium">Dhaka, Bangladesh</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Address Line 2: </span>
+                            <span class="fw-medium"></span>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+                <!-- .boxs -->
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</div>
+{% endblock  %}
+
+{% block JS %}
+<script>
+function toTitleCase(str) {
+    return str
+        .toLowerCase()
+        .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+document.querySelectorAll('.order-status').forEach(item => {
+    item.addEventListener('click', function () {
+        let status = this.dataset.status;
+        let orderId = this.dataset.order;
+
+        fetch("{% url 'update_order_status' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                order_id: orderId,
+                order_status: status
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("delivery_date_id").innerText =
+                    toTitleCase(data.delivery_date);
+                location.reload();
+            }
+        });
+    });
+});
+
+document.getElementById('paymentToggle').addEventListener('change', function () {
+    let orderId = this.dataset.order;
+    let status = this.checked ? 'paid' : 'pending';
+
+    fetch("{% url 'update_payment_status' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            order_id: orderId,
+            payment_status: status
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("payment_status_id").innerText = toTitleCase(data.payment_status);
+        }
+    });
+});
+
+// DELIVERY LOCATION UPDATE 
+
+const SHIPPING_METHOD_URL = "{% url 'update_shipping_method_ajax' %}";
+
+let currentShippingCharge = parseFloat("{{ order.shipping_charge|default:'0' }}") || 0;
+const baseSubTotal        = parseFloat("{{ order.sub_total_after_discount|default:'0' }}") || 0;
+const couponPrice         = parseFloat("{{ order.coupon_price|default:'0' }}") || 0;
+const vatGst              = parseFloat("{{ vat_gst|default:'0' }}") || 0;
+
+function recalcGrandTotal() {
+    const grand = baseSubTotal - couponPrice + currentShippingCharge + vatGst;
+    const el = document.getElementById('grand_total_display');
+    if (el) el.textContent = '৳ ' + grand.toFixed(2);
+    return grand;
+}
+
+document.getElementById('updateShippingMethodBtn').addEventListener('click', function () {
+    const btn            = this;
+    const select         = document.getElementById('shippingMethodSelect');
+    const selectedMethod = select.value;
+    const msgEl          = document.getElementById('shippingMethodMsg');
+
+    btn.disabled    = true;
+    btn.innerHTML   = '<span class="spinner-border spinner-border-sm"></span>';
+    msgEl.style.display = 'none';
+
+    fetch(SHIPPING_METHOD_URL, {
+        method:  'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            order_id:        {{ order.id }},
+            shipping_method: selectedMethod,
+        }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            currentShippingCharge = parseFloat(data.shipping_charge);
+            document.getElementById('shippingChargeDisplay').textContent = '৳ ' + currentShippingCharge.toFixed(2);
+
+            const deliveryEl = document.getElementById('delivery_charge_display');
+            if (deliveryEl) deliveryEl.textContent = '৳ ' + currentShippingCharge.toFixed(2);
+
+            const newTotal = parseFloat(data.new_total);
+            const grandEl  = document.getElementById('grand_total_display');
+            if (grandEl) grandEl.textContent = '৳ ' + newTotal.toFixed(2);
+
+            msgEl.style.display = 'block';
+            msgEl.className     = 'mt-2 text-success';
+            msgEl.innerHTML     =
+                `<i class="bi bi-check-circle"></i> Updated to
+                <b>${select.options[select.selectedIndex].text}</b> —
+                Charge: ৳ ${currentShippingCharge.toFixed(2)}.
+                New Grand Total: <b>৳ ${newTotal.toFixed(2)}</b>`;
+
+            // Toast
+            const toast = document.createElement('div');
+            toast.textContent = `Shipping updated! New total: ৳ ${newTotal.toFixed(2)}`;
+            toast.style.cssText = `
+                position:fixed;top:20px;right:20px;z-index:9999;
+                background:#4CAF50;color:#fff;
+                padding:12px 20px;border-radius:8px;
+                font-size:13px;font-weight:500;
+                box-shadow:0 4px 12px rgba(0,0,0,0.15);
+                transition:opacity 0.3s;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+
+        } else {
+            msgEl.style.display = 'block';
+            msgEl.className     = 'mt-2 text-danger';
+            msgEl.textContent   = 'Error: ' + (data.error || 'Could not update.');
+        }
+    })
+    .catch(err => {
+        msgEl.style.display = 'block';
+        msgEl.className     = 'mt-2 text-danger';
+        msgEl.textContent   = 'Failed: ' + err.message;
+    })
+    .finally(() => {
+        btn.disabled  = false;
+        btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Update';
+    });
+});
+</script>
+
+{% endblock  %}

@@ -1,0 +1,92 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %} {% if page_title %}
+{{page_title}}
+{% else %}
+Categories
+{% endif %} 
+{% endblock %}
+
+{% block content %}
+
+
+<section class="products-area">
+    <div class="containers">
+    <h4 class="mb-3">All categories</h4>
+
+        <!-- PRODUCTS GRID -->
+        <div class="row row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+            {% for category in categories_qs %}
+            <div class="col mb-4">
+                <div class="category-card text-center h-100">
+                    <a href="{% url 'category_products' category.id %}">
+                        <div class="category-img">
+                            {% if category.image %}
+                                <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                            {% else %}
+                                <img src="{% static 'assets/img/lCjRExEMOBrqGlmAq6SIXRgy5vVPEzjT9iQOIkfR.png' %}" alt="categories">
+                            {% endif %}
+                        </div>
+                        <p class="category-title">{{ category.name }}</p>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- RESULTS INFO + PAGINATION (Single Row) -->
+        {% if categories_qs.paginator.count > 0 %}
+        <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap">
+
+            <!-- Showing X to Y of Z results -->
+            <p class="mb-0 text-muted small">
+                Showing {{ categories_qs.start_index }} to {{ categories_qs.end_index }} of {{ categories_qs.paginator.count }} results
+            </p>
+
+            <!-- Pagination -->
+            {% if categories_qs.paginator.num_pages > 1 %}
+            <ul class="pagination mb-0">
+
+                <!-- Previous -->
+                {% if categories_qs.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ categories_qs.previous_page_number }}">&laquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+                {% endif %}
+
+                <!-- Page Numbers (Current ±2 pages) -->
+                {% for num in categories_qs.paginator.page_range %}
+                    {% if num >= categories_qs.number|add:'-2' and num <= categories_qs.number|add:'2' %}
+                        {% if categories_qs.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Next -->
+                {% if categories_qs.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ categories_qs.next_page_number }}">&raquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                {% endif %}
+
+            </ul>
+            {% endif %}
+
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
+
+{% block JS %}
+{% endblock %}

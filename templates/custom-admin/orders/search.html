@@ -1,0 +1,57 @@
+<table class="table align-middle table-bordered" id="search_items">
+    <thead class="table-light">
+        <tr>
+            <th class='fw-bold'>Order ID</th>
+            <th class='fw-bold'>Order Date</th>
+            <th class='fw-bold'>Customer Name</th>
+            <th class='fw-bold'>Total</th>
+            <th class='fw-bold'>Payment Status</th>
+            <th class='fw-bold'>Order Status</th>
+            <th class='fw-bold'>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.order_no }}</td>
+            <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+            <td>{{ order.shipping_address.full_name }}</td>
+            <td>৳ {{order.total_payable}}</td>
+            <td>{{ order.get_payment_status_display }}</td>
+            <td>
+                <span class="badge order-status
+                    {% if order.order_status == 'pending' %}bg-primary
+                    {% elif order.order_status == 'confirmed' %}bg-info
+                    {% elif order.order_status == 'cancelled' %}bg-warning
+                    {% elif order.order_status == 'shipped' %}bg-secondary
+                    {% elif order.order_status == 'returned' %}bg-dark
+                    {% elif order.order_status == 'delivered' %}bg-success
+                    {% else %}bg-danger{% endif %}">
+                    {{ order.get_order_status_display }}
+                </span>
+            </td>
+            <td>
+                <div class="action-btns text-center">
+                    <a href="{% url 'order_detail' order.id %}" 
+                        class="action-btn action-view"
+                        title="View Order">
+                            <i class="bi bi-eye"></i>
+                    </a>
+
+                {% comment %} <a href="{% url 'order_invoice_download' order.id %}" 
+        
+                    class="action-btn action-download"
+                    title="Download Invoice">
+                        <i class="fa-solid fa-download"></i>
+                    </a> {% endcomment %}
+
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="text-center">No Orders Found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

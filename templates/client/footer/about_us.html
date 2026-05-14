@@ -1,0 +1,16 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %}About Us{% endblock %}
+{% block content %}
+    <div class="containers">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="contact-area">
+                    <div class="description">
+                        {{ object.description|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

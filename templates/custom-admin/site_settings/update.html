@@ -1,0 +1,93 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Update Site Setting{% endblock  %}
+
+{% block content %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <section class="boxs">
+        <h6 class="subtitle">Update Site Setting</h6>
+        <hr>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.company_name|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.email|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.phone|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.company_moto|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.address|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.facebook|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.linkedin|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.youtube|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.instagram|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.tiktok|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.xhandle|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.messenger|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.whatsapp_no|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.logo|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.favicon|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.is_active|as_crispy_field }}
+                </div>
+            </div>
+            <div class="text-center pt-3 pb-4">
+                <button type="submit" class="btn add-btn">Update</button>
+            </div>
+        </form>
+
+    </section>
+{% endblock  %}
+
+{% block JS %}
+
+{% endblock  %}

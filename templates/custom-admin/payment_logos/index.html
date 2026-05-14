@@ -1,0 +1,61 @@
+{% extends "admin_base.html" %}
+{% block title %}Payment Methods Logo{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="fw-bold">Payment Methods Logos</h5>
+        {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+        <a href="{% url 'payment_method_logo_create' %}" class="btn add-btn btn-sm">+ Add Logo</a>
+        {% endif %}
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>SL No.</th>
+                    <th>Logo</th>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if logos %}
+                {% for logo in logos %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <img src="{{ logo.logo.url }}" width="80">
+                    </td>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <td>
+                        <a href="{% url 'payment_method_logo_update' logo.id %}" class="edit_btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a> 
+
+                        <a href="{% url 'payment_method_logo_delete' logo.id %}" class="delete_btn" title="Delete" 
+                            onclick="SweetDelete(event, this.href)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No logos found</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">No logos found</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

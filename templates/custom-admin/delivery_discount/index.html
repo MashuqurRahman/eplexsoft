@@ -1,0 +1,113 @@
+{% extends "admin_base.html" %}
+{% block title %}Delivery Discount{% endblock %}
+{% block content %}
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="fw-bold">Delivery Discount</h5>
+        <a href="{% url 'delivery_discount_create_url' %}" class="btn add-btn btn-sm">+ Add Discount</a>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Flat Delivery</th>
+                    <th>Discount Price</th>
+                    <th>Minimum Price</th>                
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in obj_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ obj.flat_delivery|default:"N/A" }}</td>
+                    <td>{{ obj.discount_price|default:"N/A" }}</td>
+                    <td>{{ obj.min_price|default:"N/A" }}</td>               
+                    <td>
+                        <a href="{% url 'delivery_discount_update_url' obj.id %}" class="edit_btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a href="{% url 'delivery_discount_delete_url' obj.id %}" class="delete_btn" title="Delete" 
+                            onclick="SweetDelete(event, this.href)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12" class="text-center">Data is not found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+                <div class="table-footer">
+                {% if obj_list.has_other_pages %}
+                    <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-end">
+                        {% if obj_list.has_previous %}
+                        <li class="page-item" >
+                                <a href="?page={{ obj_list.previous_page_number }}" class="page-link" tabindex="-1">Previous</a>
+                            </li>
+                        {% if obj_list.number > 3 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">1</a>
+                        </li>
+                            {% if obj_list.number > 4 %}
+
+                            <li class="page-item">
+                            <span class="page-link">...</span>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                        {% endif %}
+
+                        {% for num in obj_list.paginator.page_range %}
+                        {% if obj_list.number == num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% elif num > obj_list.number|add:'-3' and num < obj_list.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if obj_list.has_next %}
+                        {% if obj_list.number < obj_list.paginator.num_pages|add:'-3' %}
+                            <li class="page-item">
+                            <span class="page-link">...</span>
+                            </li>
+                            <li class="page-item">
+                            <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                            </li>
+                        {% elif obj_list.number < obj_list.paginator.num_pages|add:'-2' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ obj_list.paginator.num_pages }}">{{ obj_list.paginator.num_pages }}</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item">
+                        <a href="?page={{ obj_list.next_page_number }}" class="page-link">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>  
+                </nav> 
+                {% endif %}  
+            </div>
+    </div>
+</div>
+{% endblock %}

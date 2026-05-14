@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Login - Ecommerce</title>
+    <!-- Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Responsive Website Design, landing page, Portfolio, Business, E-commerce">
+    <meta name="description" content="Responsive Website Design & Development">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="rebots" content="index, archive">
+    <link rel="canonical" href="https://www.example.com">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!--favicon icon-->
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %}">
+
+    <!-- CSS style links-->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+
+</head>
+
+<body>
+
+
+
+
+    <!-- login form -->
+    <section class="login-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="logining">
+                        <img src="{% static 'assets/img/login.svg' %}" alt="login">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="login-form">
+                        {% if site_setting %}
+                            <img src="{{ site_setting.logo.url }}" alt="{{ site_setting.company_name }}">
+                            <p>Welcome to {{ site_setting.company_name }}</p>
+                        {% else %}
+                            <img src="{% static 'assets/img/logo.png' %}" alt="Ready Ecommerce">
+                            <p>Welcome to Ready Ecommerce</p>
+                        {% endif %}
+                        <h4>Login</h4>
+                        <form class="row g-3" method="POST" action="">
+                            {% csrf_token %}
+                            <div class="col-12">
+                                <label for="Email" class="form-label">Email</label>
+                                <input type="text" name="email" class="form-control" id="email" placeholder="Enter Email">
+                                {% if errors.email %}
+                                    <small class="text-danger" style="font-size: 14px;">{{ errors.email }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-12 position-relative">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" id="password" placeholder="Enter Password">
+                                <span class="eye" onclick="showHidePassword()">
+                                    <i class="bi bi-eye-slash" id="togglePassword"></i>
+                                </span>
+
+                                {% if errors.password %}
+                                    <small class="text-danger" style="font-size: 14px;">{{ errors.password }}</small>
+                                {% endif %}
+
+                                <!-- Forgot password link -->
+                                <div class="mt-2">
+                                    <a href="{% url 'password_reset' %}" class="text-primary" style="font-size: 14px;">Forgot Password?</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <button type="submit" class="cusbtn2">Login</button>
+                                <p>Don’t have an account? <a href="{% url 'registration_url' %}">Sign Up</a> </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- login form -->
+
+
+
+
+
+    <!-- Js script links-->
+    <script src="{% static 'assets/js/code.jquery.com_jquery-3.7.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/apexcharts.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'assets/js/select2.min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+    <script>
+        function showHidePassword() {
+            const toggle = document.getElementById("togglePassword");
+            const password = document.getElementById("password");
+
+            // toggle the type attribute
+            const type = password.getAttribute("type") === "password" ? "text" : "password";
+            password.setAttribute("type", type);
+            // toggle the icon
+            toggle.classList.toggle("bi-eye");
+            toggle.classList.toggle("bi-eye-slash");
+        }
+    </script>
+
+</body>
+
+</html>

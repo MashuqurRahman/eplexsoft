@@ -1,0 +1,179 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Order Report{% endblock  %}
+{% block content %}
+{% block Style %}
+<style>
+    table.table-bordered thead th {
+        background-color: #e8e8e8 !important;
+        color: rgb(82, 82, 82) !important;
+    }
+</style>
+{% endblock  %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Order Report</h5>
+    </div>
+
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.categories|as_crispy_field }}
+                </div>
+                 <div class="col-md-4">
+                    {{ form.sub_categories|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.sub_sub_categories|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.order_status|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.form_date|as_crispy_field }}
+                </div>
+                 <div class="col-md-4">
+                    {{ form.to_date|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <button class="btn add-btn" type="submit">Submit</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% if order_obj %}
+<div class="card mt-2">
+    <div style="text-align: right;">
+      <button onclick="ExportToExcel('xlsx')" class="btn add-btn btn-sm" style="width:60px; height:35px">
+        <i class="bi bi-file-earmark-excel" style="font-size: 18px;"></i>
+      </button>
+      <button type="button" onclick="printDiv('printableArea')" class="btn add-btn btn-sm" style="width:60px; height:35px">
+        <i class="bi bi-printer" style="font-size: 18px;"></i>
+      </button>
+    </div>
+    <div class="table-responsive" id="printableArea">
+        <table class="table table-bordered" id="order_report">
+            <thead>
+                <tr style="background-color: gray !important;">
+                    <th>SL</th>
+                    <th>Order No</th>
+                    <th>Product Name</th>
+                    <th>Buying Price</th>
+                    <th>Selling Price</th>
+                    <th>Profit</th>
+                    <th>Delivery Charge</th>
+                    <th>VAT & GST</th>
+                    <th>Coupon Price</th>
+                    <th>Total</th>
+                    <th>Order Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in order_obj %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ order.order_no }}</td>
+                    <td>{{ order.order_wise_products }}</td>
+                    <td>{{ order.order_wise_buying_price }}</td>
+                    <td>{{ order.order_wise_selling_price }}</td>
+                    <td>{{ order.order_wise_profit }}</td>
+                    <td>{{ order.shipping_charge }}</td>
+                    <td>{{ order.total_vat_gst_amount }}</td>
+                    <td>{{ order.coupon_price }}</td>
+                    <td>{{ order.total_payable }}</td>
+                    <td>{{ order.get_order_status_display }}</td>
+                    <td>{{ order.created_at|date:"d-m-Y" }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="3" class="fw-bold text-center">Total</td>
+                    <td class="fw-bold">{{total_buying_price}}</td>
+                    <td class="fw-bold">{{total_selling_price}}</td>
+                    <td class="fw-bold">{{total_profit}}</td>
+                    <td class="fw-bold">{{total_delivery_charge}}</td>
+                    <td class="fw-bold">{{total_vat_gst}}</td>
+                    <td class="fw-bold">{{coupon_total}}</td>
+                    <td class="fw-bold">{{ground_total}}</td>
+                    <td colspan="3"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% elif is_searched %}
+    <div class="card mt-2">
+        <div class="card-body text-center">
+            <h5 class="text-danger">There is no order</h5>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block JS %}
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script>
+$(document).ready(function() {
+
+    var load_subcategories_url = "{% url 'ajax_load_subcategories' %}";
+    var load_sub_subcategories_from_category = "{% url 'ajax_load_sub_subcategories_from_category' %}";
+    $("#id_categories").change(function () {
+        var categoryId = $(this).val();  
+        $.ajax({                       
+            url: load_subcategories_url,                 
+            data: {'category': categoryId},
+            success: function (data) { 
+                $("#id_sub_categories").html(data); 
+            }
+        });
+        $.ajax({                       
+            url: load_sub_subcategories_from_category,                 
+            data: {'category': categoryId},
+            success: function (data) { 
+                $("#id_sub_sub_categories").html(data); 
+            }
+        });
+    });
+
+    var load_sub_subcategories_url = "{% url 'ajax_load_sub_subcategories' %}";
+    $("#id_sub_categories").change(function () {
+        var sub_categoryId = $(this).val();  
+        $.ajax({                       
+            url: load_sub_subcategories_url,                 
+            data: {'sub_category': sub_categoryId},
+            success: function (data) { 
+                $("#id_sub_sub_categories").html(data); 
+            }
+        });
+    });
+
+});
+
+function printDiv(divName) {
+    var printContents = document.getElementById(divName).innerHTML;
+    var originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+}
+
+function ExportToExcel(type, fn, dl) {
+    var elt = document.getElementById('order_report');
+    var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+    return dl ?
+        XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
+        XLSX.writeFile(wb, fn || ('Order_Report.' + (type || 'xlsx')));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Update RedX Courier Info{% endblock  %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="fw-bold">RedX Courier Info</h5>
+            </div>
+
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ redx_form.api_key|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ redx_form.base_url|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ redx_form.pickup_store_id|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ redx_form.pickup_phone|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4" style="margin-top: 40px;">
+                            {{ redx_form.status|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="text-center pt-1 pb-2">
+                        <button type="submit" name="form_type" value="redx" class="btn btn-sm add-btn">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}
