@@ -103,9 +103,9 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.mysql',
 
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'ecommerce_db_omar'),
-        'USER': os.environ.get('DJANGO_DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'eplexsoft_eplex_demo_db'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'eplexsoft_eplexsoft'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'eplexsoft@eplexsoft'),
         'HOST': os.environ.get('DJANGO_DB_HOST','127.0.0.1'),
 
         'PORT': os.environ.get('PORT', '3306'),
