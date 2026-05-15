@@ -103,9 +103,9 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.mysql',
 
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'eplexsoft_db'),
-        'USER': os.environ.get('DJANGO_DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'rivenfas_rivenfashion_db'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'rivenfas_rivenfashion'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'riven@ecommerce'),
         'HOST': os.environ.get('DJANGO_DB_HOST','127.0.0.1'),
 
         'PORT': os.environ.get('PORT', '3306'),
@@ -157,7 +157,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
