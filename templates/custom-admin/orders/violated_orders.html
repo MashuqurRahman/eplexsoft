@@ -1,0 +1,238 @@
+{% extends "admin_base.html" %}
+{% load static %}
+
+{% block title %}Stock Violated Orders{% endblock %}
+
+{% block content %}
+<div class="card">
+<div class="container-fluid mt-4">
+
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+      <div style="font-size:11px;font-weight:500;color:#888;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px">
+        Order Management
+      </div>
+      <h1 style="font-size:20px;font-weight:600;letter-spacing:-.4px">
+        Stock Violated Orders
+      </h1>
+    </div>
+    <a href="{% url 'order_list' %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back to Orders
+    </a>
+  </div>
+    <hr>
+  {% if orders_with_violations %}
+
+    {% for order, items_info in orders_with_violations.items %}
+    <div class="card mb-4 border-0 shadow-sm" id="order-card-{{ order.id }}">
+      <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2"
+           style="background:#fff8f8;border-bottom:1px solid #fde8e8">
+
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <code style="font-size:12px;background:#f3f3f6;padding:3px 10px;border-radius:4px;border:0.5px solid #ddd">
+            #{{ order.order_no }}
+          </code>
+          <span class="badge
+            {% if order.order_status == 'pending' %}bg-primary
+            {% elif order.order_status == 'confirmed' %}bg-info
+            {% elif order.order_status == 'shipped' %}bg-secondary
+            {% elif order.order_status == 'delivered' %}bg-success
+            {% elif order.order_status == 'cancelled' %}bg-warning text-dark
+            {% else %}bg-danger{% endif %}">
+            {{ order.get_order_status_display }}
+          </span>
+          <span style="font-size:12px;color:#888">
+            <i class="bi bi-person"></i>
+            {{ order.shipping_address.full_name }}
+          </span>
+          <span style="font-size:12px;color:#888">
+            <i class="bi bi-calendar2"></i>
+            {{ order.created_at|date:"d M Y, h:i A" }}
+          </span>
+        </div>
+
+        <div class="d-flex gap-2">
+          <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-eye"></i> View
+          </a>
+          <a href="{% url 'order_edit_url' order.id %}" class="btn btn-sm btn-outline-primary mx-1">
+            <i class="bi bi-pencil-square"></i> Edit
+          </a>
+        </div>
+
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table align-middle table-bordered" style="font-size:13px">
+            <thead class="table-light">
+              <tr>
+                <th class="fw-semibold ps-3">Product</th>
+                <th class="fw-semibold">Variant</th>
+                <th class="fw-semibold text-center">Ordered Qty</th>
+                <th class="fw-semibold text-center">Available Stock</th>
+                <th class="fw-semibold text-center">Over Quantity</th>
+                <th class="fw-semibold text-center">Status</th>
+                <th class="fw-semibold text-center pe-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for info in items_info %}
+              {% with item=info.item %}
+              <tr id="item-row-{{ item.id }}"
+                  style="{% if info.still_violated %}background:rgba(220,53,69,0.04){% endif %}">
+
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    {% if item.product_attribute.image %}
+                    <img src="{{ item.product_attribute.image.url }}" width="36" height="36" style="border-radius:6px;object-fit:cover;border:0.5px solid #ddd; margin-right: 8px;" loading="lazy">
+                    {% endif %}
+                    <div>
+                      <div class="fw-medium">{{ item.product.product_name }}</div>
+                      <div class="text-muted" style="font-size:11px">Item ID: {{ item.id }}</div>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <span class="badge bg-light text-dark border" style="font-size:11px">
+                    Size: {{ item.product_attribute.size|default:"—" }}
+                  </span>
+                  <span class="badge bg-light text-dark border ms-1" style="font-size:11px">
+                    Color: {{ item.product_attribute.color|default:"—" }}
+                  </span>
+                </td>
+
+                <td class="text-center fw-semibold">{{ item.quantity }}</td>
+
+                <td class="text-center">
+                  <span class="{% if info.still_violated %}text-danger fw-semibold{% else %}text-success fw-semibold{% endif %}">
+                    {{ info.remaining }}
+                  </span>
+                </td>
+
+                <td class="text-center">
+                    {% if info.still_violated %}
+                        <span class="badge bg-danger" style="font-size:13px">{{ info.over_by }}</span>
+                    {% else %}
+                        <span class="badge bg-success">Restocked ✓</span>
+                    {% endif %}
+                </td>
+
+                <td class="text-center">
+                  {% if info.still_violated %}
+                    <span class="badge bg-danger">
+                      <i class="bi bi-exclamation-triangle-fill"></i> Violated
+                    </span>
+                  {% else %}
+                    <span class="badge bg-success">
+                      <i class="bi bi-check-circle-fill"></i> Stock OK
+                    </span>
+                  {% endif %}
+                </td>
+
+                <td class="text-center pe-3">
+                  {% if not info.still_violated %}
+                  {# Stock is sufficient — show resolve button #}
+                  <button class="btn btn-sm btn-success resolve-btn"
+                        data-item-id="{{ item.id }}"
+                        data-order-id="{{ order.id }}"
+                        data-url="{% url 'resolve_stock_violation' item.id %}"
+                        style="font-size:12px">
+                        <i class="bi bi-check-lg"></i> Mark Resolved
+                    </button>
+                  {% else %}
+                  <span class="text-muted small">Awaiting stock</span>
+                  {% endif %}
+                </td>
+
+              </tr>
+              {% endwith %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="text-center pb-4">
+      <h5 class="mt-3 text-muted">No stock violations found</h5>
+      <p class="text-muted small">All orders are within available stock limits.</p>
+    </div>
+  {% endif %}
+
+</div>
+
+
+<div id="resolveToast" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:none">
+  <div class="alert alert-success shadow d-flex align-items-center gap-2 mb-0">
+    <i class="bi bi-check-circle-fill"></i>
+    <span id="resolveToastMsg">Resolved successfully!</span>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+
+{% block JS %}
+<script>
+const CSRF_TOKEN       = "{{ csrf_token }}";
+
+document.querySelectorAll('.resolve-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const itemId  = this.dataset.itemId;
+    const orderId = this.dataset.orderId;
+    const url     = this.dataset.url;        // ← correct URL per button
+    const origHtml = this.innerHTML;
+
+    this.disabled  = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+    fetch(url, {                             // ← use it directly here
+      method:  'POST',
+      headers: { 'X-CSRFToken': CSRF_TOKEN, 'Content-Type': 'application/json' },
+      body:    JSON.stringify({}),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        const row = document.getElementById('item-row-' + itemId);
+        row.style.transition = 'opacity 0.4s';
+        row.style.opacity    = '0';
+        setTimeout(() => row.remove(), 400);
+
+        const card = document.getElementById('order-card-' + orderId);
+        if (card) {
+          const remaining = card.querySelectorAll('tbody tr').length;
+          if (remaining <= 1) {
+            card.style.transition = 'opacity 0.5s';
+            card.style.opacity    = '0';
+            setTimeout(() => card.remove(), 500);
+          }
+        }
+        showToast(data.message || 'Violation resolved!');
+      } else {
+        this.disabled  = false;
+        this.innerHTML = origHtml;
+        showToast('Error: ' + (data.error || 'Could not resolve.'), 'danger');
+      }
+    })
+    .catch(() => {
+      this.disabled  = false;
+      this.innerHTML = origHtml;
+      showToast('Network error. Try again.', 'danger');
+    });
+  });
+});
+
+function showToast(msg, type='success') {
+  const el = document.getElementById('resolveToast');
+  el.querySelector('div').className = `alert alert-${type} shadow d-flex align-items-center gap-2 mb-0`;
+  document.getElementById('resolveToastMsg').textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3500);
+}
+</script>
+{% endblock %}

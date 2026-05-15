@@ -1,0 +1,202 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %}Order Details{% endblock  %}
+
+{% block content %}
+<div class="container">
+    <div class="customerdashcontents">
+    <section class="order-details">
+        <div class="row">
+            <div class="col-md-8">
+                <!-- boxs -->
+                <div class="boxs">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between">
+                        <p class="subtitle">Order Details</p>
+                    <div class="bumns">
+                        <a href="{% url 'download_order_details' order.id %}"
+                        class="invoice active">
+                            <i class="bi bi-cloud-arrow-down"></i>
+                            Download Order Details
+                        </a>
+                    </div>
+                    </div>
+                    <div class="card-body border-top pt-3 mt-2">
+                        <div class="d-flex gap-3 flex-wrap align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="order-item">
+                                    <label class="label">Order Id:</label>
+                                    <span class="value">{{ order.order_no }}</span>
+                                </div>
+                                <div class="order-item">
+                                    <label class="label">Payment Status:</label>
+                                    <span class="value" id="payment_status_id">{{ order.get_payment_status_display }}</span>
+                                </div>
+                                <div class="order-item">
+                                    <label class="label">Payment Method:</label>
+                                    {% if order.payment_method == 'cash_payment' %}
+                                    <span class="value">Cash Payment</span>
+                                    {% else %}
+                                    <span class="value">Card Payment</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="item-divider"></div>
+
+                            <div class="flex-grow-1">
+                                <div class="order-item">
+                                    <label class="label">Order Status:</label>
+                                    <span class="value">{{order.get_order_status_display }}</span>
+                                </div>
+                                <div class="order-item">
+                                    <label class="label">Order Date:</label>
+                                    <span class="value">{{order.created_at }}</span>
+                                </div>
+                                <div class="order-item">
+                                    <label class="label">Delivery Date:</label>
+                                    <span class="value">{{order.delivery_date|default:"N/A" }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive-xl mt-4">
+                            <table class="table mytable">
+                                <thead>
+                                    <tr>
+                                        <th>SL</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Size</th>
+                                        <th>Color</th>
+                                        <th>Price</th>
+                                        {% comment %} <th class="text-end">Total</th> {% endcomment %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in product_item_obj %}
+                                    <tr>
+                                        <td>{{forloop.counter}}</td>
+                                        <td>
+                                            <div class="d-flex gap-1 align-items-center">
+                                                <img src="{{item.product_attribute.image.url}}" alt="" width="40" height="40" loading="lazy">
+                                                <span>{{item.product.product_name}}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{item.quantity}}</td>
+                                        <td>{{item.product_attribute.size}}</td>
+                                        <td>{{item.product_attribute.color}}</td>
+                                        <td>{{item.product_attribute.product_final_price}}</td>
+                                        {% comment %} <td class="text-end">
+                                            $2400
+                                        </td> {% endcomment %}
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        <div class="grandtotal max-300 ms-auto d-flex flex-column gap-1">
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div>Sub Total After Discount</div>
+                                <div>৳ {{order.sub_total_after_discount}}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div>Coupon Discount</div>
+                                <div>৳ {{order.coupon_price}}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div>Delivery Charge</div>
+                                <div>৳ {{order.shipping_charge}}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div>VAT &amp; Tax</div>
+                                <div>৳ {{vat_gst}}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between gap-2 border-top pt-1 mt-1">
+                                <div class="fw-bold">Grand Total</div>
+                                <div class="fw-bold">৳ {{order.total_payable}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- boxs -->
+            </div>
+
+
+            <div class="col-md-4">
+
+                <!-- .boxs -->
+                <div class="boxs">
+                    <p class="subtitle">Shipping Address</p>
+                    <div class=" mt-3">
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Name: </span>
+                            <span class="fw-medium">{{order.shipping_address.full_name}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Phone: </span>
+                            <span class="fw-medium">{{order.shipping_address.phone_no}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">City: </span>
+                            <span class="fw-medium">{{order.shipping_address.city}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Upazila: </span>
+                            <span class="fw-medium">{{order.shipping_address.upozila}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Thana: </span>
+                            <span class="fw-medium">{{order.shipping_address.thana}}</span>
+                        </div>
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Address: </span>
+                            <span class="fw-medium">{{order.shipping_address.address_line}}</span>
+                        </div>
+                        {% comment %} <div class="d-flex gap-2 border-bottom align-items-center justify-content-between flex-wrap py-12">
+                            <div>
+                                <span class="text-color">Road No: </span>
+                                <span class="fw-medium"></span>,
+                            </div>
+                            <div>
+                                <span class="text-color">Flat No: </span>
+                                <span class="fw-medium">6B</span>,
+                            </div>
+                            <div>
+                                <span class="text-color">House No: </span>
+                                <span class="fw-medium"></span>
+                            </div>
+                        </div> {% endcomment %}
+
+                        <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Post Code: </span>
+                            <span class="fw-medium">{{order.shipping_address.postal_code}}</span>
+                        </div>
+                        {% comment %} <div class="border-bottom d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Address Line: </span>
+                            <span class="fw-medium">Dhaka, Bangladesh</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between gap-2 py-12">
+                            <span class="text-color">Address Line 2: </span>
+                            <span class="fw-medium"></span>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+                <!-- .boxs -->
+            </div>
+        </div>
+    </section>
+</div>
+</div>
+
+
+{% endblock  %}
+
+{% block JS %}
+{% endblock  %}

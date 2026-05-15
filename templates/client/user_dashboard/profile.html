@@ -1,0 +1,62 @@
+{% extends "user_dashboard_base.html" %}
+{% load static %}
+{% block title %}User Order History{% endblock  %}
+
+{% block content %}
+<div class="customerdashcontents">
+    <div class="customer-header">
+        <h2 class="fw-bold">My Profile</h2>
+    </div>
+    <div class="profile-card d-flex justify-content-between align-items-center px-0">
+    <div class="row g-0">
+        <div class="col-md-4 profile-header right-shadow d-flex flex-column align-items-center justify-content-center">
+            {% if user.image %}
+            <img src="{{user.image.url}}" alt="User Image" class="profile-img">
+            {% else %}
+            <img src="{% static 'assets/img/user_images.png' %}" alt="User Image" class="profile-img">
+            {% endif %}
+            <h3 class="fw-bold mb-0">{{user.name|default:"User"}}</h3>
+            <p class="text-muted">{{user.email|default:"user@gmail.com"}}</p>
+            <a href="{% url 'user_profile_update_url' %}" class="btn btn-edit mt-3">Edit Profile</a>
+        </div>
+
+        <div class="col-md-8 p-4 p-lg-5">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="info-label">Email Address</div>
+                    <div class="info-value"><i class="bi bi-envelope icon-box"></i>{{user.email|default:"N/A"}}</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="info-label">Phone Number</div>
+                    <div class="info-value"><i class="bi bi-telephone icon-box"></i>{{user.phone|default:"N/A"}}</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="info-label">Gender</div>
+                    <div class="info-value"><i class="bi bi-person icon-box"></i>{{user.get_gender_display|default:"N/A"}}</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="info-label">Date of Birth</div>
+                    <div class="info-value"><i class="bi bi-calendar-event icon-box"></i>{{user.dob|default:"N/A"}}</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="info-label">Country</div>
+                    <div class="info-value"><i class="bi bi-geo-alt icon-box"></i>{{user.country|default:"N/A"}}</div>
+                </div>
+                <div class="col-12">
+                    <div class="info-label">Full Address</div>
+                    <div class="info-value"><i class="bi bi-house icon-box"></i>{{user.address|default:"N/A"}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</div>
+
+
+{% endblock  %}
+
+{% block JS %}
+{% endblock  %}

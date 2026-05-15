@@ -1,0 +1,42 @@
+<table class="table table-bordered" id="search_items">
+    <thead>
+        <tr>
+            <th>SL</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Gender</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in obj_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ obj.name|default:"N/A" }}</td>
+            <td>{{ obj.email|default:"N/A" }}</td>
+            <td>{{ obj.phone|default:"N/A" }}</td>
+            <td>{{ obj.get_gender_display|default:"N/A" }}</td>
+            <td>{{ obj.get_role_display|default:"N/A" }}</td>
+            <td>
+                <a href="{% url 'employee_profile_url' obj.id %}" class="edit_btn" title="Edit">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                </a>
+                <a href="{% url 'update_employee_url' obj.id %}" class="edit_btn" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                <a href="{% url 'delete_employee_url' obj.id %}" class="delete_btn" title="Delete" 
+                    onclick="SweetDelete(event, this.href)">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="12" class="text-center">Data is not found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

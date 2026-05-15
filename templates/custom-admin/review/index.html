@@ -1,0 +1,191 @@
+{% extends "admin_base.html" %}
+{% block title %}Review Management{% endblock %}
+{% block content %}
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="fw-bold">Reviews</h5>
+    </div>
+
+    <div class="card-body">
+        <div class="table-header mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="data-search">
+                        <div class="input-group search">
+                            <input class="form-control" id="search_id" placeholder="Search..." type="search">
+                            <span class="input-group-text" id="searchBtn"><i aria-hidden="true" class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive" id="search_items">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">SL No.</th>
+                    <th style="width: 18%;">User Email</th>
+                    <th style="width: 20%;">Product Name</th>
+                    <th style="width: 5%;">Rating</th>
+                    <th>Review</th>
+                    <th style="width: 5%;">To Show</th>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if reviews %}
+                {% for review in reviews %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ review.user.email }}</td>
+                    <td>{{ review.product.product_name }}</td>
+                    <td>{{ review.rating|floatformat:0 }} <span><i style="color: #FFC107;" class="bi bi-star-fill"></i></span></td>
+                    <td>{{ review.review }}</td>
+                    <td class="text-center">
+                        <input type="checkbox" class="form-check-input review-checkbox" data-review-id="{{ review.id }}" {% if review.is_selected %}checked{% endif %}>
+                    </td>
+                    {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+                    <td>
+                        <a href="{% url 'update_review_url' review.id %}" class="edit_btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a> 
+
+                        <a href="{% url 'delete_review_url' review.id %}" class="delete_btn" title="Delete" 
+                            onclick="SweetDelete(event, this.href)">
+                            <i class="fas fa-trash-alt"></i>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center">No reviews found</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="10" class="text-center">No reviews found</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+            <div class="table-footer">
+                {% if reviews.has_other_pages %}
+                    <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-end">
+                        {% if reviews.has_previous %}
+                        <li class="page-item" >
+                                <a href="?page={{ reviews.previous_page_number }}" class="page-link" tabindex="-1">Previous</a>
+                            </li>
+                        {% if reviews.number > 3 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">1</a>
+                        </li>
+                            {% if reviews.number > 4 %}
+
+                            <li class="page-item">
+                            <span class="page-link">...</span>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                        {% endif %}
+
+                        {% for num in reviews.paginator.page_range %}
+                        {% if reviews.number == num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% elif num > reviews.number|add:'-3' and num < reviews.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if reviews.has_next %}
+                        {% if reviews.number < reviews.paginator.num_pages|add:'-3' %}
+                            <li class="page-item">
+                            <span class="page-link">...</span>
+                            </li>
+                            <li class="page-item">
+                            <a class="page-link" href="?page={{ reviews.paginator.num_pages }}">{{ reviews.paginator.num_pages }}</a>
+                            </li>
+                        {% elif reviews.number < reviews.paginator.num_pages|add:'-2' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ reviews.paginator.num_pages }}">{{ reviews.paginator.num_pages }}</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item">
+                        <a href="?page={{ reviews.next_page_number }}" class="page-link">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>  
+                </nav> 
+                {% endif %}  
+            </div>
+
+
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+<script>
+    $(document).on('change', '.review-checkbox', function () {
+        let reviewId = $(this).data('review-id');
+        let isChecked = $(this).is(':checked');
+
+        fetch("{% url 'toggle_review_selection_url' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                review_id: reviewId,
+                is_selected: isChecked
+            })
+        });
+    });
+
+    $(document).ready(function(){
+        var search_url = "{% url 'review_search_url' %}"
+        var redirect_url = "{% url 'review_list_url' %}"
+
+        $("#search_id").keypress(function (e) { 
+            if (e.keyCode == 13){
+                $("#searchBtn").click();
+            }
+        });
+    
+        $("#searchBtn").click(function () {
+            if($("#search_id").val())
+                $.ajax({                       
+                    url: search_url,                   
+                data: {
+                    'search_id': $("#search_id").val()
+                },
+                success: function (data) {   
+                    $("#search_items").html(data);
+                }
+            });
+            else
+                location.href = redirect_url
+        });
+    });
+</script>
+{% endblock  %}

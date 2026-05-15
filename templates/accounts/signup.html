@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Signup - Ecommerce</title>
+    <!-- Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Responsive Website Design, landing page, Portfolio, Business, E-commerce">
+    <meta name="description" content="Responsive Website Design & Development">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="rebots" content="index, archive">
+    <link rel="canonical" href="https://www.example.com">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!--favicon icon-->
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %}">
+
+    <!-- CSS style links-->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+
+</head>
+
+<body>
+
+
+
+
+    <!-- login form -->
+    <section class="login-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="logining">
+                        <img src="{% static 'assets/img/login.svg' %}" alt="login">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="login-form">
+                        {% if site_setting %}
+                            <img src="{{ site_setting.logo.url }}" alt="{{ site_setting.company_name }}">
+                            <p>Welcome to {{ site_setting.company_name }}</p>
+                        {% else %}
+                            <img src="{% static 'assets/img/logo.png' %}" alt="Ready Ecommerce">
+                            <p>Welcome to Ready Ecommerce</p>
+                        {% endif %}
+                        <h4>Signup Now</h4>
+
+                        <form class="row g-3" method="POST" action="">
+                            {% csrf_token %}
+                            
+                            <div class="col-12">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" id="email"
+                                    value="{{ email|default:'' }}" placeholder="Enter Email" required>
+
+                                {% if errors.email %}
+                                    <small class="text-danger" style="font-size: 14px;">{{ errors.email }}</small>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12 position-relative">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" id="password"
+                                    placeholder="Enter Password" required>
+
+                                <span class="eye" onclick="togglePassword('password', 'togglePassword')">
+                                    <i class="bi bi-eye-slash" id="togglePassword"></i>
+                                </span>
+                            </div>
+
+
+                            <div class="col-12 position-relative">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input type="password" name="confirm_password" class="form-control"
+                                    id="confirm_password" placeholder="Confirm Password" required>
+
+                                <span class="eye" onclick="togglePassword('confirm_password', 'toggleConfirmPassword')">
+                                    <i class="bi bi-eye-slash" id="toggleConfirmPassword"></i>
+                                </span>
+
+                                {% if errors.confirm_password %}
+                                    <small class="text-danger" style="font-size: 14px;">{{ errors.confirm_password }}</small>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="cusbtn2">Sign Up</button>
+                                <p>Already have an account? 
+                                    <a href="{% url 'login_url' %}">Login</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- login form -->
+
+
+
+
+
+    <!-- Js script links-->
+    <script src="{% static 'assets/js/code.jquery.com_jquery-3.7.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/slick.min.js' %}"></script>
+    <script src="{% static 'assets/js/apexcharts.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'assets/js/select2.min.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            } else {
+                input.type = "password";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

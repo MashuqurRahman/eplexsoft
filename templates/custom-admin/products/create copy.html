@@ -1,0 +1,321 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Add Product{% endblock  %}
+{% block Style %}
+
+{% endblock Style %}
+{% block content %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="boxs">
+        <h6 class="subtitle">Add Product</h6>
+        <hr>
+        <form id="submit_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.categories|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.sub_categories|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.sub_sub_categories|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.product_name|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ varient_form.brand|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ varient_form.sku|as_crispy_field }}
+                </div>
+            </div>          
+            <div class="row">
+                <div class="col-md-4">
+                    {{ varient_form.unit|as_crispy_field }}
+                </div>
+
+                <div class="col-md-4">
+                    {{ form.description|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.moq|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ varient_form.sold_count|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ varient_form.cover_photo|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.delivery_discount|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    {{ form.vat_tax_amount|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.gst_amount|as_crispy_field }}
+                </div>
+                {% if "product_approval_permission" in request.user.user_permissions %}
+                    <div class="col-md-4">
+                        {{ form.approval|as_crispy_field }}
+                    </div>
+                {% endif %}
+                
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    {{ form.is_active|as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.is_best_deal|as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.is_applicable|as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.is_popular|as_crispy_field }}
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="extra_cost_table" class="table table-bordered" style="width: 200%">
+                    <thead>
+                        <tr>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;" class="color">Color *</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;" class="size">Size *</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Regular Price *</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Discounted Price </th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Buying Price *</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Height(in)</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Width(in)</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Weight(gm) *</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Stock *</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Attribute Images</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Product Image *</th>
+                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Is Cover *</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ product_attribute_formset.management_form }}
+                        {% for form in product_attribute_formset %}
+                        <tr class="extra_cost_form">
+                            {{ form.id }}
+                            <td>{{ form.color }}</td>
+                            <td>{{ form.size }}</td>
+                            <td>{{ form.regular_price }}</td>
+                            <td>{{ form.discount_price }}</td>
+                            <td>{{ form.buying_price }}</td>
+                            <td>{{ form.height }}</td>
+                            <td>{{ form.width }}</td>
+                            <td>{{ form.weight }}</td>
+                            <td>{{ form.stock }}</td>
+                            <td>
+                                <input type="file" name="attribute_images_{{ forloop.counter0 }}" multiple class="form-control">
+                            </td>
+                            <td>{{ form.image }}</td>
+                            <td style="text-align:center;">{{ form.is_cover }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <table style="display:none;" style="width: 200%">
+                    <tbody>
+                        <tr id="empty_product_attribute_form" class="extra_cost_form">
+                            {{ product_attribute_formset.empty_form.id }}
+                            <td>{{ product_attribute_formset.empty_form.color }}</td>
+                            <td>{{ product_attribute_formset.empty_form.size }}</td>
+                            <td>{{ product_attribute_formset.empty_form.regular_price }}</td>
+                            <td>{{ product_attribute_formset.empty_form.discount_price }}</td>
+                            <td>{{ product_attribute_formset.empty_form.buying_price }}</td>
+                            <td>{{ product_attribute_formset.empty_form.height }}</td>
+                            <td>{{ product_attribute_formset.empty_form.width }}</td>
+                            <td>{{ product_attribute_formset.empty_form.weight }}</td>
+                            <td>{{ product_attribute_formset.empty_form.stock }}</td>
+                            <td>
+                                <input type="file" name="attribute_images___prefix__" multiple class="form-control">
+                            </td>
+                            <td>{{ product_attribute_formset.empty_form.image }}</td>
+                            <td style="text-align:center;">{{ product_attribute_formset.empty_form.is_cover }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row mt-2">
+                <ul class="action d-flex gap-2 list-unstyled">
+                    <li>
+                        <button type="button" class="btn btn-success" id="add_product_attribute">ADD</button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-danger" id="remove_extra_cost_form">Remove</button>
+                    </li>
+                </ul>
+            </div>
+            
+
+                        
+
+
+            <div class="text-center pt-3 pb-4">
+                <button type="submit" id="submit_btn" class="btn add-btn">Submit</button>
+            </div>
+
+        </form>
+
+    </section>
+{% endblock  %}
+
+{% block JS %}
+<script>
+$(document).ready(function() {
+    $('#id_color').select2({
+        allowClear: true,
+        width: '100%'
+    });
+});
+
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%',
+        closeOnSelect: false,
+        allowClear: true
+    });
+});
+$(document).ready(function() {
+    $("#submit_btn").click(function(){
+        $(this).prop('disabled', true);
+        $("#submit_form").submit();
+    })
+});
+
+
+
+var load_subcategories_url = "{% url 'ajax_load_subcategories' %}"
+ $("#id_categories").change(function () {
+     
+    var categoryId = $(this).val();  
+    $.ajax({                       
+      url: load_subcategories_url,                 
+      data: {
+        'category': categoryId      
+      },
+      success: function (data) { 
+        $("#id_sub_categories").html(data); 
+      }
+    });
+  });
+var load_sub_subcategories_url = "{% url 'ajax_load_sub_subcategories' %}"
+ $("#id_sub_categories").change(function () {
+     
+    var sub_categoryId = $(this).val();  
+    $.ajax({                       
+      url: load_sub_subcategories_url,                 
+      data: {
+        'sub_category': sub_categoryId     
+      },
+      success: function (data) { 
+        $("#id_sub_sub_categories").html(data); 
+      }
+    });
+  });
+
+
+$(document).ready(function () {
+    let prefix = "product_formset";
+    let totalForms = parseInt($("#id_" + prefix + "-TOTAL_FORMS").val());
+
+    $("#add_product_attribute").click(function (event) {
+        event.preventDefault();
+
+        let newRow = $("#empty_product_attribute_form").clone(true, true).removeAttr("id").show();
+
+        newRow.html(newRow.html().replace(/__prefix__/g, totalForms));
+
+        $("#extra_cost_table tbody").append(newRow);
+
+        totalForms++;
+        $("#id_" + prefix + "-TOTAL_FORMS").val(totalForms);
+    });
+
+    $("#remove_extra_cost_form").click(function (event) {
+        event.preventDefault();
+
+        let rows = $("#extra_cost_table tbody tr");
+        let lastRow = rows.last();
+
+        let isBlank = true;
+        lastRow.find("input[type='text'], input[type='number']").each(function () {
+            if ($(this).val().trim() !== "") {
+                isBlank = false;
+                return false;
+            }
+        });
+
+        if (isBlank && rows.length > 1) {
+            lastRow.remove();
+            totalForms--;
+            $("#id_" + prefix + "-TOTAL_FORMS").val(totalForms);
+        }
+    });
+  });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    function handleIsCoverChange() {
+        const checkboxes = document.querySelectorAll(
+            '#extra_cost_table input[type="checkbox"][name$="is_cover"]'
+        );
+
+        let checkedBox = null;
+
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                checkedBox = cb;
+            }
+        });
+
+        checkboxes.forEach(cb => {
+            if (checkedBox && cb !== checkedBox) {
+                cb.disabled = true;
+            } else {
+                cb.disabled = false;
+            }
+        });
+    }
+
+    document.addEventListener("change", function (e) {
+        if (
+            e.target.matches(
+                '#extra_cost_table input[type="checkbox"][name$="is_cover"]'
+            )
+        ) {
+            handleIsCoverChange();
+        }
+    });
+
+    handleIsCoverChange();
+});
+</script>
+
+
+{% endblock JS  %}

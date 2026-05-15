@@ -1,0 +1,134 @@
+{% extends "admin_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Update Product Attribute{% endblock %}
+
+{% block content %}
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="fw-bold">Update Product Varient Attribute</h5>
+    </div>
+
+    <div class="card-body">
+        <form id="submit_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.color|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.size|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.regular_price|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.discount_price|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.buying_price|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.height|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.width|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.weight|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Initial Stock</label>
+                    <input type="number" class="form-control" name="last_stock" value="{{ stock }}" readonly>
+                </div>
+                
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Increase Quantity</label>
+                    <input type="number" class="form-control" name="quantity" value="0">
+                </div>
+                <div class="col-md-4">
+                    <label for="id_attribute_images" class="form-label">Add Attribute Images</label>
+                    <input type="file" name="attribute_images" id="id_attribute_images" class="form-control" multiple>
+                </div>
+                <div class="col-md-4"style="margin-top: 40px;">
+                    {{ form.is_cover|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row"> 
+                <div class="col-md-4">
+                    {{ form.image|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <label class="form-label">Existing Attribute Images</label>
+                    <div class="d-flex flex-wrap gap-3">
+
+                        {% for img in existing_images %}
+                            <div style="position: relative;">
+                                
+                                <img src="{{ img.image.url }}" 
+                                    width="120" 
+                                    height="120" 
+                                    style="object-fit: cover; border-radius: 8px; border:1px solid #ddd;">
+
+                                <a href="{% url 'delete_attribute_image' img.id %}"
+                                    onclick="SweetDelete(event, this.href)"
+                                    style="position: absolute; top: -8px; right: -8px;
+                                            background: red; color: white; border-radius: 50%;
+                                            padding: 4px 8px; text-decoration: none;">
+                                        ×
+                                </a>
+
+                                {% if img.is_primary %}
+                                    <span class="badge bg-success"
+                                        style="position: absolute; bottom: 5px; left: 5px;">
+                                        Primary
+                                    </span>
+                                {% endif %}
+
+                            </div>
+                        {% empty %}
+                            <p>No images added.</p>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center pt-3 pb-4">
+                <button id="submit_btn" type="submit" class="btn add-btn">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block JS %}
+<script>
+    $(document).ready(function(){
+        $("#submit_btn").click(function(){
+            $(this).prop("disabled", true);
+            $("#submit_form").submit();
+        });
+    });
+</script>
+{% endblock  %}

@@ -1,0 +1,573 @@
+{% extends "client_base.html" %}
+{% load static %}
+{% block title %}Digital Products{% endblock  %}
+
+{% block content %}
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Filter</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="filteroption">
+                <div class="mb-3">
+                    <label for="Sort" class="form-label">Sort by</label>
+                    <select id="Sort" class="form-select select2" aria-label="Default select example">
+                        <option selected>Default Sorting</option>
+                        <option value="1">High to Low</option>
+                        <option value="2">Low to High</option>
+                        <option value="3">Most Selling</option>
+                        <option value="3">New Product</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="mb-1">Product Price</label>
+                    <div class="sort-box">
+                        <div>
+                            <span class="doller1">$</span>
+                            <input type="text" aria-label="price Max" id="min_price1" class="price-range-field" />
+                            <span class="to">TO</span>
+                            <span class="doller2">$</span>
+                            <input type="text" aria-label="Price Min" id="max_price1" class="price-range-field" />
+                        </div>
+                        <div id="slider-range1" class="price-filter-range"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="Category" class="form-label">Category</label>
+                    <select id="Category" class="form-select select2" aria-label="Default select example">
+                        <option selected="" value="">Select Category</option>
+                        <option value="25">Software License</option>
+                        <option value="22">Pets &amp; Supplies</option>
+                        <option value="21">Toys &amp; Games</option>
+                        <option value="20">Groceries &amp; Essentials</option>
+                        <option value="19">Books &amp; Stationery</option>
+                        <option value="18">Food</option>
+                        <option value="17">Electronics</option>
+                        <option value="16">Cloth</option>
+                        <option value="15">Gadgets</option>
+                        <option value="14">Home Appliances</option>
+                        <option value="13">Sports &amp; Outdoors</option>
+                        <option value="6">Beauty</option>
+                        <option value="5">Sports &amp; Entertainment</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="Brand" class="form-label">Brand</label>
+                    <select id="Brand" class="form-select select2" aria-label="Default select example">
+                        <option selected="" value="">Select Brand</option>
+                        <option value="21">Unilever</option>
+                        <option value="22">Shiseido</option>
+                        <option value="27">Top ten</option>
+                        <option value="28">SparkLink</option>
+                        <option value="29">Rich Man</option>
+                        <option value="30">Apple</option>
+                        <option value="31">Samsung</option>
+                        <option value="32">Nike</option>
+                        <option value="33">Gucci</option>
+                        <option value="34">Adidas</option>
+                        <option value="35">Louis Vuitton</option>
+                        <option value="36">Rolex</option>
+                        <option value="37">Nestle</option>
+                        <option value="38">Tyson Foods</option>
+                        <option value="39">Microsoft</option>
+                        <option value="40">Tropicana</option>
+                        <option value="41">Oreo</option>
+                        <option value="42">Lay’s</option>
+                        <option value="43">Anchor</option>
+                        <option value="44">Birds Eye</option>
+                        <option value="45">Notify</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Color" class="form-label">Color</label>
+                    <br>
+                    <label class="checks">White
+                        <input type="radio" checked="checked" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Black
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Green
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Blue
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Yellow
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Magenta
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Orange
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Purple
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Brown
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Lavender
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Indigo
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Salmon
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Teal
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Goldenrod
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="Size" class="form-label">Size</label>
+                    <br>
+                    <label class="checks">43
+                        <input type="radio" checked="checked" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Small
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Large
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">XL
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">XXL
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">3XL
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">4XL
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="offcanvas-footer">
+            <button class="cusbtn">Clear</button>
+            <button class="cusbtn2">Apply</button>
+        </div>
+    </div>
+
+    <!-- filter -->
+    <section class="filter-area">
+        <div class="containers">
+            <div class="row">
+                <div class="col-12">
+                    <div class="filters">
+                        <p><a href="#"><i class="bi bi-chevron-left"></i> Back </a> “all” 154 items found</p>
+                        <button class="filter" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"><i class="bi bi-funnel"></i> Filter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- filter -->
+
+    <!-- products -->
+    <section class="products-area">
+        <div class="containers">
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Smart Watch </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/jmqhBMHVDJ4bZeuPyUjRB0xzZEiPZoj7INmcmILF.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Smart Watch </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/jmqhBMHVDJ4bZeuPyUjRB0xzZEiPZoj7INmcmILF.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Smart Watch </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/jmqhBMHVDJ4bZeuPyUjRB0xzZEiPZoj7INmcmILF.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Smart Watch </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/jmqhBMHVDJ4bZeuPyUjRB0xzZEiPZoj7INmcmILF.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Smart Watch </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/jmqhBMHVDJ4bZeuPyUjRB0xzZEiPZoj7INmcmILF.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/mze8v7eP9mSDS9VW7Z4xL3g750N6rpSdXKahcYjY.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Smart Watch </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+                <!-- products -->
+                <div class="col">
+                    <div class="products">
+                        <div class="wishlist">
+                            <span class="badge text-bg-danger">6.2% OFF</span>
+                            <i class="loves bi bi-heart-fill"></i>
+                        </div>
+                        <div class="productimg">
+                            <a href="details.html">
+                                <img src="{% static 'assets/img/jmqhBMHVDJ4bZeuPyUjRB0xzZEiPZoj7INmcmILF.png' %}" alt="product img">
+                            </a>
+                        </div>
+                        <div class="productcon">
+                            <a href="details.html">Freeman Beauty Korean Cica Soothing Clay Mask </a>
+                            <h5>$121.00 <del>$129.00</del></h5>
+                            <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i>10 (0)</p>
+                                <div class="vr"></div>
+                                <p>12 Sold</p>
+                            </div>
+                        </div>
+                        <div class="buybtn">
+                            <a href="checkout.html"> <i class="bi bi-bag-check"></i></a>
+                            <a href="details.html">Buy now</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- products -->
+
+
+
+            </div>
+
+
+            <div class="col-12 ">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-end">
+                        <li class="page-item disabled">
+                            <a class="page-link">Previous</a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+        </div>
+    </section>
+    <!-- products -->
+
+{% endblock  %}
+
+{% block Js %}
+
+{% endblock  %}

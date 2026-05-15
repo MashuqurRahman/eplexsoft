@@ -1,0 +1,62 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Add Sub Sub Categories{% endblock  %}
+
+{% block content %}
+    <section class="boxs">
+        <h6 class="subtitle">Add Sub Sub Categories</h6>
+        <hr>
+        <form id="submit_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.categories|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.sub_categories|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.sub_sub_cat_name|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.image|as_crispy_field }}
+                </div>
+            </div>
+            <div class="text-center pt-3 pb-4">
+                <button id="submit_btn" type="submit" class="btn add-btn">Submit</button>
+            </div>
+        </form>
+
+    </section>
+{% endblock  %}
+
+{% block JS %}
+<script>
+    var load_subcategories_url = "{% url 'ajax_load_subcategories_based_on_sub_sub_category' %}"
+    $("#id_categories").change(function () {
+        
+        var categoryId = $(this).val();  
+        $.ajax({                       
+        url: load_subcategories_url,                 
+        data: {
+            'category': categoryId      
+        },
+        success: function (data) { 
+            $("#id_sub_categories").html(data); 
+        }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function(){
+        $("#submit_btn").click(function(){
+            $(this).prop('disabled', true);
+            $("#submit_form").submit();
+        })
+    })
+</script>
+{% endblock  %}

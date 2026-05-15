@@ -1,0 +1,253 @@
+{% extends "user_dashboard_base.html" %}
+{% load static %}
+{% block title %}Dashboard{% endblock  %}
+{% block content %}
+
+<!-- customerdashcontents -->
+<div class="customerdashcontents">
+    <div class="customer-header">
+        <h2 class="fw-bold">Dashboard</h2>
+    </div>
+
+    <!-- customer-container -->
+    <div class="customer-container">
+        <div class="row">
+            <div class="col-xl-8">
+                <!-- dashboard-count -->
+                <div class="dashboard-count">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-3">
+                            <a href="javascript:void(0)">
+                                <div class="count-box">
+                                    <h3>{{cart_list|length}} <span> <i class="bi bi-minecart"></i></span></h3>
+                                    <p>Products in Cart</p>
+                                </div>
+                            </a>
+                        </div>
+                        {% comment %} <div class="col-md-6 col-lg-3">
+                            <a href="{% url 'product_wishlist_url' %}">
+                                <div class="count-box">
+                                    <h3>{{wish_list|length}} <span> <i class="bi bi-heart"></i></span></h3>
+                                    <p>Products in Wishlist</p>
+                                </div>
+                            </a>
+                        </div> {% endcomment %}
+                        {% comment %} <div class="col-md-6 col-lg-3">
+                            <div class="count-box">
+                                <h3>94 <span> <img src="{% static 'assets/img/box-tick.svg' %}" alt="box-tick"></span></h3>
+                                <p>Products Ordered</p>
+                            </div>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+                <!-- dashboard-count -->
+
+                <!-- my cart -->
+                <div class="mycart">
+                    <div class="offcanvas-header p-2">
+                        <h5 class="offcanvas-title" id="staticBackdropLabel"><i class="bi bi-bag-dash-fill"></i> My Cart
+                            <span>({{cart_list|length}} items)</span>
+                        </h5>
+                    </div>
+                    {% if cart_list %}
+                    {% for item in cart_list %}
+                    <div class="">
+                        <div class="cartlist">
+                            <div class="d-flex">
+
+                                <div class="flex-shrink-0">
+                                    <img src="{{item.product_attribute.image.url}}" alt="...">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <button class="delete" data-cart-item-id="{{item.id}}"><i class="bi bi-trash3-fill"></i></button>
+                                    {% if obj.brand %}
+                                    <span>{{obj.brand}}</span> 
+                                    {% endif %}
+                                    <h4>{{item.product.product_name}}</h4>
+                                    {% if item.product.cover_product_attribute.final_discount.total_discount  %}
+                                    <p>৳ {{ item.product.cover_product_attribute.product_final_price }} <del>৳ {{ item.product.cover_product_attribute.regular_price }}</del>
+                                        <span class="badge text-bg-danger"> {{ item.product.cover_product_attribute.final_discount.total_discount_percentage }} % OFF</span>
+                                    </p>
+                                    {% else %}
+                                    <p>৳ {{ item.product.cover_product_attribute.regular_price }}</p>
+                                    {% endif %}
+                                    <div class="d-flex gap-2 mb-3 mt-1">
+                                        <span class="badge bg-light text-dark border fw-normal">Color: <strong>{{item.product_attribute.color}}</strong></span>
+                                        <span class="badge bg-light text-dark border fw-normal">Size: <strong>{{item.product_attribute.size}}</strong></span>
+                                    </div>
+                                    {% comment %} <div class="number">
+                                        <span class="minus">-</span>
+                                        <input type="text" value="1" />
+                                        <span class="plus">+</span>
+                                    </div> {% endcomment %}
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                    <div class="checkoutbtn">
+                        <div class="amout">
+                            <h4>Cart Amount</h4>
+                            <h4 id="cart-total" class="fw-bold">৳ {{ cart_total }}</h4>
+                        </div>
+                        {% if cart_list %}
+                            <a href="{% url 'product_checkout_url' %}" class="cusbtn2 checkout">Proceed to Checkout</a>
+                        {% else %}
+                            <a href="javascript:void(0)" class="cusbtn2 checkout">Proceed to Checkout</a>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="empty-cart">
+                        <p class="text-center" style="color: #eb2e61">There is no item in cart</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- my cart -->
+
+
+
+            </div>
+
+
+            <div class="col-xl-4">
+                <!-- customerinfo -->
+                {% comment %} <div class="customerinfo">
+                    <h3 class="subtile3">Default Shipping Address</h3>
+
+                    <div class="adddress">
+                        <p>My Personal <span class="badge text-bg-light">home</span></p>
+                        <p>880156763524</p>
+                        <p>6B, Dhaka, Bangladesh, A-23S76</p>
+                    </div>
+                </div> {% endcomment %}
+                <!-- customerinfo -->
+                <!--populers  -->
+                <div class="populers boxs">
+                    <h3 class="subtile3">Recently Viewed</h3>
+                    <div class="customscroll">
+                    {% if recently_viewed_products %}
+                    {% for item in recently_viewed_products %}
+                    <div class="d-flex populeritem mb-3" onclick="window.location='{% url 'product_details_page_url' item.product.id %}'" style="cursor: pointer;">
+                        <div class="flex-shrink-0">
+                            <img src="{{ item.product.cover_product_attribute.image.url }}" alt="icons">
+                        </div>
+                        <div class="flex-grow-1 ms-3 productcon">
+                            <a href="{% url 'product_details_page_url' item.product.id %}">{{ item.product.product_name }}</a>
+                            {% if item.product.cover_product_attribute.final_discount.total_discount %}
+                                <h5>৳ {{ item.product.cover_product_attribute.product_final_price  }} <del>৳ {{ item.product.cover_product_attribute.regular_price }}</del></h5>
+                            {% else %}
+                                <h5>৳ {{ item.product.cover_product_attribute.regular_price }}</h5>
+                            {% endif %}
+                            {% comment %} <div class="starsold">
+                                <p><i class="bi bi-star-fill"></i> 0</p>
+                                <div class="vr"></div>
+                                <p>{{item.product.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                            </div> {% endcomment %}
+                            <div class="starsold review-sold">
+                                <ul class="open-review-modal" style="cursor:pointer">
+                                    {% for i in item.product.reviews_calculation.full_stars %}
+                                    <li><i style="font-size: 12px;" class="bi bi-star-fill text-warning"></i></li>
+                                    {% endfor %}
+
+                                    {% if item.product.reviews_calculation.half_star %}
+                                    <li><i style="font-size: 12px;"class="bi bi-star-half text-warning"></i></li>
+                                    {% endif %}
+
+                                    {% for i in item.product.reviews_calculation.empty_stars %}
+                                    <li><i style="font-size: 12px;"class="bi bi-star text-muted"></i></li>
+                                    {% endfor %}
+                                    <li style="color: #64748b !important;">({{item.product.reviews_calculation.total_reviews}})</li>
+                                </ul>
+                                <div class="vr"></div>
+                                <p>{{item.product.total_sold_count.sold_qty|floatformat:0}} Sold</p>
+                            </div>
+                            {% comment %} <div class="buybtn">
+                                <a href="javascript:void(0)" class="add-to-cart"
+                                    data-product-id="{{ item.id }}"
+                                    data-variant-id="{{ cover.id }}">
+                                    <i class="bi bi-bag-check"></i>
+                                </a>
+                                <a href="{% url 'buy_now_product_url' cover.id %}">
+                                    Buy now
+                                </a>
+                            </div> {% endcomment %}
+
+                            {% comment %} <span> Stock: {{item.product.product_stock_status.stock_qty}} </span> {% endcomment %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="customscroll">
+                        <div class="populeritem mb-3">
+                            <h5 class="text-center">Products not found</h5>
+                        </div>
+                    </div>
+                    {% endif %}
+                    </div>
+
+                </div>
+                <!--populers  -->
+            </div>
+        </div>
+
+    </div>
+    <!-- customer-container -->
+
+</div>
+<!-- customerdashcontents -->
+
+
+{% endblock  %}
+
+{% block JS %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const csrftoken = "{{ csrf_token }}";
+
+        function updateCartTotalFromServer(total) {
+            document.getElementById("cart-total").innerText = "৳ " + total;
+        }
+
+        document.querySelectorAll(".plus, .minus").forEach(btn => {
+            btn.addEventListener("click", function () {
+
+                const cartItem = this.closest(".cartlist");
+                const cartItemId = cartItem.dataset.cartItemId;
+                const qtyInput = cartItem.querySelector(".qty-input");
+
+                let qty = parseInt(qtyInput.value);
+
+                if (this.classList.contains("plus")) {
+                    qty += 1;
+                } else {
+                    if (qty <= 1) return;
+                    qty -= 1;
+                }
+                qtyInput.value = qty;
+
+                fetch("{% url 'update_cart_qty_url' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrftoken,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        cart_item_id: cartItemId,
+                        quantity: qty
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        updateCartTotalFromServer(data.cart_total);
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock  %}

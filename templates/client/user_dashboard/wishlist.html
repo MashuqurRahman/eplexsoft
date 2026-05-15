@@ -1,0 +1,326 @@
+{% extends "user_dashboard_base.html" %}
+{% load static %}
+{% block title %}Wishlist{% endblock  %}
+
+{% block content %}
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Filter</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="filteroption">
+                <div class="mb-3">
+                    <label for="Sort" class="form-label">Sort by</label>
+                    <select id="Sort" class="form-select select2" aria-label="Default select example">
+                        <option selected>Default Sorting</option>
+                        <option value="1">High to Low</option>
+                        <option value="2">Low to High</option>
+                        <option value="3">Most Selling</option>
+                        <option value="3">New Product</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="mb-1">Product Price</label>
+                    <div class="sort-box">
+                        <div>
+                            <span class="doller1">$</span>
+                            <input type="text" aria-label="price Max" id="min_price1" class="price-range-field" />
+                            <span class="to">TO</span>
+                            <span class="doller2">$</span>
+                            <input type="text" aria-label="Price Min" id="max_price1" class="price-range-field" />
+                        </div>
+                        <div id="slider-range1" class="price-filter-range"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="Category" class="form-label">Category</label>
+                    <select id="Category" class="form-select select2" aria-label="Default select example">
+                        <option selected="" value="">Select Category</option>
+                        <option value="25">Software License</option>
+                        <option value="22">Pets &amp; Supplies</option>
+                        <option value="21">Toys &amp; Games</option>
+                        <option value="20">Groceries &amp; Essentials</option>
+                        <option value="19">Books &amp; Stationery</option>
+                        <option value="18">Food</option>
+                        <option value="17">Electronics</option>
+                        <option value="16">Cloth</option>
+                        <option value="15">Gadgets</option>
+                        <option value="14">Home Appliances</option>
+                        <option value="13">Sports &amp; Outdoors</option>
+                        <option value="6">Beauty</option>
+                        <option value="5">Sports &amp; Entertainment</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="Brand" class="form-label">Brand</label>
+                    <select id="Brand" class="form-select select2" aria-label="Default select example">
+                        <option selected="" value="">Select Brand</option>
+                        <option value="21">Unilever</option>
+                        <option value="22">Shiseido</option>
+                        <option value="27">Top ten</option>
+                        <option value="28">SparkLink</option>
+                        <option value="29">Rich Man</option>
+                        <option value="30">Apple</option>
+                        <option value="31">Samsung</option>
+                        <option value="32">Nike</option>
+                        <option value="33">Gucci</option>
+                        <option value="34">Adidas</option>
+                        <option value="35">Louis Vuitton</option>
+                        <option value="36">Rolex</option>
+                        <option value="37">Nestle</option>
+                        <option value="38">Tyson Foods</option>
+                        <option value="39">Microsoft</option>
+                        <option value="40">Tropicana</option>
+                        <option value="41">Oreo</option>
+                        <option value="42">Lay’s</option>
+                        <option value="43">Anchor</option>
+                        <option value="44">Birds Eye</option>
+                        <option value="45">Notify</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Color" class="form-label">Color</label>
+                    <br>
+                    <label class="checks">White
+                        <input type="radio" checked="checked" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Black
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Green
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Blue
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Yellow
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Magenta
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Orange
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Purple
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Brown
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Lavender
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Indigo
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Salmon
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Teal
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Goldenrod
+                        <input type="radio" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="Size" class="form-label">Size</label>
+                    <br>
+                    <label class="checks">43
+                        <input type="radio" checked="checked" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Small
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">Large
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">XL
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">XXL
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">3XL
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="checks">4XL
+                        <input type="radio" name="Size">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="offcanvas-footer">
+            <button class="cusbtn">Clear</button>
+            <button class="cusbtn2">Apply</button>
+        </div>
+    </div>
+    <section class="customer-dashboard">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="customersdash">
+                    <!-- customermenu -->
+                    <div class="customermenu">
+                        <div class="customer-profile">
+                            <img src="{% static 'assets/img/profile.jpg' %}" alt="User">
+                            <h4>{{request.user.email}}</h4>
+                            
+                        </div>
+                        <nav class="menu">
+                            <ul>
+                                <li><a href="{% url 'user_dashboard_url' %}"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+                                <li><a href="{% url 'product_wishlist_url' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
+                                {% comment %} <li><a href="orders.html"><i class="bi bi-bag-check"></i> Order History</a></li>
+                                <li><a href="#"><i class="bi bi-recycle"></i> Return Orders</a></li>
+                                
+                                <li><a href="#"><i class="bi bi-chat-left-dots"></i> Message</a></li>
+                                <li><a href="#"><i class="bi bi-person"></i> My Profile</a></li>
+                                <li><a href="#"><i class="bi bi-geo-alt"></i> Manage Address</a></li>
+                                <li><a href="#"><i class="bi bi-ticket-perforated"></i> Support Ticket</a></li>
+                                <li><a href="#"><i class="bi bi-key"></i> Change Password</a></li>
+                                <li><a href="#"><i class="bi bi-list-ol"></i> Terms & Conditions</a></li>
+                                <li><a href="#"><i class="bi bi-shield-check"></i> Privacy Policy</a></li> {% endcomment %}
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- customermenu -->
+
+                    <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="customerdashcontents">
+                        <div class="customer-header">
+                            <h2>Wishlist ({{wish_list|length}})</h2>
+                        </div>
+
+                        <div class="products-area">
+                            <div class="containers">
+                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+                                    <!-- products -->
+                                    {% for item in wish_list %}
+                                    {% with cover=item.product.product_attribute.first %}
+                                    <div class="col">
+                                        <div class="products">
+
+                                            <div class="wishlist" data-product-id="{{ item.id }}">
+                                                {% if cover.discount_price %}
+                                                    <span class="badge text-bg-danger">
+                                                        {{ cover.discount_percentage }}% OFF
+                                                    </span>
+                                                {% endif %}
+                                                <i class="loves bi {% if item.product.id in user_wishlist_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
+                                            </div>
+
+                                            <div class="productimg">
+                                                <a href="{% url 'product_details_page_url' item.product.id %}">
+                                                    <img src="{{ cover.image.url }}" alt="product img">
+                                                </a>
+                                            </div>
+
+                                            <div class="productcon">
+                                                <a href="{% url 'product_details_page_url' item.product.id %}">
+                                                    {{ item.product.product_name }}
+                                                </a>
+
+                                                {% if cover.discount_price %}
+                                                    <h5>৳ {{ cover.discount_price }} <del>৳ {{ cover.regular_price }}</del></h5>
+                                                {% else %}
+                                                    <h5>৳ {{ cover.regular_price }}</h5>
+                                                {% endif %}
+
+                                                <p class="small">
+                                                    Stock:
+                                                    {% if cover.stock > 0 and cover.stock > item.product.moq %}
+                                                        <span class="text-success">In stock</span>
+                                                    {% else %}
+                                                        <span class="text-danger">Out of stock</span>
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+
+                                            <div class="buybtn">
+                                                <a href="javascript:void(0)" class="add-to-cart"
+                                                    data-product-id="{{ item.product.id }}"
+                                                    data-variant-id="{{ cover.id }}">
+                                                    <i class="bi bi-bag-check"></i>
+                                                </a>
+
+                                                <a href="{% url 'buy_now_product_url' cover.id %}">
+                                                    Buy now
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    {% endwith %}
+                                {% endfor %}
+                                    <!-- products -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock  %}
+
+{% block JS %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on('click', '.loves', function(){
+        let heart = $(this);
+        let productId = heart.closest('.wishlist').data('product-id');
+
+        console.log("Clicked product:", productId);
+        $.ajax({
+            url: '{% url "add_to_wishlist_url" %}',
+            type: 'POST',
+            data: {
+                product_id: productId,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function(response) {
+                console.log(response);
+                if(response.status === 'added'){
+                    heart.removeClass('bi-heart').addClass('bi-heart-fill text-danger');
+                }
+                else if(response.status === 'removed'){
+                    heart.removeClass('bi-heart-fill text-danger').addClass('bi-heart')
+                }
+            }
+        });
+    });
+</script>
+{% endblock  %}

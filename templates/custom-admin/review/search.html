@@ -1,0 +1,50 @@
+<table class="table table-bordered" id="search_items">
+    <thead>
+        <tr>
+            <th style="width: 5%;">SL No.</th>
+            <th style="width: 18%;">User Email</th>
+            <th style="width: 20%;">Product Name</th>
+            <th style="width: 5%;">Rating</th>
+            <th>Review</th>
+            <th style="width: 5%;">To Show</th>
+            {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+            <th>Action</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% if reviews %}
+        {% for review in reviews %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ review.user.email }}</td>
+            <td>{{ review.product.product_name }}</td>
+            <td>{{ review.rating|floatformat:0 }} <span><i style="color: #FFC107;" class="bi bi-star-fill"></i></span></td>
+            <td>{{ review.review }}</td>
+            <td class="text-center">
+                <input type="checkbox" class="form-check-input review-checkbox" data-review-id="{{ review.id }}" {% if review.is_selected %}checked{% endif %}>
+            </td>
+            {% if request.user.is_superuser or request.user.role == 'central_admin' %}
+            <td>
+                <a href="{% url 'update_review_url' review.id %}" class="edit_btn" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a> 
+
+                <a href="{% url 'delete_review_url' review.id %}" class="delete_btn" title="Delete" 
+                    onclick="SweetDelete(event, this.href)">
+                    <i class="fas fa-trash-alt"></i>
+            </td>
+            {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="10" class="text-center">No reviews found</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="10" class="text-center">No reviews found</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>

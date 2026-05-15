@@ -1,0 +1,74 @@
+{% extends "admin_base.html" %}
+{% block title %}Campaign List{% endblock %}
+
+{% block content %}
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="fw-bold">Campaign List</h5>
+        <a href="{% url 'campaign_create' %}" class="btn add-btn btn-sm">
+            + Add Campaign
+        </a>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>SL No.</th>
+                    <th>Campaign</th>
+                    <th>Image</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slider in sliders %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ slider.campaign_name }}</td>
+                    <td>
+                        <img src="{{ slider.image.url }}" width="80">
+                    </td>
+                    <td>
+                        {% if slider.is_active_status %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+            
+                    <td>
+                        <a href="{% url 'campaign_update' slider.id %}" class="edit_btn" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a> 
+
+                        <a href="{% url 'campaign_delete' slider.id %}" class="delete_btn" title="Delete" 
+                            onclick="SweetDelete(event, this.href)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No sliders found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+<table class="table table-bordered" id="search_items">
+    <thead>
+        <tr>
+            <th class="text-center">SL No</th>
+            <th class="text-center">Category Name</th>
+            <th class="text-center">Description</th>
+            <th class="text-center">Image</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if obj_list %}
+        {% for obj in obj_list %}
+        <tr>
+            <td class="td-center">{{forloop.counter}}</td>
+            <td class="td-center">{{obj.name}}</td>
+            <td class="td-center">{{obj.description|default:"N/A"}}</td>
+            <td class="text-center">
+                {% if obj.image %}
+                    <div class="table-thumb">
+                        <img src="{{ obj.image.url }}" alt="{{ obj.name }}">
+                    </div>
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td class="td-center">
+                <a href="{% url 'edit_categories_url' obj.id %}" class="edit_btn" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                <a href="{% url 'delete_categories_url' obj.id %}" class="delete_btn" title="Delete" 
+                    onclick="SweetDelete(event, this.href)">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center">Data is not found</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>

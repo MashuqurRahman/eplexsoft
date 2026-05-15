@@ -1,0 +1,284 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Product Details{% endblock  %}
+{% block Style %}
+<style>
+.table-thumb{
+    width: 70px;
+    aspect-ratio: 1 / 1; 
+    overflow: hidden;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    display: inline-block;
+}
+.table-thumb img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.td-center{
+    vertical-align: middle;
+    text-align: center;
+}
+
+</style>
+{% endblock Style %}
+{% block content %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="boxs">
+        <h6 class="subtitle">Product Details</h6>
+        <hr>
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card shadow-sm product-card">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="fw-bold mb-0">{{ product.product_name }}</h3>
+                                <span class="badge 
+                                    {% if product.is_active == True %}
+                                        bg-success
+                                    {% else %}
+                                        bg-secondary
+                                    {% endif %}
+                                ">
+                                {% if product.is_active == True %}
+                                    Active
+                                {% else %}
+                                    Inactive
+                                {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-md-5">
+
+                                    {% if product.product_attribute.all %}
+                                        <img 
+                                            id="mainImage"
+                                            src="{{ product.cover_product_attribute.image.url }}"
+                                            class="main-image mb-3"
+                                            alt="Product Image">
+
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            {% for img in product.product_attribute.all %}
+                                                <img 
+                                                    src="{{ img.image.url }}"
+                                                    class="thumb-img"
+                                                    onclick="document.getElementById('mainImage').src='{{ img.image.url }}'">
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <img 
+                                            id="mainImage"
+                                            src="{{ product_varient.cover_photo.url }}"
+                                            class="main-image mb-3"
+                                            alt="Product Image">
+                                    {% endif %}
+
+                                </div>
+                                <div class="col-md-4">
+
+                                    <p>
+                                        <span class="label">Category</span><br>
+                                        {{ product.categories }}
+                                    </p>
+
+                                    <p>
+                                        <span class="label">Sub Category</span><br>
+                                        {{ product.sub_categories }}
+                                    </p>
+                                    <p>
+                                        <span class="label">Sub Sub Category</span><br>
+                                        {{ product.sub_sub_categories }}
+                                    </p>
+
+                                    <p>
+                                        <span class="label">SKU</span><br>
+                                        {{ product_varient.sku }}
+                                    </p>
+                                    <p>
+                                        <span class="label">Brand</span><br>
+                                        {% if product_varient.brand %}
+                                            {{ product_varient.brand }}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        <span class="label">VAT Amount</span><br>
+                                        {{ product.vat_tax_amount }}
+                                    </p>
+                                    <p>
+                                        <span class="label">GST Amount</span><br>
+                                        {{ product.gst_amount }}
+                                    </p>
+
+                                </div>
+                                <div class="col-md-3">
+                                    <p>
+                                        <span class="label">Delivery Discount</span><br>
+                                        {{ product.delivery_discount.flat_delivery }}
+                                    </p>
+                                    <p>
+                                        <span class="label">Sold Amount</span><br>
+                                        {% if product %}
+                                                <span class="badge bg-secondary">{{ product.total_sold_count.sold_qty }}</span>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </p>
+
+                                    <p>
+                                        <span class="label">MOQ</span><br>
+                                        <span class="badge bg-info">{{ product.moq }}</span>
+                                    </p>
+                                    <p>
+                                        <span class="label">Unit</span><br>
+                                        {% if product_varient  %}
+                                                <span class="badge bg-secondary">{{ product_varient.unit }}</span>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </p>
+
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div>
+                                <p class="label">Description</p>
+                                <p class="text-muted">
+                                    {% if product.description %}
+                                        {{ product.description }}
+                                    {% else %}
+                                        No description provided.
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p>
+                                        <span class="label">Created At</span><br>
+                                        {{ product_varient.created_at }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>
+                                        <span class="label">Last Updated</span><br>
+                                        {{ product_varient.updated_at }}
+                                    </p>
+                                </div>
+                            </div>
+
+        
+                            <div class="text-end mt-4">
+                                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                                    Back
+                                </a>
+                                <a href="{% url 'update_product_url' product.id %}" class="btn add-btn">
+                                    Edit Product
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card shadow-sm product-card mt-3">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold mb-0">Product Varient Attributes</h4>
+                                <span class="badge">
+                                    <a href="{% url 'product_attribute_create_url' product.id %}" class="btn add-btn btn-sm">
+                                        <i class="fas fa-plus"></i> Add Attributes
+                                    </a>
+                                </span>
+                            </div>
+                            <hr>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">SL</th>
+                                            <th>Color</th>
+                                            <th>Size</th>
+                                            <th>Regular Price</th>
+                                            <th>Discounted Price</th>
+                                            <th>Buying Price</th>
+                                            <th>Height(in)</th>
+                                            <th>Width(in)</th>
+                                            <th>Weight(gm)</th>
+                                            <th>Stock</th>
+                                            <th>Is Cover</th>
+                                            <th>Product Image</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if product_attribures_obj %}
+                                        {% for obj in product_attribures_obj %}
+                                        <tr>
+                                            <td class="td-center">{{forloop.counter}}</td>
+                                            <td class="td-center">{{obj.color}}</td>
+                                            <td class="td-center">{{obj.size}}</td>
+                                            <td class="td-center">{{obj.regular_price}}</td>
+                                            <td class="td-center">{{obj.discount_price|default:"N/A"}}</td>
+                                            <td class="td-center">{{obj.buying_price}}</td>
+                                            <td class="td-center">{{obj.height|default:"N/A"}}</td>
+                                            <td class="td-center">{{obj.width|default:"N/A"}}</td>
+                                            <td class="td-center">{{obj.weight|default:"N/A"}}</td>
+                                            <td class="td-center">{{obj.attribute_stock_status.remaining_stock}}</td>
+                                            <td class="td-center">{{obj.is_cover}}</td>
+                                            <td class="td-center">
+                                                <div class="table-thumb">
+                                                    <img src="{{obj.image.url}}" alt="product image">
+                                                </div>
+                                            </td>
+                                            <td class="td-center">
+                                                <a href="{% url 'product_attribute_update_url' obj.id %}" class="edit_btn" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+
+                                                <a href="{% url 'product_attribute_delete_url' obj.id product.id %}" class="delete_btn" title="Delete" 
+                                                    onclick="SweetDelete(event, this.href)">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="13" class="text-center">Data is not found</td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+{% endblock  %}
+
+{% block JS %}
+
+{% endblock  %}
