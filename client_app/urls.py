@@ -98,12 +98,6 @@ urlpatterns = [
     path('ajax/get-sizes-from-sub-sub-category-for-brand/', filter_views.get_sizes_from_sub_sub_category_for_brand, name='get_sizes_from_sub_sub_category_for_brand'),
 
     path('ajax/get-sizes-from-color-for-brand/', filter_views.get_sizes_from_color_for_brand, name='get_sizes_from_color_for_brand'),
-    
-
-
-
-
-    # path('ajax/get-colors-from-size/', filter_views.get_colors_from_size, name='get_colors_from_size'),
 
 
     # REVIEW RATING
