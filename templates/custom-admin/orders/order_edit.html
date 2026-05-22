@@ -97,12 +97,12 @@
           <div class="col-sm-6">
             <label class="form-label small fw-medium">Order Status</label>
             <select id="editOrderStatus" class="form-select form-select-sm">
-              <option value="pending"   {% if order.order_status == 'pending'%}selected{% endif %}>Pending</option>
+              <option value="pending" {% if order.order_status == 'pending'%}selected{% endif %}>Pending</option>
               <option value="confirmed" {% if order.order_status == 'confirmed' %}selected{% endif %}>Confirmed</option>
-              <option value="shipped"   {% if order.order_status == 'shipped' %}selected{% endif %}>Shipped</option>
+              <option value="shipped" {% if order.order_status == 'shipped' %}selected{% endif %}>Shipped</option>
               <option value="delivered" {% if order.order_status == 'delivered' %}selected{% endif %}>Delivered</option>
               <option value="cancelled" {% if order.order_status == 'cancelled' %}selected{% endif %}>Cancelled</option>
-              <option value="returned"  {% if order.order_status == 'returned' %}selected{% endif %}>Returned</option>
+              <option value="returned" {% if order.order_status == 'returned' %}selected{% endif %}>Returned</option>
             </select>
           </div>
           <div class="col-sm-6">
@@ -128,12 +128,10 @@
           <div class="col-sm-6">
             <label class="form-label small fw-medium">Shipping Method</label>
             <select id="shippingMethodSelect" class="form-select form-select-sm">
-              <option value="inside_dhaka"
-                {% if order.shipping_method == 'inside_dhaka' %}selected{% endif %}>
+              <option value="inside_dhaka" {% if order.shipping_method == 'inside_dhaka' %}selected{% endif %}>
                 Inside Dhaka
               </option>
-              <option value="outside_dhaka"
-                {% if order.shipping_method == 'outside_dhaka' %}selected{% endif %}>
+              <option value="outside_dhaka" {% if order.shipping_method == 'outside_dhaka' %}selected{% endif %}>
                 Outside Dhaka
               </option>
             </select>
@@ -154,7 +152,7 @@
 
         </div>
 
-        <!-- Status message -->
+
         <div id="shippingMethodMsg" class="mt-2" style="display:none;font-size:12px"></div>
       </div>
 
@@ -244,8 +242,7 @@
                   </td>
 
                   <td>
-                    <button class="btn btn-sm remove-item-btn text-danger"
-                            style="padding:2px 6px;background:transparent;border:none">
+                    <button class="btn btn-sm remove-item-btn text-danger" style="padding:2px 6px;background:transparent;border:none">
                       <i class="bi bi-trash3"></i>
                     </button>
                   </td>
@@ -293,98 +290,43 @@
         </div> {% endcomment %}
 
         <div class="border-top pt-3 mt-3">
-
-          <!-- HEADER -->
           <div class="d-flex align-items-center justify-content-between mb-2">
             <p class="subtitle mb-0">Order Totals</p>
-
-            <button class="btn btn-sm btn-outline-secondary"
-                    id="editTotalsBtn"
-                    style="font-size:11px;padding:3px 10px">
+            <button class="btn btn-sm btn-outline-secondary" id="editTotalsBtn" style="font-size:11px;padding:3px 10px">
               <i class="bi bi-pencil"></i> Edit
             </button>
           </div>
 
-          <!-- DISPLAY MODE -->
           <div id="totalsDisplay">
-
-            <div class="d-flex flex-column gap-1 ms-auto"
-                style="max-width:300px">
-
+            <div class="d-flex flex-column gap-1 ms-auto" style="max-width:300px">
               <div class="d-flex justify-content-between">
-                <span class="text-muted small">
-                  Sub Total After Discount
-                </span>
-
-                <!-- KEEP ID -->
-                <span id="editSubtotal"
-                      class="small fw-medium">
-                  ৳ {{ order.sub_total_after_discount }}
-                </span>
+                <span class="text-muted small">Sub Total After Discount</span>
+                <span id="editSubtotal" class="small fw-medium">৳ {{ order.sub_total_after_discount }}</span>
               </div>
 
               <div class="d-flex justify-content-between">
-
-                <span class="text-muted small">
-                  Coupon Discount
-                </span>
-
-                <!-- NEW ID -->
-                <span id="displayCoupon"
-                      class="small fw-medium">
-                  ৳ {{ order.coupon_price|default:"0.00" }}
-                </span>
-
+                <span class="text-muted small">Coupon Discount </span>
+                <span id="displayCoupon" class="small fw-medium">৳ {{ order.coupon_price|default:"0.00" }}</span>
               </div>
 
               <div class="d-flex justify-content-between">
-
-                <span class="text-muted small">
-                  Delivery Charge
-                </span>
-
-                <!-- KEEP CLASS -->
-                <span id="displayShipping"
-                      class="small fw-medium delivery-charge-display">
-                  ৳ {{ order.shipping_charge }}
-                </span>
-
+                <span class="text-muted small">Delivery Charge</span>
+                <span id="displayShipping" class="small fw-medium delivery-charge-display">৳ {{ order.shipping_charge }}</span>
               </div>
 
               <div class="d-flex justify-content-between">
-
-                <!-- KEEP ID -->
-                <span class="text-muted small"
-                      id="editVatGst">
-                  VAT &amp; Tax
-                </span>
-
-                <!-- NEW ID -->
-                <span id="displayVat"
-                      class="small fw-medium">
-                  ৳ {{ vat_gst }}
-                </span>
-
+                <span class="text-muted small" id="editVatGst">VAT &amp; Tax</span>
+                <span id="displayVat" class="small fw-medium">৳ {{ vat_gst }}</span>
               </div>
 
               <div class="d-flex justify-content-between border-top pt-2 mt-1">
-
-                <span class="fw-bold">
-                  Grand Total
-                </span>
-
-                <!-- KEEP ID -->
-                <span class="fw-bold"
-                      id="editGrandTotal">
-                  ৳ {{ order.total_payable }}
-                </span>
-
+                <span class="fw-bold">Grand Total</span>
+                <span class="fw-bold" id="editGrandTotal">৳ {{ order.total_payable }}</span>
               </div>
 
             </div>
           </div>
 
-          <!-- EDIT MODE -->
           <div id="totalsForm" style="display:none">
             <div class="d-flex flex-column gap-2 ms-auto" style="max-width:340px">
             <div class="d-flex align-items-center justify-content-between gap-2">
@@ -469,8 +411,7 @@
 
             <div class="col-sm-6">
               <label class="form-label" style="font-size:11px;font-weight:500">Phone</label>
-              <input type="text" id="addr-phone-no" class="form-control form-control-sm"
-                    value="{{ order.shipping_address.phone_no }}">
+              <input type="text" id="addr-phone-no" class="form-control form-control-sm" value="{{ order.shipping_address.phone_no }}">
             </div>
 
             <div class="col-12">
@@ -509,9 +450,7 @@
             <button class="btn btn-sm btn-primary" id="saveAddressBtn">
               <i class="bi bi-check-lg"></i> Save Address
             </button>
-            <button class="btn btn-sm btn-outline-secondary mx-1" id="cancelAddressBtn">
-              Cancel
-            </button>
+            <button class="btn btn-sm btn-outline-secondary mx-1" id="cancelAddressBtn">Cancel</button>
           </div>
         </div>
       </div>
@@ -569,7 +508,7 @@ let newItems       = [];
 let attributeSwaps = {};
 const variantCache = {};
  
-// ─── Shipping method update ────────────────────────────────────────────────
+// ─── Shipping method update ───────
 document.getElementById('updateShippingMethodBtn').addEventListener('click', function() {
   const btn = this;
   const select = document.getElementById('shippingMethodSelect');
@@ -581,9 +520,9 @@ document.getElementById('updateShippingMethodBtn').addEventListener('click', fun
   msgEl.style.display = 'none';
  
   fetch(SHIPPING_METHOD_URL, {
-    method:  'POST',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
-    body:    JSON.stringify({ order_id: ORDER_ID, shipping_method: selectedMethod }),
+    body: JSON.stringify({ order_id: ORDER_ID, shipping_method: selectedMethod }),
   })
   .then(r => r.json())
   .then(data => {
@@ -603,30 +542,30 @@ document.getElementById('updateShippingMethodBtn').addEventListener('click', fun
       showToast('Shipping method updated!', 'success');
     } else {
       msgEl.style.display = 'block';
-      msgEl.className     = 'mt-2 text-danger';
-      msgEl.textContent   = 'Error: ' + (data.error || 'Could not update.');
+      msgEl.className = 'mt-2 text-danger';
+      msgEl.textContent = 'Error: ' + (data.error || 'Could not update.');
       showToast('Failed to update shipping method.', 'danger');
     }
   })
   .catch(() => {
     msgEl.style.display = 'block';
-    msgEl.className     = 'mt-2 text-danger';
-    msgEl.textContent   = 'Network error. Try again.';
+    msgEl.className = 'mt-2 text-danger';
+    msgEl.textContent = 'Network error. Try again.';
     showToast('Network error.', 'danger');
   })
   .finally(() => {
-    btn.disabled  = false;
+    btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Update';
   });
 });
  
-// ─── Page load: populate selects for all existing rows ────────────────────
+// ─── Page load: populate selects for all existing rows ─────────────
 document.querySelectorAll('#orderItemsBody tr[data-product-id]').forEach(tr => {
   loadVariantsForRow(tr);
 });
  
 function loadVariantsForRow(tr) {
-  const productId     = tr.dataset.productId;
+  const productId = tr.dataset.productId;
   const currentAttrId = parseInt(tr.dataset.attrId);
   if (!productId) return;
  
@@ -699,21 +638,21 @@ function syncAttrFromSelects(tr) {
   if (!selectedOpt) return;
  
   const newAttrId = parseInt(selectedOpt.dataset.attrId);
-  const newPrice  = parseFloat(selectedOpt.dataset.price);
-  const newStock  = parseInt(selectedOpt.dataset.stock ?? 9999);
+  const newPrice = parseFloat(selectedOpt.dataset.price);
+  const newStock = parseInt(selectedOpt.dataset.stock ?? 9999);
   const originalQty = tr.dataset.isNew === 'true' ? 0 : parseInt(tr.dataset.originalQty ?? 0);
-  const inStock   = selectedOpt.dataset.inStock === 'true';
-  const isNew     = tr.dataset.isNew === 'true';
-  const itemId    = tr.dataset.itemId;
+  const inStock = selectedOpt.dataset.inStock === 'true';
+  const isNew = tr.dataset.isNew === 'true';
+  const itemId = tr.dataset.itemId;
   const attrChanged = String(newAttrId) !== tr.dataset.attrId;
   const effectiveStock = attrChanged ? newStock : newStock + originalQty;
  
   if (!newAttrId || isNaN(newPrice)) return;
  
   const oldAttrId = parseInt(tr.dataset.attrId);
-  tr.dataset.attrId    = String(newAttrId);
+  tr.dataset.attrId = String(newAttrId);
   tr.dataset.unitPrice = String(newPrice);
-  tr.dataset.stock     = String(newStock);
+  tr.dataset.stock = String(newStock);
  
   const unitCell = tr.querySelector('.unit-price-cell');
   if (unitCell) unitCell.textContent = '৳ ' + newPrice.toFixed(1);
@@ -737,7 +676,7 @@ function syncAttrFromSelects(tr) {
   recalc();
 }
  
-// ─── Tab switching ─────────────────────────────────────────────────────────
+// ─── Tab switching ──────────
 document.querySelectorAll('[data-tab]').forEach(link => {
   link.addEventListener('click', function(e) {
     e.preventDefault();
@@ -750,12 +689,10 @@ document.querySelectorAll('[data-tab]').forEach(link => {
   });
 });
  
-// ─── Table body click handler ──────────────────────────────────────────────
+// ─── Table body click handler ────────
 document.getElementById('orderItemsBody').addEventListener('click', function(e) {
   const tr = e.target.closest('tr');
   if (!tr) return;
- 
-  // ── QTY MINUS ──
   if (e.target.closest('.qty-minus')) {
     const span = tr.querySelector('.qty-val');
     const qty  = parseInt(span.textContent);
@@ -769,9 +706,9 @@ document.getElementById('orderItemsBody').addEventListener('click', function(e) 
  
   // ── QTY PLUS — allow over-stock, but warn ──
   if (e.target.closest('.qty-plus')) {
-    const span   = tr.querySelector('.qty-val');
+    const span = tr.querySelector('.qty-val');
     const current = parseInt(span.textContent);
-    const stock   = parseInt(tr.dataset.stock ?? 9999);
+    const stock = parseInt(tr.dataset.stock ?? 9999);
     const originalQty = parseInt(tr.dataset.originalQty ?? 0);
 
     const effectiveStock = stock + originalQty;
@@ -809,14 +746,11 @@ document.getElementById('orderItemsBody').addEventListener('click', function(e) 
   }
 });
  
-// ─── Stock violation helpers ───────────────────────────────────────────────
- 
-/**
- * Checks the current qty vs stock for a row and shows/clears warning badge.
- */
+// ─── Stock violation helpers ───────
+
 function checkRowStockViolation(tr) {
-  const qty         = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
-  const stock       = parseInt(tr.dataset.stock ?? 9999);
+  const qty = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
+  const stock = parseInt(tr.dataset.stock ?? 9999);
   const originalQty = parseInt(tr.dataset.originalQty ?? 0);
   const effectiveStock = stock + originalQty;
 
@@ -827,9 +761,7 @@ function checkRowStockViolation(tr) {
   }
 }
  
-/**
- * Adds a red ⚠ badge inside the qty cell and highlights the row.
- */
+
 function showRowViolationWarning(tr, qty, stock) {
   tr.classList.add('stock-violated-row');
   tr.style.background = 'rgba(220,53,69,0.06)';
@@ -864,39 +796,39 @@ function clearRowViolationWarning(tr) {
  * Returns { violated: bool, violatedQty: int } for a row.
  */
 function getRowViolation(tr) {
-  const qty          = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
-  const stock        = parseInt(tr.dataset.stock ?? 9999);
-  const originalQty  = parseInt(tr.dataset.originalQty ?? 0);
+  const qty = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
+  const stock = parseInt(tr.dataset.stock ?? 9999);
+  const originalQty = parseInt(tr.dataset.originalQty ?? 0);
   const effectiveStock = tr.dataset.isNew === 'true' ? stock + 0 : stock + originalQty;
 
   return {
-    violated:    qty > effectiveStock,
+    violated: qty > effectiveStock,
     violatedQty: Math.max(0, qty - effectiveStock),
   };
 }
  
-// ─── Payment toggle ────────────────────────────────────────────────────────
+// ─── Payment toggle ────────
 document.getElementById('editPaymentToggle').addEventListener('change', function() {
   document.getElementById('payStatusLabel').textContent = this.checked ? 'Paid' : 'Pending';
 });
  
-// ─── Live recalc ───────────────
+// ─── Live recalc ───────────
 function recalc() {
   let subtotal = 0;
   let newCount = 0;
   let hasViolation = false;
  
   document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
-    const unitPrice   = parseFloat(tr.dataset.unitPrice || 0);
-    const qty         = parseInt(tr.querySelector('.qty-val')?.textContent || 1);
-    const rowTotal    = unitPrice * qty;
-    const totalCell   = tr.querySelector('.row-total');
+    const unitPrice = parseFloat(tr.dataset.unitPrice || 0);
+    const qty  = parseInt(tr.querySelector('.qty-val')?.textContent || 1);
+    const rowTotal = unitPrice * qty;
+    const totalCell = tr.querySelector('.row-total');
     if (totalCell) totalCell.textContent = '৳ ' + rowTotal.toFixed(2);
     subtotal += rowTotal;
     if (tr.dataset.isNew === 'true') newCount++;
 
     // ── use effectiveStock, same logic as qty-plus ──
-    const stock       = parseInt(tr.dataset.stock ?? 9999);
+    const stock = parseInt(tr.dataset.stock ?? 9999);
     const originalQty = parseInt(tr.dataset.originalQty ?? 0);
     const effectiveStock = tr.dataset.isNew === 'true' ? stock : stock + originalQty;
 
@@ -906,14 +838,14 @@ function recalc() {
   const grand = subtotal + currentDelivery - COUPON + VAT_GST;
   const delta = grand - ORIGINAL_TOTAL;
  
-  document.getElementById('editSubtotal').textContent      = '৳ ' + subtotal.toFixed(2);
-  document.getElementById('editGrandTotal').textContent    = '৳ ' + grand.toFixed(2);
-  document.getElementById('summarySubtotal').textContent   = '৳ ' + subtotal.toFixed(2);
+  document.getElementById('editSubtotal').textContent = '৳ ' + subtotal.toFixed(2);
+  document.getElementById('editGrandTotal').textContent = '৳ ' + grand.toFixed(2);
+  document.getElementById('summarySubtotal').textContent = '৳ ' + subtotal.toFixed(2);
   document.getElementById('summaryGrandTotal').textContent = '৳ ' + grand.toFixed(2);
-  document.getElementById('summaryCoupon').textContent     = '৳ ' + COUPON.toFixed(2);
-  document.getElementById('summaryVatTax').textContent     = '৳ ' + VAT_GST.toFixed(2);
-  document.getElementById('newItemsCount').textContent     = newCount + ' item' + (newCount !== 1 ? 's' : '');
-  document.getElementById('itemCountLabel').textContent    = document.querySelectorAll('#orderItemsBody tr').length + ' item(s)';
+  document.getElementById('summaryCoupon').textContent = '৳ ' + COUPON.toFixed(2);
+  document.getElementById('summaryVatTax').textContent = '৳ ' + VAT_GST.toFixed(2);
+  document.getElementById('newItemsCount').textContent = newCount + ' item' + (newCount !== 1 ? 's' : '');
+  document.getElementById('itemCountLabel').textContent = document.querySelectorAll('#orderItemsBody tr').length + ' item(s)';
  
   const banner = document.getElementById('changeBanner');
   if (Math.abs(delta) > 0.005) {
@@ -954,7 +886,7 @@ function renumberRows() {
   });
 }
  
-// ─── Catalog search ────────────────────────────────────────────────────────
+// ─── Catalog search ─────────
 let searchTimer;
 document.getElementById('productSearchInput').addEventListener('input', function() {
   clearTimeout(searchTimer);
@@ -963,8 +895,8 @@ document.getElementById('productSearchInput').addEventListener('input', function
 document.getElementById('categoryFilter').addEventListener('change', fetchCatalog);
  
 function fetchCatalog() {
-  const q    = document.getElementById('productSearchInput').value.trim();
-  const cat  = document.getElementById('categoryFilter').value;
+  const q = document.getElementById('productSearchInput').value.trim();
+  const cat = document.getElementById('categoryFilter').value;
   const grid = document.getElementById('productCatalogGrid');
  
   grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:#aaa;font-size:12px">Loading…</div>';
@@ -1031,10 +963,6 @@ let rowKeyCounter = 0;
  
 function addProductToOrder(attrId, productId, name, size, color, price, image) {
   const existing = document.querySelector(`#orderItemsBody tr[data-product-id="${productId}"][data-is-new="true"]`);
-  //if (existing) {
-  //  showToast('Product already added! Change variant in the table.', 'warning');
-  //  return;
-  //}
  
   const rowKey = 'new_' + (++rowKeyCounter);
   newItems.push({ product_attribute_id: attrId, rowKey });
@@ -1042,13 +970,13 @@ function addProductToOrder(attrId, productId, name, size, color, price, image) {
   const tbody  = document.getElementById('orderItemsBody');
   const rowNum = tbody.querySelectorAll('tr').length + 1;
   const tr = document.createElement('tr');
-  tr.dataset.itemId    = 'new';
-  tr.dataset.rowKey    = rowKey;
-  tr.dataset.attrId    = String(attrId);
+  tr.dataset.itemId = 'new';
+  tr.dataset.rowKey = rowKey;
+  tr.dataset.attrId = String(attrId);
   tr.dataset.productId = String(productId);
   tr.dataset.unitPrice = String(price);
-  tr.dataset.isNew     = 'true';
-  tr.style.background  = 'rgba(127,119,221,0.04)';
+  tr.dataset.isNew = 'true';
+  tr.style.background = 'rgba(127,119,221,0.04)';
  
   tr.innerHTML = `
     <td class="row-num">${rowNum}</td>
@@ -1104,48 +1032,48 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
   document.getElementById('updateShippingMethodBtn').click();
   const btn = this;
  
-  btn.disabled  = true;
+  btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
  
   const items = [];
  
   // Existing rows
   document.querySelectorAll('#orderItemsBody tr[data-is-new="false"]').forEach(tr => {
-    const itemId        = tr.dataset.itemId;
-    const itemIdInt     = parseInt(itemId);
+    const itemId = tr.dataset.itemId;
+    const itemIdInt = parseInt(itemId);
     const swappedAttrId = attributeSwaps[itemId] || null;
-    const qty           = parseInt(tr.querySelector('.qty-val').textContent);
-    const stock         = parseInt(tr.dataset.stock ?? 9999);
-    const violated      = qty > stock;
-    const violatedQty   = violated ? qty - stock : 0;
+    const qty = parseInt(tr.querySelector('.qty-val').textContent);
+    const stock = parseInt(tr.dataset.stock ?? 9999);
+    const violated = qty > stock;
+    const violatedQty = violated ? qty - stock : 0;
  
     items.push({
-      id:                      itemIdInt,
-      quantity:                qty,
+      id: itemIdInt,
+      quantity: qty,
       new_product_attribute_id: swappedAttrId,
-      is_new:                  false,
-      is_deleted:              false,
-      is_stock_violated:       violated,
-      violated_qty:            violatedQty,
+      is_new: false,
+      is_deleted: false,
+      is_stock_violated: violated,
+      violated_qty: violatedQty,
     });
   });
  
   // New rows
   newItems.forEach(ni => {
-    const tr        = document.querySelector(`#orderItemsBody tr[data-row-key="${ni.rowKey}"]`);
-    const qty       = tr ? parseInt(tr.querySelector('.qty-val').textContent) : 1;
-    const stock     = tr ? parseInt(tr.dataset.stock ?? 9999) : 9999;
+    const tr = document.querySelector(`#orderItemsBody tr[data-row-key="${ni.rowKey}"]`);
+    const qty = tr ? parseInt(tr.querySelector('.qty-val').textContent) : 1;
+    const stock = tr ? parseInt(tr.dataset.stock ?? 9999) : 9999;
     const currentAttrId = tr ? parseInt(tr.dataset.attrId) : ni.product_attribute_id;
-    const violated      = qty > stock;
-    const violatedQty   = violated ? qty - stock : 0;
+    const violated = qty > stock;
+    const violatedQty = violated ? qty - stock : 0;
  
     items.push({
       product_attribute_id: currentAttrId,
-      quantity:             qty,
-      is_new:               true,
-      is_deleted:           false,
-      is_stock_violated:    violated,
-      violated_qty:         violatedQty,
+      quantity: qty,
+      is_new: true,
+      is_deleted: false,
+      is_stock_violated: violated,
+      violated_qty: violatedQty,
     });
   });
  
@@ -1158,13 +1086,14 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
     method:  'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
     body: JSON.stringify({
-      order_id:        ORDER_ID,
-      order_status:    document.getElementById('editOrderStatus').value,
-      payment_status:  document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
-      subtotal:        parseFloat(document.getElementById('manualSubtotal')?.value || 0),
-      coupon_price:    parseFloat(document.getElementById('manualCoupon')?.value || 0),
-      shipping_charge: parseFloat(document.getElementById('manualDelivery')?.value || 0),
-      vat_gst:         parseFloat(document.getElementById('manualVat')?.value || 0),
+      order_id: ORDER_ID,
+      order_status: document.getElementById('editOrderStatus').value,
+      payment_status: document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
+
+      subtotal: totalsForm.style.display !== 'none' || window._totalsEdited ? parseFloat(document.getElementById('manualSubtotal').value) || 0: null,
+      coupon_price: totalsForm.style.display !== 'none' || window._totalsEdited ? parseFloat(document.getElementById('manualCoupon').value) || 0 : null,
+      shipping_charge: totalsForm.style.display !== 'none' || window._totalsEdited ? parseFloat(document.getElementById('manualDelivery').value) || 0 : null,
+      vat_gst: totalsForm.style.display !== 'none' || window._totalsEdited ? parseFloat(document.getElementById('manualVat').value) || 0 : null,
       items,
     }),
   })
@@ -1190,9 +1119,9 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
  
       deletedItemIds = [];
       attributeSwaps = {};
-      newItems       = [];
+      newItems = [];
       document.querySelectorAll('#orderItemsBody tr[data-is-new="true"]').forEach(tr => {
-        tr.dataset.isNew    = 'false';
+        tr.dataset.isNew = 'false';
         tr.style.background = '';
       });
  
@@ -1208,12 +1137,12 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
   });
 });
  
-// ─── Address edit ──────────────────────────────────────────────────────────
-const editAddressBtn   = document.getElementById('editAddressBtn');
+// ─── Address edit ────────
+const editAddressBtn = document.getElementById('editAddressBtn');
 const cancelAddressBtn = document.getElementById('cancelAddressBtn');
-const saveAddressBtn   = document.getElementById('saveAddressBtn');
-const addressDisplay   = document.getElementById('addressDisplay');
-const addressForm      = document.getElementById('addressForm');
+const saveAddressBtn = document.getElementById('saveAddressBtn');
+const addressDisplay = document.getElementById('addressDisplay');
+const addressForm = document.getElementById('addressForm');
  
 editAddressBtn.addEventListener('click', function() {
   addressDisplay.style.display = 'none';
@@ -1231,43 +1160,43 @@ saveAddressBtn.addEventListener('click', function() {
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
  
   const payload = {
-    order_id:     ORDER_ID,
-    full_name:    document.getElementById('addr-full-name').value.trim(),
-    phone_no:     document.getElementById('addr-phone-no').value.trim(),
+    order_id: ORDER_ID,
+    full_name: document.getElementById('addr-full-name').value.trim(),
+    phone_no: document.getElementById('addr-phone-no').value.trim(),
     address_line: document.getElementById('addr-address-line').value.trim(),
-    city:         document.getElementById('addr-city').value.trim(),
-    thana:        document.getElementById('addr-thana').value.trim(),
-    upozila:      document.getElementById('addr-upozila').value.trim(),
-    postal_code:  document.getElementById('addr-postal-code').value.trim(),
-    note:         document.getElementById('addr-note').value.trim(),
+    city: document.getElementById('addr-city').value.trim(),
+    thana: document.getElementById('addr-thana').value.trim(),
+    upozila: document.getElementById('addr-upozila').value.trim(),
+    postal_code: document.getElementById('addr-postal-code').value.trim(),
+    note: document.getElementById('addr-note').value.trim(),
   };
  
   if (!payload.full_name || !payload.phone_no || !payload.address_line || !payload.city) {
     showToast('Please fill in all required fields.', 'danger');
-    btn.disabled  = false;
+    btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Address';
     return;
   }
  
   fetch(ADDRESS_SAVE_URL, {
-    method:  'POST',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
-    body:    JSON.stringify(payload),
+    body: JSON.stringify(payload),
   })
   .then(r => r.json())
   .then(data => {
     if (data.success) {
       const a = data.address;
-      document.getElementById('disp-full-name').textContent   = 'Name: '     + a.full_name;
-      document.getElementById('disp-phone-no').textContent    = 'Phone: '    + a.phone_no;
-      document.getElementById('disp-address-line').textContent= 'Address: '  + a.address_line;
-      document.getElementById('disp-city').textContent        = 'City: '     + a.city;
-      document.getElementById('disp-thana').textContent       = 'Thana: '    + a.thana;
-      document.getElementById('disp-upozila').textContent     = 'Upazila: '  + a.upozila;
-      document.getElementById('disp-postal-code').textContent = 'Post Code: '+ a.postal_code;
+      document.getElementById('disp-full-name').textContent = 'Name: ' + a.full_name;
+      document.getElementById('disp-phone-no').textContent = 'Phone: ' + a.phone_no;
+      document.getElementById('disp-address-line').textContent = 'Address: ' + a.address_line;
+      document.getElementById('disp-city').textContent = 'City: ' + a.city;
+      document.getElementById('disp-thana').textContent = 'Thana: ' + a.thana;
+      document.getElementById('disp-upozila').textContent = 'Upazila: ' + a.upozila;
+      document.getElementById('disp-postal-code').textContent = 'Post Code: ' + a.postal_code;
       const noteEl = document.getElementById('disp-note');
       if (a.note) { noteEl.textContent = 'Note: ' + a.note; noteEl.style.display = 'block'; }
-      else         { noteEl.style.display = 'none'; }
+      else { noteEl.style.display = 'none'; }
       addressDisplay.style.display = 'block';
       addressForm.style.display    = 'none';
       editAddressBtn.style.display = '';
@@ -1283,21 +1212,21 @@ saveAddressBtn.addEventListener('click', function() {
   });
 });
  
-// ─── Order Totals Edit ─────────────────────────────────────────────────────
-const editTotalsBtn   = document.getElementById('editTotalsBtn');
+// ─── Order Totals Edit ─────────
+const editTotalsBtn = document.getElementById('editTotalsBtn');
 const cancelTotalsBtn = document.getElementById('cancelTotalsBtn');
-const saveTotalsBtn   = document.getElementById('saveTotalsBtn');
-const totalsDisplay   = document.getElementById('totalsDisplay');
-const totalsForm      = document.getElementById('totalsForm');
+const saveTotalsBtn = document.getElementById('saveTotalsBtn');
+const totalsDisplay = document.getElementById('totalsDisplay');
+const totalsForm = document.getElementById('totalsForm');
  
 editTotalsBtn.addEventListener('click', function() {
   totalsDisplay.style.display = 'none';
-  totalsForm.style.display    = 'block';
+  totalsForm.style.display = 'block';
   editTotalsBtn.style.display = 'none';
 });
 cancelTotalsBtn.addEventListener('click', function() {
   totalsDisplay.style.display = 'block';
-  totalsForm.style.display    = 'none';
+  totalsForm.style.display = 'none';
   editTotalsBtn.style.display = '';
  
   document.getElementById('manualSubtotal').value =
@@ -1310,18 +1239,19 @@ cancelTotalsBtn.addEventListener('click', function() {
     parseFloat(document.getElementById('displayVat').textContent.replace(/[^\d.]/g,'')) || 0;
 });
 saveTotalsBtn.addEventListener('click', function() {
+  window._totalsEdited = true;
   const subtotal = parseFloat(document.getElementById('manualSubtotal').value) || 0;
-  const coupon   = parseFloat(document.getElementById('manualCoupon').value)   || 0;
+  const coupon = parseFloat(document.getElementById('manualCoupon').value)   || 0;
   const shipping = parseFloat(document.getElementById('manualDelivery').value) || 0;
-  const vat      = parseFloat(document.getElementById('manualVat').value)      || 0;
+  const vat = parseFloat(document.getElementById('manualVat').value)      || 0;
  
   COUPON = coupon; VAT_GST = vat; currentDelivery = shipping;
   const grand = subtotal + shipping - coupon + vat;
  
-  document.getElementById('editSubtotal').textContent   = '৳ ' + subtotal.toFixed(2);
-  document.getElementById('displayCoupon').textContent  = '৳ ' + coupon.toFixed(2);
+  document.getElementById('editSubtotal').textContent = '৳ ' + subtotal.toFixed(2);
+  document.getElementById('displayCoupon').textContent = '৳ ' + coupon.toFixed(2);
   document.getElementById('displayShipping').textContent= '৳ ' + shipping.toFixed(2);
-  document.getElementById('displayVat').textContent     = '৳ ' + vat.toFixed(2);
+  document.getElementById('displayVat').textContent = '৳ ' + vat.toFixed(2);
   document.getElementById('editGrandTotal').textContent = '৳ ' + grand.toFixed(2);
  
   const summarySubtotal = document.getElementById('summarySubtotal');
@@ -1339,7 +1269,7 @@ saveTotalsBtn.addEventListener('click', function() {
   showToast('Totals updated successfully!', 'success');
 });
  
-// ─── Helpers ──────────────────────────────────────────────────────────────
+// ─── Helpers ───────
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
