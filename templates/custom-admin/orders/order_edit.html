@@ -1029,102 +1029,105 @@ function addProductToOrder(attrId, productId, name, size, color, price, image) {
  
 // ─── Save order ───────
 document.getElementById('saveOrderBtn').addEventListener('click', function() {
-  document.getElementById('updateShippingMethodBtn').click();
   const btn = this;
- 
-  btn.disabled = true;
+  btn.disabled  = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
- 
+
   const items = [];
- 
+
   // Existing rows
   document.querySelectorAll('#orderItemsBody tr[data-is-new="false"]').forEach(tr => {
-    const itemId = tr.dataset.itemId;
-    const itemIdInt = parseInt(itemId);
+    const itemId        = tr.dataset.itemId;
     const swappedAttrId = attributeSwaps[itemId] || null;
-    const qty = parseInt(tr.querySelector('.qty-val').textContent);
-    const stock = parseInt(tr.dataset.stock ?? 9999);
-    const violated = qty > stock;
-    const violatedQty = violated ? qty - stock : 0;
- 
+    const qty           = parseInt(tr.querySelector('.qty-val').textContent);
+    const stock         = parseInt(tr.dataset.stock ?? 9999);
+    const originalQty   = parseInt(tr.dataset.originalQty ?? 0);
+    const effectiveStock = stock + originalQty;
+    const violated      = qty > effectiveStock;
+
     items.push({
-      id: itemIdInt,
-      quantity: qty,
+      id:                       parseInt(itemId),
+      quantity:                 qty,
       new_product_attribute_id: swappedAttrId,
-      is_new: false,
-      is_deleted: false,
-      is_stock_violated: violated,
-      violated_qty: violatedQty,
+      is_new:                   false,
+      is_deleted:               false,
+      is_stock_violated:        violated,
+      violated_qty:             violated ? qty - effectiveStock : 0,
     });
   });
- 
+
   // New rows
   newItems.forEach(ni => {
-    const tr = document.querySelector(`#orderItemsBody tr[data-row-key="${ni.rowKey}"]`);
-    const qty = tr ? parseInt(tr.querySelector('.qty-val').textContent) : 1;
-    const stock = tr ? parseInt(tr.dataset.stock ?? 9999) : 9999;
+    const tr            = document.querySelector(`#orderItemsBody tr[data-row-key="${ni.rowKey}"]`);
+    const qty           = tr ? parseInt(tr.querySelector('.qty-val').textContent) : 1;
+    const stock         = tr ? parseInt(tr.dataset.stock ?? 9999) : 9999;
     const currentAttrId = tr ? parseInt(tr.dataset.attrId) : ni.product_attribute_id;
-    const violated = qty > stock;
-    const violatedQty = violated ? qty - stock : 0;
- 
+    const violated      = qty > stock;
+
     items.push({
       product_attribute_id: currentAttrId,
-      quantity: qty,
-      is_new: true,
-      is_deleted: false,
-      is_stock_violated: violated,
-      violated_qty: violatedQty,
+      quantity:             qty,
+      is_new:               true,
+      is_deleted:           false,
+      is_stock_violated:    violated,
+      violated_qty:         violated ? qty - stock : 0,
     });
   });
- 
+
   // Deleted rows
   deletedItemIds.forEach(id => {
     items.push({ id, is_new: false, is_deleted: true });
   });
- 
+
+  // Build payload — use _manualValues if admin explicitly saved totals
+  const payload = {
+    order_id:       ORDER_ID,
+    order_status:   document.getElementById('editOrderStatus').value,
+    payment_status: document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
+    items,
+    // Send null when not manually edited → backend auto-recalculates
+    subtotal:        _totalsEdited ? _manualValues.subtotal  : null,
+    coupon_price:    _totalsEdited ? _manualValues.coupon    : null,
+    shipping_charge: _totalsEdited ? _manualValues.shipping  : null,
+    vat_gst:         _totalsEdited ? _manualValues.vat       : null,
+  };
+
   fetch(SAVE_URL, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
-    body: JSON.stringify({
-      order_id: ORDER_ID,
-      order_status: document.getElementById('editOrderStatus').value,
-      payment_status: document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
-
-      subtotal: totalsForm.style.display !== 'none' || window._totalsEdited ? parseFloat(document.getElementById('manualSubtotal').value) || 0: null,
-      coupon_price: totalsForm.style.display !== 'none' || window._totalsEdited ? parseFloat(document.getElementById('manualCoupon').value) || 0 : null,
-      shipping_charge: totalsForm.style.display !== 'none' || window._totalsEdited ? parseFloat(document.getElementById('manualDelivery').value) || 0 : null,
-      vat_gst: totalsForm.style.display !== 'none' || window._totalsEdited ? parseFloat(document.getElementById('manualVat').value) || 0 : null,
-      items,
-    }),
+    body:    JSON.stringify(payload),
   })
   .then(r => r.json())
   .then(data => {
     if (data.success) {
       showToast('Order saved successfully!', 'success');
- 
+
+      // Update _manualValues from server response so a re-edit shows correct numbers
       if (data.new_tax !== undefined) {
-        const vatGstEl = document.getElementById('editVatGst');
-        if (vatGstEl) vatGstEl.textContent = '৳ ' + parseFloat(data.new_tax).toFixed(2);
+        _manualValues.vat = parseFloat(data.new_tax);
+        VAT_GST = _manualValues.vat;
       }
       if (data.new_shipping_charge) {
-        const newCharge = parseFloat(data.new_shipping_charge);
-        currentDelivery = newCharge;
+        _manualValues.shipping = parseFloat(data.new_shipping_charge);
+        currentDelivery = _manualValues.shipping;
         document.querySelectorAll('.delivery-charge-display').forEach(el => {
-          el.textContent = '৳ ' + newCharge.toFixed(2);
+          el.textContent = '৳ ' + _manualValues.shipping.toFixed(2);
         });
         const shippingDisplay = document.getElementById('shippingChargeDisplay');
-        if (shippingDisplay) shippingDisplay.textContent = '৳ ' + newCharge.toFixed(2);
+        if (shippingDisplay) shippingDisplay.textContent = '৳ ' + _manualValues.shipping.toFixed(2);
         recalc();
       }
- 
+
       deletedItemIds = [];
       attributeSwaps = {};
-      newItems = [];
+      newItems       = [];
+      _totalsEdited  = false;
+
       document.querySelectorAll('#orderItemsBody tr[data-is-new="true"]').forEach(tr => {
-        tr.dataset.isNew = 'false';
+        tr.dataset.isNew    = 'false';
         tr.style.background = '';
       });
- 
+
       setTimeout(() => { window.location.href = "{% url 'order_list' %}"; }, 200);
     } else {
       showToast('Error: ' + (data.error || 'Could not save.'), 'danger');
@@ -1212,62 +1215,76 @@ saveAddressBtn.addEventListener('click', function() {
   });
 });
  
+
+let _totalsEdited = false;
+let _manualValues = {
+  subtotal:  parseFloat("{{ order.sub_total_after_discount|default:'0' }}") || 0,
+  coupon:    parseFloat("{{ order.coupon_price|default:'0' }}") || 0,
+  shipping:  parseFloat("{{ order.shipping_charge|default:'0' }}") || 0,
+  vat:       parseFloat("{{ vat_gst|default:'0' }}") || 0,
+};
+
 // ─── Order Totals Edit ─────────
-const editTotalsBtn = document.getElementById('editTotalsBtn');
+const editTotalsBtn   = document.getElementById('editTotalsBtn');
 const cancelTotalsBtn = document.getElementById('cancelTotalsBtn');
-const saveTotalsBtn = document.getElementById('saveTotalsBtn');
-const totalsDisplay = document.getElementById('totalsDisplay');
-const totalsForm = document.getElementById('totalsForm');
+const saveTotalsBtn   = document.getElementById('saveTotalsBtn');
+const totalsDisplay   = document.getElementById('totalsDisplay');
+const totalsForm      = document.getElementById('totalsForm');
  
 editTotalsBtn.addEventListener('click', function() {
+  document.getElementById('manualSubtotal').value = _manualValues.subtotal;
+  document.getElementById('manualCoupon').value   = _manualValues.coupon;
+  document.getElementById('manualDelivery').value = _manualValues.shipping;
+  document.getElementById('manualVat').value      = _manualValues.vat;
+
   totalsDisplay.style.display = 'none';
-  totalsForm.style.display = 'block';
+  totalsForm.style.display    = 'block';
   editTotalsBtn.style.display = 'none';
 });
 cancelTotalsBtn.addEventListener('click', function() {
   totalsDisplay.style.display = 'block';
-  totalsForm.style.display = 'none';
+  totalsForm.style.display    = 'none';
   editTotalsBtn.style.display = '';
- 
-  document.getElementById('manualSubtotal').value =
-    parseFloat(document.getElementById('editSubtotal').textContent.replace(/[^\d.]/g,'')) || 0;
-  document.getElementById('manualCoupon').value =
-    parseFloat(document.getElementById('displayCoupon').textContent.replace(/[^\d.]/g,'')) || 0;
-  document.getElementById('manualDelivery').value =
-    parseFloat(document.getElementById('displayShipping').textContent.replace(/[^\d.]/g,'')) || 0;
-  document.getElementById('manualVat').value =
-    parseFloat(document.getElementById('displayVat').textContent.replace(/[^\d.]/g,'')) || 0;
 });
 saveTotalsBtn.addEventListener('click', function() {
-  window._totalsEdited = true;
+  // Read from inputs
   const subtotal = parseFloat(document.getElementById('manualSubtotal').value) || 0;
-  const coupon = parseFloat(document.getElementById('manualCoupon').value)   || 0;
+  const coupon   = parseFloat(document.getElementById('manualCoupon').value)   || 0;
   const shipping = parseFloat(document.getElementById('manualDelivery').value) || 0;
-  const vat = parseFloat(document.getElementById('manualVat').value)      || 0;
- 
-  COUPON = coupon; VAT_GST = vat; currentDelivery = shipping;
+  const vat      = parseFloat(document.getElementById('manualVat').value)      || 0;
+
+  // Persist to our reliable store
+  _manualValues = { subtotal, coupon, shipping, vat };
+  _totalsEdited = true;
+
+  // Update live JS vars so recalc() uses new values immediately
+  COUPON          = coupon;
+  VAT_GST         = vat;
+  currentDelivery = shipping;
+
   const grand = subtotal + shipping - coupon + vat;
- 
-  document.getElementById('editSubtotal').textContent = '৳ ' + subtotal.toFixed(2);
-  document.getElementById('displayCoupon').textContent = '৳ ' + coupon.toFixed(2);
-  document.getElementById('displayShipping').textContent= '৳ ' + shipping.toFixed(2);
-  document.getElementById('displayVat').textContent = '৳ ' + vat.toFixed(2);
-  document.getElementById('editGrandTotal').textContent = '৳ ' + grand.toFixed(2);
- 
+
+  // Update display spans
+  document.getElementById('editSubtotal').textContent    = '৳ ' + subtotal.toFixed(2);
+  document.getElementById('displayCoupon').textContent   = '৳ ' + coupon.toFixed(2);
+  document.getElementById('displayShipping').textContent = '৳ ' + shipping.toFixed(2);
+  document.getElementById('displayVat').textContent      = '৳ ' + vat.toFixed(2);
+  document.getElementById('editGrandTotal').textContent  = '৳ ' + grand.toFixed(2);
+
   const summarySubtotal = document.getElementById('summarySubtotal');
   if (summarySubtotal) summarySubtotal.textContent = '৳ ' + subtotal.toFixed(2);
   const summaryGrand = document.getElementById('summaryGrandTotal');
   if (summaryGrand) summaryGrand.textContent = '৳ ' + grand.toFixed(2);
- 
+
   document.querySelectorAll('.delivery-charge-display').forEach(el => {
     el.textContent = '৳ ' + shipping.toFixed(2);
   });
- 
+
   totalsDisplay.style.display = 'block';
   totalsForm.style.display    = 'none';
   editTotalsBtn.style.display = '';
-  showToast('Totals updated successfully!', 'success');
-});
+  showToast('Totals updated. Click "Save changes" to persist.', 'success');
+})
  
 // ─── Helpers ───────
 function escHtml(str) {

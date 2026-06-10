@@ -414,7 +414,7 @@ def update_order_ajax(request):
                     attr = item.product_attribute
                     product = attr.product
                     item_total = Decimal(str(attr.product_final_price)) * item.quantity
-
+     
                     sub_total_after_discount += item_total
 
                     vat_rate = Decimal(str(product.vat_tax_amount or 0))
