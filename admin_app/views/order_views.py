@@ -295,9 +295,13 @@ def update_order_ajax(request):
         items = data.get('items', [])
 
         manual_subtotal = data.get('subtotal')
+        print('Received manual_subtotal:', manual_subtotal)
         manual_coupon = data.get('coupon_price')
         manual_shipping  = data.get('shipping_charge')
+        print('Received manual_shipping:', manual_shipping)
+
         manual_vat_gst = data.get('vat_gst')
+        print('Received manual_vat_gst:', manual_vat_gst)
 
         has_manual_override = any(
             v is not None

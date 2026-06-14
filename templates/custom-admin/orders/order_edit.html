@@ -24,12 +24,10 @@
       </div>
 
       <div class="order_edited_by px-3 py-2 rounded d-md-block" style="background:#f8f8fb;border:0.5px solid #e0e0e8;min-width:240px;max-width:320px">
-
         {% if order.edited_by %}
           <div style="font-size:10px;font-weight:600;color:#7F77DD;letter-spacing:.6px; text-transform:uppercase;margin-bottom:8px">
             <i class="bi bi-pencil-square"></i> Last Edited By
           </div>
-
           <div class="d-flex align-items-center gap-2 mb-2">
             <div>
               <div style="font-size:12px;font-weight:600;color:#222;line-height:1.3">
@@ -46,7 +44,6 @@
               {% endif %}
             </div>
           </div>
-
           <div style="border-top:0.5px solid #e8e8f0;padding-top:6px;margin-top:4px">
             <div style="font-size:11px;color:#aaa;margin-top:2px">
               <i class="bi bi-calendar2-plus" style="font-size:10px;color:#7F77DD"></i>
@@ -59,7 +56,6 @@
               {{ order.updated_at|date:"M d, Y · h:i A" }}
             </div>
           </div>
-
         {% else %}
           <div style="font-size:10px;font-weight:600;color:#aaa;letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px">
             <i class="bi bi-pencil-square"></i> Edit History
@@ -74,7 +70,6 @@
             {{ order.created_at|date:"M d, Y · h:i A" }}
           </div>
         {% endif %}
-
       </div>
 
       <div class="d-flex gap-2 align-items-start pt-2">
@@ -85,7 +80,6 @@
           <i class="bi bi-check-lg"></i> Save changes
         </button>
       </div>
-
     </div>
 </div>
 
@@ -124,7 +118,6 @@
       <div class="boxs p-2">
         <p class="subtitle">Delivery Location</p>
         <div class="row g-3 mt-1 align-items-end">
-
           <div class="col-sm-6">
             <label class="form-label small fw-medium">Shipping Method</label>
             <select id="shippingMethodSelect" class="form-select form-select-sm">
@@ -136,22 +129,18 @@
               </option>
             </select>
           </div>
-
           <div class="col-sm-4">
             <label class="form-label small fw-medium">Current Charge</label>
             <div class="fw-medium" style="font-size:13px;padding:5px 0" id="shippingChargeDisplay">
               ৳ {{ order.shipping_charge }}
             </div>
           </div>
-
           <div class="col-sm-2 text-end">
             <button class="btn btn-sm btn-outline-primary w-100" id="updateShippingMethodBtn">
               <i class="bi bi-arrow-repeat"></i> Update
             </button>
           </div>
-
         </div>
-
         <div id="shippingMethodMsg" class="mt-2" style="display:none;font-size:12px"></div>
       </div>
 
@@ -196,9 +185,7 @@
                     data-stock="{{ item.product_attribute.attribute_stock_status.remaining_stock }}"
                     data-original-qty="{{ item.quantity }}"
                     data-is-new="false">
-
                   <td class="row-num">{{ forloop.counter }}</td>
-
                   <td>
                     <div class="d-flex gap-2 align-items-center">
                       <img src="{{ item.product_attribute.image.url }}" width="36" height="36"
@@ -210,7 +197,6 @@
                       </div>
                     </div>
                   </td>
-
                   <td style="min-width:90px">
                     <select class="form-select form-select-sm size-select" style="font-size:11px;padding:2px 6px">
                       <option value="{{ item.product_attribute.id }}" selected>
@@ -218,7 +204,6 @@
                       </option>
                     </select>
                   </td>
-
                   <td style="min-width:100px">
                     <select class="form-select form-select-sm color-select" style="font-size:11px;padding:2px 6px">
                       <option value="{{ item.product_attribute.id }}" selected>
@@ -226,7 +211,6 @@
                       </option>
                     </select>
                   </td>
-
                   <td>
                     <div class="d-flex align-items-center gap-1">
                       <button class="btn btn-sm btn-outline-secondary qty-minus" style="padding:1px 7px;line-height:1">−</button>
@@ -234,12 +218,10 @@
                       <button class="btn btn-sm btn-outline-secondary qty-plus" style="padding:1px 7px;line-height:1">+</button>
                     </div>
                   </td>
-
                   <td class="unit-price-cell" style="font-size:12px">৳ {{ item.product_attribute.product_final_price }}</td>
                   <td class="row-total fw-medium" style="font-size:12px">
                     ৳ {{ item.product_attribute.product_final_price|floatformat:2 }}
                   </td>
-
                   <td>
                     <button class="btn btn-sm remove-item-btn text-danger" style="padding:2px 6px;background:transparent;border:none">
                       <i class="bi bi-trash3"></i>
@@ -275,6 +257,7 @@
           </div>
         </div>
 
+        <!-- Order Totals -->
         <div class="border-top pt-3 mt-3">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <p class="subtitle mb-0">Order Totals</p>
@@ -288,31 +271,26 @@
               <div class="d-flex justify-content-between align-items-start">
                 <span class="text-muted small">Sub Total After Discount</span>
                 <span class="text-end">
-                  <span id="editSubtotal" class="small fw-medium">৳ {{ order.sub_total_after_discount }}</span>
+                  <span class="small fw-medium">৳ {{ order.sub_total_after_discount }}</span>
                   <br><span id="itemsSumHint" class="text-muted" style="font-size:10px"></span>
                 </span>
               </div>
-
               <div class="d-flex justify-content-between">
                 <span class="text-muted small">Coupon Discount</span>
                 <span id="displayCoupon" class="small fw-medium">৳ {{ order.coupon_price|default:"0.00" }}</span>
               </div>
-
               <div class="d-flex justify-content-between">
                 <span class="text-muted small">Delivery Charge</span>
                 <span id="displayShipping" class="small fw-medium delivery-charge-display">৳ {{ order.shipping_charge }}</span>
               </div>
-
               <div class="d-flex justify-content-between">
                 <span class="text-muted small" id="editVatGst">VAT &amp; Tax</span>
                 <span id="displayVat" class="small fw-medium">৳ {{ vat_gst }}</span>
               </div>
-
               <div class="d-flex justify-content-between border-top pt-2 mt-1">
                 <span class="fw-bold">Grand Total</span>
-                <span class="fw-bold" id="editGrandTotal">৳ {{ order.total_payable }}</span>
+                <span class="fw-bold">৳ {{ order.total_payable }}</span>
               </div>
-
             </div>
           </div>
 
@@ -322,29 +300,23 @@
                 <label class="form-label small fw-medium mb-0" style="min-width:140px">Subtotal</label>
                 <input type="number" step="0.01" id="manualSubtotal" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.sub_total_after_discount }}">
               </div>
-
               <div class="d-flex align-items-center justify-content-between gap-2">
                 <label class="form-label small fw-medium mb-0" style="min-width:140px">Coupon Discount</label>
                 <input type="number" step="0.01" id="manualCoupon" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.coupon_price|default:'0.00' }}">
               </div>
-
               <div class="d-flex align-items-center justify-content-between gap-2">
                 <label class="form-label small fw-medium mb-0" style="min-width:140px">Delivery Charge</label>
                 <input type="number" step="0.01" id="manualDelivery" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.shipping_charge }}">
               </div>
-
               <div class="d-flex align-items-center justify-content-between gap-2">
                 <label class="form-label small fw-medium mb-0" style="min-width:140px">VAT &amp; Tax</label>
                 <input type="number" step="0.01" id="manualVat" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ vat_gst }}">
               </div>
-
               <div class="d-flex justify-content-end gap-2 mt-2">
-                <button class="btn btn-sm btn-primary" id="saveTotalsBtn"><i class="bi bi-check-lg"></i> Update</button>
                 <button class="btn btn-sm btn-outline-secondary mx-1" id="cancelTotalsBtn">Cancel</button>
               </div>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -377,7 +349,6 @@
             <i class="bi bi-pencil"></i> Edit
           </button>
         </div>
-
         <div id="addressDisplay" class="mt-2 p-2 rounded" style="background:#f8f8fb;border:0.5px solid #e0e0e8;font-size:12px;line-height:1.9">
           <div class="fw-medium" id="disp-full-name"><b>Name:</b> {{ order.shipping_address.full_name }}</div>
           <span id="disp-phone-no"><b>Phone:</b> {{ order.shipping_address.phone_no }}</span><br>
@@ -397,44 +368,35 @@
               <label class="form-label" style="font-size:11px;font-weight:500">Full Name</label>
               <input type="text" id="addr-full-name" class="form-control form-control-sm" value="{{ order.shipping_address.full_name }}">
             </div>
-
             <div class="col-sm-6">
               <label class="form-label" style="font-size:11px;font-weight:500">Phone</label>
               <input type="text" id="addr-phone-no" class="form-control form-control-sm" value="{{ order.shipping_address.phone_no }}">
             </div>
-
             <div class="col-12">
               <label class="form-label" style="font-size:11px;font-weight:500">Address Line</label>
               <input type="text" id="addr-address-line" class="form-control form-control-sm" value="{{ order.shipping_address.address_line }}">
             </div>
-
             <div class="col-sm-6">
               <label class="form-label" style="font-size:11px;font-weight:500">City</label>
               <input type="text" id="addr-city" class="form-control form-control-sm" value="{{ order.shipping_address.city }}">
             </div>
-
             <div class="col-sm-6">
               <label class="form-label" style="font-size:11px;font-weight:500">Thana</label>
               <input type="text" id="addr-thana" class="form-control form-control-sm" value="{{ order.shipping_address.thana }}">
             </div>
-
             <div class="col-sm-6">
               <label class="form-label" style="font-size:11px;font-weight:500">Upazila</label>
               <input type="text" id="addr-upozila" class="form-control form-control-sm" value="{{ order.shipping_address.upozila }}">
             </div>
-
             <div class="col-sm-6">
               <label class="form-label" style="font-size:11px;font-weight:500">Post Code</label>
               <input type="text" id="addr-postal-code" class="form-control form-control-sm" value="{{ order.shipping_address.postal_code }}">
             </div>
-
             <div class="col-12">
               <label class="form-label" style="font-size:11px;font-weight:500">Note <span class="text-muted">(optional)</span></label>
               <textarea id="addr-note" class="form-control form-control-sm" rows="2" style="font-size:12px">{{ order.shipping_address.note }}</textarea>
             </div>
-
           </div>
-
           <div class="d-flex gap-2 mt-2">
             <button class="btn btn-sm btn-primary" id="saveAddressBtn">
               <i class="bi bi-check-lg"></i> Save Address
@@ -468,7 +430,6 @@
   </div>
 </div>
 
-
 <div id="saveToast" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:none">
   <div class="alert alert-success shadow d-flex align-items-center gap-2 mb-0">
     <i class="bi bi-check-circle-fill"></i>
@@ -480,11 +441,11 @@
 
 {% block JS %}
 <script>
-const ORDER_ID      = {{ order.id }};
-const CSRF_TOKEN    = "{{ csrf_token }}";
+const ORDER_ID       = {{ order.id }};
+const CSRF_TOKEN     = "{{ csrf_token }}";
 const ORIGINAL_TOTAL = parseFloat("{{ order.total_payable|default:'0' }}") || 0;
 
-// Live JS vars — always kept in sync so recalc() is always accurate
+// ── Live JS vars — always kept in sync so recalc() is accurate ──────────────
 let currentDelivery = parseFloat("{{ order.shipping_charge|default:'0' }}") || 0;
 let COUPON          = parseFloat("{{ order.coupon_price|default:'0' }}") || 0;
 let VAT_GST         = parseFloat("{{ vat_gst|default:'0' }}") || 0;
@@ -500,10 +461,9 @@ let newItems       = [];
 let attributeSwaps = {};
 const variantCache = {};
 
-// ─── Manual totals state ───────────────────────────────────────────────────────
-// _manualValues holds the last values explicitly set by the admin via the Edit
-// totals form. _totalsEdited flags that these should be sent to the backend
-// instead of letting the backend auto-recalculate from items.
+// ── Manual totals state ──────────────────────────────────────────────────────
+// _manualValues holds values explicitly set by admin via the Edit totals form.
+// _totalsEdited = true means send these to backend instead of auto-recalculating.
 let _totalsEdited = false;
 let _manualValues = {
   subtotal: parseFloat("{{ order.sub_total_after_discount|default:'0' }}") || 0,
@@ -512,7 +472,9 @@ let _manualValues = {
   vat:      parseFloat("{{ vat_gst|default:'0' }}") || 0,
 };
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
+let _draftTotals = null;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -527,13 +489,16 @@ function showToast(msg, type = 'success') {
   setTimeout(() => el.style.display = 'none', 4000);
 }
 
-// ─── Live recalc ───────────────────────────────────────────────────────────────
-// Always recomputes from current item rows + COUPON / VAT_GST / currentDelivery.
-// When the admin has manually overridden totals, those values are already written
-// into COUPON / VAT_GST / currentDelivery by saveTotalsBtn, so recalc() naturally
-// uses them without any special-casing.
+// ── recalc() ─────────────────────────────────────────────────────────────────
+// Single source of truth for all displayed totals.
+// Rules:
+//   - editSubtotal  → show _manualValues.subtotal when _totalsEdited, else live item sum
+//   - itemsSumHint  → show live item sum as hint when _totalsEdited (so admin can compare)
+//   - Grand total   → always uses _manualValues.subtotal when _totalsEdited
+//   - COUPON / VAT_GST / currentDelivery are always the live vars (updated by
+//     saveTotalsBtn and shipping method update)
 function recalc() {
-  let subtotal     = 0;
+  let liveItemSum  = 0;
   let newCount     = 0;
   let hasViolation = false;
 
@@ -543,44 +508,34 @@ function recalc() {
     const rowTotal  = unitPrice * qty;
     const totalCell = tr.querySelector('.row-total');
     if (totalCell) totalCell.textContent = '৳ ' + rowTotal.toFixed(2);
-    subtotal += rowTotal;
+    liveItemSum += rowTotal;
     if (tr.dataset.isNew === 'true') newCount++;
 
-    const stock       = parseInt(tr.dataset.stock ?? 9999);
-    const originalQty = parseInt(tr.dataset.originalQty ?? 0);
+    const stock          = parseInt(tr.dataset.stock ?? 9999);
+    const originalQty    = parseInt(tr.dataset.originalQty ?? 0);
     const effectiveStock = tr.dataset.isNew === 'true' ? stock : stock + originalQty;
     if (qty > effectiveStock) hasViolation = true;
   });
 
-  // When the admin has manually set a subtotal override, use that for the grand
-  // total calculation instead of the live item sum. The live item sum is still
-  // shown in editSubtotal so the admin can see what items currently add up to.
-  const baseSubtotal = _totalsEdited ? _manualValues.subtotal : subtotal;
+  // Which subtotal to use for the grand total calculation
+  const baseSubtotal = _totalsEdited ? _manualValues.subtotal : liveItemSum;
   const grand        = baseSubtotal + currentDelivery - COUPON + VAT_GST;
   const delta        = grand - ORIGINAL_TOTAL;
 
-  // ── Left column: Order Totals display panel ──
-  // When admin has manually overridden subtotal, show their value in the main
-  // display and show the live item sum as a small hint beneath it.
-  if (_totalsEdited) {
-    document.getElementById('editSubtotal').textContent = '৳ ' + _manualValues.subtotal.toFixed(2);
-    const hint = document.getElementById('itemsSumHint');
-    if (hint) hint.textContent = '(items sum: ৳ ' + subtotal.toFixed(2) + ')';
-  } else {
-    document.getElementById('editSubtotal').textContent = '৳ ' + subtotal.toFixed(2);
-    const hint = document.getElementById('itemsSumHint');
-    if (hint) hint.textContent = '';
-  }
-  document.getElementById('editGrandTotal').textContent = '৳ ' + grand.toFixed(2);
-  // Always keep the display spans in sync with live vars
+  // ── editSubtotal: show manual value when overridden, live sum otherwise ──
+  // ── editSubtotal: show manual value when overridden, live sum otherwise ──
+
+
+
+  // document.getElementById('editGrandTotal').textContent  = '৳ ' + grand.toFixed(2);
   document.getElementById('displayCoupon').textContent   = '৳ ' + COUPON.toFixed(2);
   document.getElementById('displayShipping').textContent = '৳ ' + currentDelivery.toFixed(2);
   document.getElementById('displayVat').textContent      = '৳ ' + VAT_GST.toFixed(2);
 
-  // ── Right column: Order Summary sidebar ──
+  // ── Right sidebar ──
   document.getElementById('summarySubtotal').textContent  = _totalsEdited
     ? '৳ ' + _manualValues.subtotal.toFixed(2)
-    : '৳ ' + subtotal.toFixed(2);
+    : '৳ ' + liveItemSum.toFixed(2);
   document.getElementById('summaryCoupon').textContent    = '৳ ' + COUPON.toFixed(2);
   document.getElementById('summaryDelivery').textContent  = '৳ ' + currentDelivery.toFixed(2);
   document.getElementById('summaryVatTax').textContent    = '৳ ' + VAT_GST.toFixed(2);
@@ -589,7 +544,6 @@ function recalc() {
   document.getElementById('newItemsCount').textContent  = newCount + ' item' + (newCount !== 1 ? 's' : '');
   document.getElementById('itemCountLabel').textContent = document.querySelectorAll('#orderItemsBody tr').length + ' item(s)';
 
-  // Sync all .delivery-charge-display spans
   document.querySelectorAll('.delivery-charge-display').forEach(el => {
     el.textContent = '৳ ' + currentDelivery.toFixed(2);
   });
@@ -604,7 +558,7 @@ function recalc() {
     banner.style.display = 'none';
   }
 
-  // Global stock violation banner
+  // Stock violation banner
   let violationBanner = document.getElementById('stockViolationBanner');
   if (hasViolation) {
     if (!violationBanner) {
@@ -625,7 +579,7 @@ function recalc() {
 }
 recalc();
 
-// ─── Renumber rows ─────────────────────────────────────────────────────────────
+// ── Renumber rows ────────────────────────────────────────────────────────────
 function renumberRows() {
   document.querySelectorAll('#orderItemsBody tr').forEach((tr, i) => {
     const cell = tr.querySelector('.row-num');
@@ -633,17 +587,14 @@ function renumberRows() {
   });
 }
 
-// ─── Stock violation helpers ───────────────────────────────────────────────────
+// ── Stock violation helpers ──────────────────────────────────────────────────
 function checkRowStockViolation(tr) {
-  const qty         = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
-  const stock       = parseInt(tr.dataset.stock ?? 9999);
-  const originalQty = parseInt(tr.dataset.originalQty ?? 0);
+  const qty            = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
+  const stock          = parseInt(tr.dataset.stock ?? 9999);
+  const originalQty    = parseInt(tr.dataset.originalQty ?? 0);
   const effectiveStock = stock + originalQty;
-  if (qty > effectiveStock) {
-    showRowViolationWarning(tr, qty, effectiveStock);
-  } else {
-    clearRowViolationWarning(tr);
-  }
+  if (qty > effectiveStock) showRowViolationWarning(tr, qty, effectiveStock);
+  else clearRowViolationWarning(tr);
 }
 
 function showRowViolationWarning(tr, qty, stock) {
@@ -668,7 +619,7 @@ function clearRowViolationWarning(tr) {
   if (badge) badge.remove();
 }
 
-// ─── Shipping method update ────────────────────────────────────────────────────
+// ── Shipping method update ───────────────────────────────────────────────────
 document.getElementById('updateShippingMethodBtn').addEventListener('click', function () {
   const btn            = this;
   const select         = document.getElementById('shippingMethodSelect');
@@ -688,12 +639,9 @@ document.getElementById('updateShippingMethodBtn').addEventListener('click', fun
   .then(data => {
     if (data.success) {
       currentDelivery = data.shipping_charge;
-      // If admin had manually set totals, keep _totalsEdited but update shipping
       if (_totalsEdited) _manualValues.shipping = currentDelivery;
-
       document.getElementById('shippingChargeDisplay').textContent = '৳ ' + currentDelivery.toFixed(2);
       recalc();
-
       msgEl.style.display = 'block';
       msgEl.className     = 'mt-2 text-success';
       msgEl.innerHTML     = `<i class="bi bi-check-circle"></i> Updated to 
@@ -720,21 +668,19 @@ document.getElementById('updateShippingMethodBtn').addEventListener('click', fun
   });
 });
 
-// ─── Page load: populate selects for all existing rows ──────────────────────
+// ── Page load: populate selects for all existing rows ────────────────────────
 document.querySelectorAll('#orderItemsBody tr[data-product-id]').forEach(tr => {
   loadVariantsForRow(tr);
 });
 
 function loadVariantsForRow(tr) {
-  const productId    = tr.dataset.productId;
+  const productId     = tr.dataset.productId;
   const currentAttrId = parseInt(tr.dataset.attrId);
   if (!productId) return;
-
   if (variantCache[productId]) {
     populateSelects(tr, variantCache[productId], currentAttrId);
     return;
   }
-
   fetch(`${VARIANTS_URL}?product_id=${encodeURIComponent(productId)}&order_id=${ORDER_ID}`)
     .then(r => r.json())
     .then(data => {
@@ -776,7 +722,6 @@ function populateSelects(tr, variants, currentAttrId) {
 function buildColorOptions(colorSelect, variants, selectedSize, preferredColor) {
   const filtered = variants.filter(v => v.size === selectedSize);
   const source   = filtered.length ? filtered : variants;
-
   colorSelect.innerHTML = source.map((v, idx) => {
     const isSelected = preferredColor !== null && preferredColor !== undefined
       ? (v.color === preferredColor)
@@ -801,15 +746,13 @@ function syncAttrFromSelects(tr) {
   const newAttrId  = parseInt(selectedOpt.dataset.attrId);
   const newPrice   = parseFloat(selectedOpt.dataset.price);
   const newStock   = parseInt(selectedOpt.dataset.stock ?? 9999);
-  const originalQty = tr.dataset.isNew === 'true' ? 0 : parseInt(tr.dataset.originalQty ?? 0);
   const inStock    = selectedOpt.dataset.inStock === 'true';
   const isNew      = tr.dataset.isNew === 'true';
   const itemId     = tr.dataset.itemId;
-  const attrChanged = String(newAttrId) !== tr.dataset.attrId;
 
   if (!newAttrId || isNaN(newPrice)) return;
 
-  const oldAttrId = parseInt(tr.dataset.attrId);
+  const oldAttrId      = parseInt(tr.dataset.attrId);
   tr.dataset.attrId    = String(newAttrId);
   tr.dataset.unitPrice = String(newPrice);
   tr.dataset.stock     = String(newStock);
@@ -818,9 +761,9 @@ function syncAttrFromSelects(tr) {
   if (unitCell) unitCell.textContent = '৳ ' + newPrice.toFixed(1);
 
   if (isNew) {
-    const rowKey   = tr.dataset.rowKey;
-    const ni       = newItems.find(i => i.product_attribute_id === oldAttrId) ||
-                     newItems.find(i => i.rowKey === rowKey);
+    const rowKey = tr.dataset.rowKey;
+    const ni     = newItems.find(i => i.product_attribute_id === oldAttrId) ||
+                   newItems.find(i => i.rowKey === rowKey);
     if (ni) ni.product_attribute_id = newAttrId;
   } else {
     attributeSwaps[itemId] = newAttrId;
@@ -831,7 +774,7 @@ function syncAttrFromSelects(tr) {
   recalc();
 }
 
-// ─── Tab switching ─────────────────────────────────────────────────────────────
+// ── Tab switching ────────────────────────────────────────────────────────────
 document.querySelectorAll('[data-tab]').forEach(link => {
   link.addEventListener('click', function (e) {
     e.preventDefault();
@@ -844,12 +787,11 @@ document.querySelectorAll('[data-tab]').forEach(link => {
   });
 });
 
-// ─── Table body click handler ──────────────────────────────────────────────────
+// ── Table body click handler ─────────────────────────────────────────────────
 document.getElementById('orderItemsBody').addEventListener('click', function (e) {
   const tr = e.target.closest('tr');
   if (!tr) return;
 
-  // QTY MINUS
   if (e.target.closest('.qty-minus')) {
     const span = tr.querySelector('.qty-val');
     const qty  = parseInt(span.textContent);
@@ -861,31 +803,23 @@ document.getElementById('orderItemsBody').addEventListener('click', function (e)
     return;
   }
 
-  // QTY PLUS
   if (e.target.closest('.qty-plus')) {
-    const span        = tr.querySelector('.qty-val');
-    const current     = parseInt(span.textContent);
-    const stock       = parseInt(tr.dataset.stock ?? 9999);
-    const originalQty = parseInt(tr.dataset.originalQty ?? 0);
+    const span           = tr.querySelector('.qty-val');
+    const current        = parseInt(span.textContent);
+    const stock          = parseInt(tr.dataset.stock ?? 9999);
+    const originalQty    = parseInt(tr.dataset.originalQty ?? 0);
     const effectiveStock = stock + originalQty;
-
     span.textContent = current + 1;
-
     if (current + 1 > effectiveStock) {
       showRowViolationWarning(tr, current + 1, effectiveStock);
-      showToast(
-        `⚠ Only ${effectiveStock} unit(s) available, but ${current + 1} ordered. This will be flagged as a stock violation.`,
-        'warning'
-      );
+      showToast(`⚠ Only ${effectiveStock} unit(s) available, but ${current + 1} ordered.`, 'warning');
     } else {
       clearRowViolationWarning(tr);
     }
-
     recalc();
     return;
   }
 
-  // REMOVE
   if (e.target.closest('.remove-item-btn')) {
     const isNew = tr.dataset.isNew === 'true';
     if (isNew) {
@@ -902,12 +836,12 @@ document.getElementById('orderItemsBody').addEventListener('click', function (e)
   }
 });
 
-// ─── Payment toggle ────────────────────────────────────────────────────────────
+// ── Payment toggle ───────────────────────────────────────────────────────────
 document.getElementById('editPaymentToggle').addEventListener('change', function () {
   document.getElementById('payStatusLabel').textContent = this.checked ? 'Paid' : 'Pending';
 });
 
-// ─── Catalog search ────────────────────────────────────────────────────────────
+// ── Catalog search ───────────────────────────────────────────────────────────
 let searchTimer;
 document.getElementById('productSearchInput').addEventListener('input', function () {
   clearTimeout(searchTimer);
@@ -919,9 +853,7 @@ function fetchCatalog() {
   const q    = document.getElementById('productSearchInput').value.trim();
   const cat  = document.getElementById('categoryFilter').value;
   const grid = document.getElementById('productCatalogGrid');
-
   grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:#aaa;font-size:12px">Loading…</div>';
-
   fetch(`${SEARCH_URL}?q=${encodeURIComponent(q)}&category_id=${encodeURIComponent(cat)}&order_id=${ORDER_ID}`)
     .then(r => r.json())
     .then(data => renderCatalog(data.products))
@@ -963,7 +895,6 @@ function renderCatalog(products) {
       </div>
     </div>
   `).join('');
-
   grid.querySelectorAll('.prod-card').forEach(card => {
     card.addEventListener('click', function () {
       addProductToOrder(
@@ -979,7 +910,7 @@ function renderCatalog(products) {
   });
 }
 
-// ─── Add new product row ───────────────────────────────────────────────────────
+// ── Add new product row ──────────────────────────────────────────────────────
 let rowKeyCounter = 0;
 
 function addProductToOrder(attrId, productId, name, size, color, price, image) {
@@ -1046,15 +977,26 @@ function addProductToOrder(attrId, productId, name, size, color, price, image) {
   showToast(`"${name}" added to order.`, 'success');
 }
 
-// ─── Save order ────────────────────────────────────────────────────────────────
+// ── Save order ───────────────────────────────────────────────────────────────
 document.getElementById('saveOrderBtn').addEventListener('click', function () {
+  let subtotal = null;
+  let coupon = null;
+  let shipping = null;
+  let vat = null;
+
+  if (totalsForm.style.display !== 'none') {
+      subtotal = parseFloat(document.getElementById('manualSubtotal').value) || 0;
+      coupon = parseFloat(document.getElementById('manualCoupon').value) || 0;
+      shipping = parseFloat(document.getElementById('manualDelivery').value) || 0;
+      vat = parseFloat(document.getElementById('manualVat').value) || 0;
+  }
+
   const btn = this;
   btn.disabled  = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
 
   const items = [];
 
-  // Existing rows
   document.querySelectorAll('#orderItemsBody tr[data-is-new="false"]').forEach(tr => {
     const itemId         = tr.dataset.itemId;
     const swappedAttrId  = attributeSwaps[itemId] || null;
@@ -1063,7 +1005,6 @@ document.getElementById('saveOrderBtn').addEventListener('click', function () {
     const originalQty    = parseInt(tr.dataset.originalQty ?? 0);
     const effectiveStock = stock + originalQty;
     const violated       = qty > effectiveStock;
-
     items.push({
       id:                       parseInt(itemId),
       quantity:                 qty,
@@ -1075,14 +1016,12 @@ document.getElementById('saveOrderBtn').addEventListener('click', function () {
     });
   });
 
-  // New rows
   newItems.forEach(ni => {
     const tr            = document.querySelector(`#orderItemsBody tr[data-row-key="${ni.rowKey}"]`);
     const qty           = tr ? parseInt(tr.querySelector('.qty-val').textContent) : 1;
     const stock         = tr ? parseInt(tr.dataset.stock ?? 9999) : 9999;
     const currentAttrId = tr ? parseInt(tr.dataset.attrId) : ni.product_attribute_id;
     const violated      = qty > stock;
-
     items.push({
       product_attribute_id: currentAttrId,
       quantity:             qty,
@@ -1093,25 +1032,21 @@ document.getElementById('saveOrderBtn').addEventListener('click', function () {
     });
   });
 
-  // Deleted rows
   deletedItemIds.forEach(id => {
     items.push({ id, is_new: false, is_deleted: true });
   });
 
-  // Build payload.
-  // When _totalsEdited is true, send the manually-entered values so the backend
-  // uses them verbatim instead of auto-recalculating from items.
-  // Keys must match exactly what update_order_ajax reads via data.get(...)
   const payload = {
     order_id:        ORDER_ID,
     order_status:    document.getElementById('editOrderStatus').value,
     payment_status:  document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
     items,
-    subtotal:        _totalsEdited ? _manualValues.subtotal  : null,
-    coupon_price:    _totalsEdited ? _manualValues.coupon    : null,
-    shipping_charge: _totalsEdited ? _manualValues.shipping  : null,
-    vat_gst:         _totalsEdited ? _manualValues.vat       : null,
+    subtotal: subtotal,
+    coupon_price: coupon,
+    shipping_charge: shipping,
+    vat_gst: vat,
   };
+  console.log('Payload to save:', payload);
 
   fetch(SAVE_URL, {
     method:  'POST',
@@ -1121,10 +1056,8 @@ document.getElementById('saveOrderBtn').addEventListener('click', function () {
   .then(r => r.json())
   .then(data => {
     if (data.success) {
+      _draftTotals = null;
       showToast('Order saved successfully!', 'success');
-
-      // Sync live JS vars + _manualValues from server response so any subsequent
-      // edits in this same page session start from the correct baseline.
       if (data.new_tax !== undefined) {
         VAT_GST              = parseFloat(data.new_tax);
         _manualValues.vat    = VAT_GST;
@@ -1138,23 +1071,17 @@ document.getElementById('saveOrderBtn').addEventListener('click', function () {
         _manualValues.subtotal = parseFloat(data.sub_total_after_discount);
       }
       if (data.new_coupon !== undefined) {
-        COUPON              = parseFloat(data.new_coupon);
+        COUPON               = parseFloat(data.new_coupon);
         _manualValues.coupon = COUPON;
       }
-
-      // Reset state after syncing from server
-      _totalsEdited  = false;
+      _totalsEdited  = true;
       deletedItemIds = [];
       attributeSwaps = {};
       newItems       = [];
-
-      // Mark previously-new rows as existing so they behave correctly if the
-      // admin continues editing without navigating away
       document.querySelectorAll('#orderItemsBody tr[data-is-new="true"]').forEach(tr => {
         tr.dataset.isNew    = 'false';
         tr.style.background = '';
       });
-
       recalc();
       setTimeout(() => { window.location.href = "{% url 'order_list' %}"; }, 200);
     } else {
@@ -1168,7 +1095,7 @@ document.getElementById('saveOrderBtn').addEventListener('click', function () {
   });
 });
 
-// ─── Address edit ──────────────────────────────────────────────────────────────
+// ── Address edit ─────────────────────────────────────────────────────────────
 const editAddressBtn   = document.getElementById('editAddressBtn');
 const cancelAddressBtn = document.getElementById('cancelAddressBtn');
 const saveAddressBtn   = document.getElementById('saveAddressBtn');
@@ -1218,13 +1145,13 @@ saveAddressBtn.addEventListener('click', function () {
   .then(data => {
     if (data.success) {
       const a = data.address;
-      document.getElementById('disp-full-name').textContent   = 'Name: '      + a.full_name;
-      document.getElementById('disp-phone-no').textContent    = 'Phone: '     + a.phone_no;
-      document.getElementById('disp-address-line').textContent = 'Address: '  + a.address_line;
-      document.getElementById('disp-city').textContent        = 'City: '      + a.city;
-      document.getElementById('disp-thana').textContent       = 'Thana: '     + a.thana;
-      document.getElementById('disp-upozila').textContent     = 'Upazila: '   + a.upozila;
-      document.getElementById('disp-postal-code').textContent = 'Post Code: ' + a.postal_code;
+      document.getElementById('disp-full-name').textContent    = 'Name: '      + a.full_name;
+      document.getElementById('disp-phone-no').textContent     = 'Phone: '     + a.phone_no;
+      document.getElementById('disp-address-line').textContent = 'Address: '   + a.address_line;
+      document.getElementById('disp-city').textContent         = 'City: '      + a.city;
+      document.getElementById('disp-thana').textContent        = 'Thana: '     + a.thana;
+      document.getElementById('disp-upozila').textContent      = 'Upazila: '   + a.upozila;
+      document.getElementById('disp-postal-code').textContent  = 'Post Code: ' + a.postal_code;
       const noteEl = document.getElementById('disp-note');
       if (a.note) { noteEl.textContent = 'Note: ' + a.note; noteEl.style.display = 'block'; }
       else         { noteEl.style.display = 'none'; }
@@ -1243,24 +1170,16 @@ saveAddressBtn.addEventListener('click', function () {
   });
 });
 
-// ─── Order Totals Edit ─────────────────────────────────────────────────────────
+// ── Order Totals Edit ────────────────────────────────────────────────────────
 const editTotalsBtn   = document.getElementById('editTotalsBtn');
 const cancelTotalsBtn = document.getElementById('cancelTotalsBtn');
-const saveTotalsBtn   = document.getElementById('saveTotalsBtn');
+// const saveTotalsBtn   = document.getElementById('saveTotalsBtn');
 const totalsDisplay   = document.getElementById('totalsDisplay');
 const totalsForm      = document.getElementById('totalsForm');
 
 editTotalsBtn.addEventListener('click', function () {
-  // If admin hasn't manually edited yet, pre-fill subtotal from the live item
-  // sum so they see what the items currently add up to as a starting point.
-  if (!_totalsEdited) {
-    let liveSubtotal = 0;
-    document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
-      liveSubtotal += parseFloat(tr.dataset.unitPrice || 0) *
-                      parseInt(tr.querySelector('.qty-val')?.textContent || 1);
-    });
-    _manualValues.subtotal = liveSubtotal;
-  }
+  // Always pre-fill all four inputs from _manualValues
+  // (seeded from DB on page load, updated only when admin explicitly saves)
   document.getElementById('manualSubtotal').value = _manualValues.subtotal.toFixed(2);
   document.getElementById('manualCoupon').value   = _manualValues.coupon.toFixed(2);
   document.getElementById('manualDelivery').value = _manualValues.shipping.toFixed(2);
@@ -1277,31 +1196,5 @@ cancelTotalsBtn.addEventListener('click', function () {
   editTotalsBtn.style.display = '';
 });
 
-saveTotalsBtn.addEventListener('click', function () {
-  const subtotal = parseFloat(document.getElementById('manualSubtotal').value) || 0;
-  const coupon   = parseFloat(document.getElementById('manualCoupon').value)   || 0;
-  const shipping = parseFloat(document.getElementById('manualDelivery').value) || 0;
-  const vat      = parseFloat(document.getElementById('manualVat').value)      || 0;
-
-  // 1. Persist to the reliable manual store
-  _manualValues = { subtotal, coupon, shipping, vat };
-  _totalsEdited = true;
-
-  // 2. Write into the live JS vars so recalc() uses them immediately
-  COUPON          = coupon;
-  VAT_GST         = vat;
-  currentDelivery = shipping;
-
-  // 3. recalc() will now recompute grand total using the updated live vars
-  //    and update ALL display spans in one place — no duplication needed here.
-  recalc();
-
-  // 4. Restore display / hide form
-  totalsDisplay.style.display = 'block';
-  totalsForm.style.display    = 'none';
-  editTotalsBtn.style.display = '';
-
-  showToast('Totals updated. Click "Save changes" to persist.', 'success');
-});
 </script>
 {% endblock %}
