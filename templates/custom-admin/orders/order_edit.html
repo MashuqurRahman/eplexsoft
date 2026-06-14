@@ -152,7 +152,6 @@
 
         </div>
 
-
         <div id="shippingMethodMsg" class="mt-2" style="display:none;font-size:12px"></div>
       </div>
 
@@ -276,19 +275,6 @@
           </div>
         </div>
 
-        {% comment %} <div class="border-top pt-3 mt-3">
-          <div class="d-flex flex-column gap-1 ms-auto" style="max-width:300px">
-            <div class="d-flex justify-content-between"><span class="text-muted small">Sub Total After Discount</span><span id="editSubtotal" class="small fw-medium">৳ {{ order.sub_total_after_discount }}</span></div>
-            <div class="d-flex justify-content-between"><span class="text-muted small">Coupon Discount</span><span class="small fw-medium">৳ {{ order.coupon_price|default:"0.00" }}</span></div>
-            <div class="d-flex justify-content-between"><span class="text-muted small">Delivery Charge</span><span class="small fw-medium delivery-charge-display">৳ {{ order.shipping_charge }}</span></div>
-            <div class="d-flex justify-content-between"><span class="text-muted small" id="editVatGst">VAT &amp; Tax</span><span class="small fw-medium">৳ {{ vat_gst }}</span></div>
-            <div class="d-flex justify-content-between border-top pt-2 mt-1">
-              <span class="fw-bold">Grand Total</span>
-              <span class="fw-bold" id="editGrandTotal">৳ {{ order.total_payable }}</span>
-            </div>
-          </div>
-        </div> {% endcomment %}
-
         <div class="border-top pt-3 mt-3">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <p class="subtitle mb-0">Order Totals</p>
@@ -299,13 +285,16 @@
 
           <div id="totalsDisplay">
             <div class="d-flex flex-column gap-1 ms-auto" style="max-width:300px">
-              <div class="d-flex justify-content-between">
+              <div class="d-flex justify-content-between align-items-start">
                 <span class="text-muted small">Sub Total After Discount</span>
-                <span id="editSubtotal" class="small fw-medium">৳ {{ order.sub_total_after_discount }}</span>
+                <span class="text-end">
+                  <span id="editSubtotal" class="small fw-medium">৳ {{ order.sub_total_after_discount }}</span>
+                  <br><span id="itemsSumHint" class="text-muted" style="font-size:10px"></span>
+                </span>
               </div>
 
               <div class="d-flex justify-content-between">
-                <span class="text-muted small">Coupon Discount </span>
+                <span class="text-muted small">Coupon Discount</span>
                 <span id="displayCoupon" class="small fw-medium">৳ {{ order.coupon_price|default:"0.00" }}</span>
               </div>
 
@@ -329,31 +318,31 @@
 
           <div id="totalsForm" style="display:none">
             <div class="d-flex flex-column gap-2 ms-auto" style="max-width:340px">
-            <div class="d-flex align-items-center justify-content-between gap-2">
-              <label class="form-label small fw-medium mb-0" style="min-width:140px">Subtotal</label>
-              <input type="number" step="0.01" id="manualSubtotal" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.sub_total_after_discount }}">
-            </div>
+              <div class="d-flex align-items-center justify-content-between gap-2">
+                <label class="form-label small fw-medium mb-0" style="min-width:140px">Subtotal</label>
+                <input type="number" step="0.01" id="manualSubtotal" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.sub_total_after_discount }}">
+              </div>
 
-            <div class="d-flex align-items-center justify-content-between gap-2">
-              <label class="form-label small fw-medium mb-0"style="min-width:140px">Coupon Discount</label>
-              <input type="number" step="0.01" id="manualCoupon" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.coupon_price|default:'0.00' }}">
-            </div>
+              <div class="d-flex align-items-center justify-content-between gap-2">
+                <label class="form-label small fw-medium mb-0" style="min-width:140px">Coupon Discount</label>
+                <input type="number" step="0.01" id="manualCoupon" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.coupon_price|default:'0.00' }}">
+              </div>
 
-            <div class="d-flex align-items-center justify-content-between gap-2">
-              <label class="form-label small fw-medium mb-0" style="min-width:140px">Delivery Charge</label>
-              <input type="number" step="0.01" id="manualDelivery" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.shipping_charge }}">
-            </div>
+              <div class="d-flex align-items-center justify-content-between gap-2">
+                <label class="form-label small fw-medium mb-0" style="min-width:140px">Delivery Charge</label>
+                <input type="number" step="0.01" id="manualDelivery" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ order.shipping_charge }}">
+              </div>
 
-            <div class="d-flex align-items-center justify-content-between gap-2">
-              <label class="form-label small fw-medium mb-0" style="min-width:140px">VAT & Tax</label>
-              <input type="number" step="0.01" id="manualVat" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ vat_gst }}">
-            </div>
+              <div class="d-flex align-items-center justify-content-between gap-2">
+                <label class="form-label small fw-medium mb-0" style="min-width:140px">VAT &amp; Tax</label>
+                <input type="number" step="0.01" id="manualVat" class="form-control form-control-sm text-end" style="max-width:140px" value="{{ vat_gst }}">
+              </div>
 
-            <div class="d-flex justify-content-end gap-2 mt-2">
-              <button class="btn btn-sm btn-primary" id="saveTotalsBtn"><i class="bi bi-check-lg"></i>Update</button>
-              <button class="btn btn-sm btn-outline-secondary mx-1" id="cancelTotalsBtn">Cancel</button>
+              <div class="d-flex justify-content-end gap-2 mt-2">
+                <button class="btn btn-sm btn-primary" id="saveTotalsBtn"><i class="bi bi-check-lg"></i> Update</button>
+                <button class="btn btn-sm btn-outline-secondary mx-1" id="cancelTotalsBtn">Cancel</button>
+              </div>
             </div>
-          </div>
           </div>
 
         </div>
@@ -366,15 +355,15 @@
       <div class="boxs p-2">
           <div class="mt-3">
               <p class="subtitle">Customer Info</p>
-              <div class="border-bottom py-2 d-flex  align-items-center gap-3">
+              <div class="border-bottom py-2 d-flex align-items-center gap-3">
                   <p>Name: </p>
                   <p><b>{{order.user.name|default:"N/A"}}</b></p>
               </div>
-              <div class=" py-2 d-flex  align-items-center gap-3">
+              <div class="py-2 d-flex align-items-center gap-3">
                   <p>E-mail: </p>
                   <p><b>{{order.user.email|default:"N/A"}}</b></p>
               </div>
-              <div class=" py-2 d-flex  align-items-center gap-3">
+              <div class="py-2 d-flex align-items-center gap-3">
                   <p>Phone: </p>
                   <p><b>{{order.user.phone|default:"N/A"}}</b></p>
               </div>
@@ -466,8 +455,8 @@
           <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">Items added</span><span class="small fw-medium" id="newItemsCount">0 items</span></div>
           <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">New subtotal</span><span class="small fw-medium" id="summarySubtotal">৳ {{ order.sub_total_after_discount }}</span></div>
           <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">Coupon Discount</span><span class="small fw-medium" id="summaryCoupon">৳ {{ order.coupon_price|default:"0.00" }}</span></div>
-          <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">Delivery</span><span class="small fw-medium delivery-charge-display">৳ {{ order.shipping_charge }}</span></div>
-          <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">VAT &amp; Tax</span><span class="small fw-medium" id="summaryVatTax">৳ ৳ {{ vat_gst|default:"0.00" }}</span></div>
+          <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">Delivery</span><span class="small fw-medium" id="summaryDelivery">৳ {{ order.shipping_charge }}</span></div>
+          <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted small">VAT &amp; Tax</span><span class="small fw-medium" id="summaryVatTax">৳ {{ vat_gst|default:"0.00" }}</span></div>
           <div class="d-flex justify-content-between pt-2 mt-1">
             <span class="fw-bold small">New total</span>
             <span class="fw-bold small" id="summaryGrandTotal">৳ {{ order.total_payable }}</span>
@@ -491,89 +480,261 @@
 
 {% block JS %}
 <script>
-const ORDER_ID = {{ order.id }};
-const CSRF_TOKEN = "{{ csrf_token }}";
+const ORDER_ID      = {{ order.id }};
+const CSRF_TOKEN    = "{{ csrf_token }}";
 const ORIGINAL_TOTAL = parseFloat("{{ order.total_payable|default:'0' }}") || 0;
+
+// Live JS vars — always kept in sync so recalc() is always accurate
 let currentDelivery = parseFloat("{{ order.shipping_charge|default:'0' }}") || 0;
-let COUPON = parseFloat("{{ order.coupon_price|default:'0' }}") || 0;
-let VAT_GST = parseFloat("{{ vat_gst|default:'0' }}") || 0;
-const SEARCH_URL = "{% url 'search_products_ajax' %}";
-const SAVE_URL = "{% url 'update_order_ajax' %}";
-const VARIANTS_URL = "{% url 'get_product_variants_ajax' %}";
-const ADDRESS_SAVE_URL = "{% url 'update_shipping_address_ajax' %}";
+let COUPON          = parseFloat("{{ order.coupon_price|default:'0' }}") || 0;
+let VAT_GST         = parseFloat("{{ vat_gst|default:'0' }}") || 0;
+
+const SEARCH_URL          = "{% url 'search_products_ajax' %}";
+const SAVE_URL            = "{% url 'update_order_ajax' %}";
+const VARIANTS_URL        = "{% url 'get_product_variants_ajax' %}";
+const ADDRESS_SAVE_URL    = "{% url 'update_shipping_address_ajax' %}";
 const SHIPPING_METHOD_URL = "{% url 'update_shipping_method_ajax' %}";
- 
+
 let deletedItemIds = [];
 let newItems       = [];
 let attributeSwaps = {};
 const variantCache = {};
- 
-// ─── Shipping method update ───────
-document.getElementById('updateShippingMethodBtn').addEventListener('click', function() {
-  const btn = this;
-  const select = document.getElementById('shippingMethodSelect');
+
+// ─── Manual totals state ───────────────────────────────────────────────────────
+// _manualValues holds the last values explicitly set by the admin via the Edit
+// totals form. _totalsEdited flags that these should be sent to the backend
+// instead of letting the backend auto-recalculate from items.
+let _totalsEdited = false;
+let _manualValues = {
+  subtotal: parseFloat("{{ order.sub_total_after_discount|default:'0' }}") || 0,
+  coupon:   parseFloat("{{ order.coupon_price|default:'0' }}") || 0,
+  shipping: parseFloat("{{ order.shipping_charge|default:'0' }}") || 0,
+  vat:      parseFloat("{{ vat_gst|default:'0' }}") || 0,
+};
+
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function showToast(msg, type = 'success') {
+  const el = document.getElementById('saveToast');
+  el.querySelector('div').className = `alert alert-${type} shadow d-flex align-items-center gap-2 mb-0`;
+  document.getElementById('toastMsg').textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+// ─── Live recalc ───────────────────────────────────────────────────────────────
+// Always recomputes from current item rows + COUPON / VAT_GST / currentDelivery.
+// When the admin has manually overridden totals, those values are already written
+// into COUPON / VAT_GST / currentDelivery by saveTotalsBtn, so recalc() naturally
+// uses them without any special-casing.
+function recalc() {
+  let subtotal     = 0;
+  let newCount     = 0;
+  let hasViolation = false;
+
+  document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
+    const unitPrice = parseFloat(tr.dataset.unitPrice || 0);
+    const qty       = parseInt(tr.querySelector('.qty-val')?.textContent || 1);
+    const rowTotal  = unitPrice * qty;
+    const totalCell = tr.querySelector('.row-total');
+    if (totalCell) totalCell.textContent = '৳ ' + rowTotal.toFixed(2);
+    subtotal += rowTotal;
+    if (tr.dataset.isNew === 'true') newCount++;
+
+    const stock       = parseInt(tr.dataset.stock ?? 9999);
+    const originalQty = parseInt(tr.dataset.originalQty ?? 0);
+    const effectiveStock = tr.dataset.isNew === 'true' ? stock : stock + originalQty;
+    if (qty > effectiveStock) hasViolation = true;
+  });
+
+  // When the admin has manually set a subtotal override, use that for the grand
+  // total calculation instead of the live item sum. The live item sum is still
+  // shown in editSubtotal so the admin can see what items currently add up to.
+  const baseSubtotal = _totalsEdited ? _manualValues.subtotal : subtotal;
+  const grand        = baseSubtotal + currentDelivery - COUPON + VAT_GST;
+  const delta        = grand - ORIGINAL_TOTAL;
+
+  // ── Left column: Order Totals display panel ──
+  // When admin has manually overridden subtotal, show their value in the main
+  // display and show the live item sum as a small hint beneath it.
+  if (_totalsEdited) {
+    document.getElementById('editSubtotal').textContent = '৳ ' + _manualValues.subtotal.toFixed(2);
+    const hint = document.getElementById('itemsSumHint');
+    if (hint) hint.textContent = '(items sum: ৳ ' + subtotal.toFixed(2) + ')';
+  } else {
+    document.getElementById('editSubtotal').textContent = '৳ ' + subtotal.toFixed(2);
+    const hint = document.getElementById('itemsSumHint');
+    if (hint) hint.textContent = '';
+  }
+  document.getElementById('editGrandTotal').textContent = '৳ ' + grand.toFixed(2);
+  // Always keep the display spans in sync with live vars
+  document.getElementById('displayCoupon').textContent   = '৳ ' + COUPON.toFixed(2);
+  document.getElementById('displayShipping').textContent = '৳ ' + currentDelivery.toFixed(2);
+  document.getElementById('displayVat').textContent      = '৳ ' + VAT_GST.toFixed(2);
+
+  // ── Right column: Order Summary sidebar ──
+  document.getElementById('summarySubtotal').textContent  = _totalsEdited
+    ? '৳ ' + _manualValues.subtotal.toFixed(2)
+    : '৳ ' + subtotal.toFixed(2);
+  document.getElementById('summaryCoupon').textContent    = '৳ ' + COUPON.toFixed(2);
+  document.getElementById('summaryDelivery').textContent  = '৳ ' + currentDelivery.toFixed(2);
+  document.getElementById('summaryVatTax').textContent    = '৳ ' + VAT_GST.toFixed(2);
+  document.getElementById('summaryGrandTotal').textContent = '৳ ' + grand.toFixed(2);
+
+  document.getElementById('newItemsCount').textContent  = newCount + ' item' + (newCount !== 1 ? 's' : '');
+  document.getElementById('itemCountLabel').textContent = document.querySelectorAll('#orderItemsBody tr').length + ' item(s)';
+
+  // Sync all .delivery-charge-display spans
+  document.querySelectorAll('.delivery-charge-display').forEach(el => {
+    el.textContent = '৳ ' + currentDelivery.toFixed(2);
+  });
+
+  // Change banner
+  const banner = document.getElementById('changeBanner');
+  if (Math.abs(delta) > 0.005) {
+    banner.style.display = 'flex';
+    document.getElementById('changeDelta').textContent =
+      (delta > 0 ? '+' : '') + '৳ ' + delta.toFixed(2);
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // Global stock violation banner
+  let violationBanner = document.getElementById('stockViolationBanner');
+  if (hasViolation) {
+    if (!violationBanner) {
+      violationBanner = document.createElement('div');
+      violationBanner.id = 'stockViolationBanner';
+      violationBanner.className = 'alert alert-warning d-flex align-items-center gap-2 mb-3';
+      violationBanner.style.fontSize = '13px';
+      violationBanner.innerHTML = `
+        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size:16px"></i>
+        <span><b>Stock violation detected.</b> Some items exceed available stock.</span>`;
+      const tableWrapper = document.querySelector('#tab-current .table-responsive');
+      if (tableWrapper) tableWrapper.parentElement.insertBefore(violationBanner, tableWrapper);
+    }
+    violationBanner.style.display = 'flex';
+  } else {
+    if (violationBanner) violationBanner.style.display = 'none';
+  }
+}
+recalc();
+
+// ─── Renumber rows ─────────────────────────────────────────────────────────────
+function renumberRows() {
+  document.querySelectorAll('#orderItemsBody tr').forEach((tr, i) => {
+    const cell = tr.querySelector('.row-num');
+    if (cell) cell.textContent = i + 1;
+  });
+}
+
+// ─── Stock violation helpers ───────────────────────────────────────────────────
+function checkRowStockViolation(tr) {
+  const qty         = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
+  const stock       = parseInt(tr.dataset.stock ?? 9999);
+  const originalQty = parseInt(tr.dataset.originalQty ?? 0);
+  const effectiveStock = stock + originalQty;
+  if (qty > effectiveStock) {
+    showRowViolationWarning(tr, qty, effectiveStock);
+  } else {
+    clearRowViolationWarning(tr);
+  }
+}
+
+function showRowViolationWarning(tr, qty, stock) {
+  tr.classList.add('stock-violated-row');
+  tr.style.background = 'rgba(220,53,69,0.06)';
+  const existing = tr.querySelector('.stock-violation-badge');
+  if (existing) existing.remove();
+  const qtyTd = tr.querySelector('.qty-val');
+  if (qtyTd) {
+    const badge = document.createElement('div');
+    badge.className = 'stock-violation-badge';
+    badge.style.cssText = 'font-size:10px;color:#dc3545;margin-top:2px;white-space:nowrap';
+    badge.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Stock: ${stock} | Over by ${qty - stock}`;
+    qtyTd.parentElement.appendChild(badge);
+  }
+}
+
+function clearRowViolationWarning(tr) {
+  tr.classList.remove('stock-violated-row');
+  if (tr.dataset.isNew !== 'true') tr.style.background = '';
+  const badge = tr.querySelector('.stock-violation-badge');
+  if (badge) badge.remove();
+}
+
+// ─── Shipping method update ────────────────────────────────────────────────────
+document.getElementById('updateShippingMethodBtn').addEventListener('click', function () {
+  const btn            = this;
+  const select         = document.getElementById('shippingMethodSelect');
   const selectedMethod = select.value;
-  const msgEl = document.getElementById('shippingMethodMsg');
- 
+  const msgEl          = document.getElementById('shippingMethodMsg');
+
   btn.disabled  = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
   msgEl.style.display = 'none';
- 
+
   fetch(SHIPPING_METHOD_URL, {
-    method: 'POST',
+    method:  'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
-    body: JSON.stringify({ order_id: ORDER_ID, shipping_method: selectedMethod }),
+    body:    JSON.stringify({ order_id: ORDER_ID, shipping_method: selectedMethod }),
   })
   .then(r => r.json())
   .then(data => {
     if (data.success) {
-      document.getElementById('shippingChargeDisplay').textContent = '৳ ' + data.shipping_charge.toFixed(2);
       currentDelivery = data.shipping_charge;
+      // If admin had manually set totals, keep _totalsEdited but update shipping
+      if (_totalsEdited) _manualValues.shipping = currentDelivery;
+
+      document.getElementById('shippingChargeDisplay').textContent = '৳ ' + currentDelivery.toFixed(2);
       recalc();
-      document.querySelectorAll('.delivery-charge-display').forEach(el => {
-        el.textContent = '৳ ' + data.shipping_charge.toFixed(2);
-      });
+
       msgEl.style.display = 'block';
       msgEl.className     = 'mt-2 text-success';
       msgEl.innerHTML     = `<i class="bi bi-check-circle"></i> Updated to 
         <b>${select.options[select.selectedIndex].text}</b> — 
-        Charge: ৳ ${data.shipping_charge.toFixed(2)}. 
+        Charge: ৳ ${currentDelivery.toFixed(2)}. 
         New total: ৳ ${data.new_total.toFixed(2)}`;
       showToast('Shipping method updated!', 'success');
     } else {
       msgEl.style.display = 'block';
-      msgEl.className = 'mt-2 text-danger';
-      msgEl.textContent = 'Error: ' + (data.error || 'Could not update.');
+      msgEl.className     = 'mt-2 text-danger';
+      msgEl.textContent   = 'Error: ' + (data.error || 'Could not update.');
       showToast('Failed to update shipping method.', 'danger');
     }
   })
   .catch(() => {
     msgEl.style.display = 'block';
-    msgEl.className = 'mt-2 text-danger';
-    msgEl.textContent = 'Network error. Try again.';
+    msgEl.className     = 'mt-2 text-danger';
+    msgEl.textContent   = 'Network error. Try again.';
     showToast('Network error.', 'danger');
   })
   .finally(() => {
-    btn.disabled = false;
+    btn.disabled  = false;
     btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Update';
   });
 });
- 
-// ─── Page load: populate selects for all existing rows ─────────────
+
+// ─── Page load: populate selects for all existing rows ──────────────────────
 document.querySelectorAll('#orderItemsBody tr[data-product-id]').forEach(tr => {
   loadVariantsForRow(tr);
 });
- 
+
 function loadVariantsForRow(tr) {
-  const productId = tr.dataset.productId;
+  const productId    = tr.dataset.productId;
   const currentAttrId = parseInt(tr.dataset.attrId);
   if (!productId) return;
- 
+
   if (variantCache[productId]) {
     populateSelects(tr, variantCache[productId], currentAttrId);
     return;
   }
- 
+
   fetch(`${VARIANTS_URL}?product_id=${encodeURIComponent(productId)}&order_id=${ORDER_ID}`)
     .then(r => r.json())
     .then(data => {
@@ -582,42 +743,42 @@ function loadVariantsForRow(tr) {
     })
     .catch(err => console.error('Variant load failed for product', productId, err));
 }
- 
+
 function populateSelects(tr, variants, currentAttrId) {
   if (!variants.length) return;
   const sizeSelect  = tr.querySelector('.size-select');
   const colorSelect = tr.querySelector('.color-select');
   if (!sizeSelect || !colorSelect) return;
- 
+
   tr.dataset.variants = JSON.stringify(variants);
   const currentVariant = variants.find(v => v.product_attribute_id === currentAttrId) || variants[0];
- 
-  const seenSizes  = new Set();
+
+  const seenSizes   = new Set();
   const uniqueSizes = [];
   variants.forEach(v => {
     if (!seenSizes.has(v.size)) { seenSizes.add(v.size); uniqueSizes.push(v.size); }
   });
- 
+
   sizeSelect.innerHTML = uniqueSizes.map(size =>
     `<option value="${escAttr(size)}" ${size === currentVariant.size ? 'selected' : ''}>${escHtml(size)}</option>`
   ).join('');
- 
+
   buildColorOptions(colorSelect, variants, currentVariant.size, currentVariant.color);
- 
-  sizeSelect.onchange = function() {
+
+  sizeSelect.onchange = function () {
     const allVariants = JSON.parse(tr.dataset.variants || '[]');
     buildColorOptions(colorSelect, allVariants, this.value, null);
     syncAttrFromSelects(tr);
   };
-  colorSelect.onchange = function() { syncAttrFromSelects(tr); };
+  colorSelect.onchange = function () { syncAttrFromSelects(tr); };
 }
- 
+
 function buildColorOptions(colorSelect, variants, selectedSize, preferredColor) {
   const filtered = variants.filter(v => v.size === selectedSize);
   const source   = filtered.length ? filtered : variants;
- 
+
   colorSelect.innerHTML = source.map((v, idx) => {
-    let isSelected = preferredColor !== null && preferredColor !== undefined
+    const isSelected = preferredColor !== null && preferredColor !== undefined
       ? (v.color === preferredColor)
       : (idx === 0);
     return `<option value="${escAttr(v.color)}"
@@ -630,55 +791,49 @@ function buildColorOptions(colorSelect, variants, selectedSize, preferredColor) 
              </option>`;
   }).join('');
 }
- 
+
 function syncAttrFromSelects(tr) {
   const colorSelect = tr.querySelector('.color-select');
   if (!colorSelect) return;
   const selectedOpt = colorSelect.options[colorSelect.selectedIndex];
   if (!selectedOpt) return;
- 
-  const newAttrId = parseInt(selectedOpt.dataset.attrId);
-  const newPrice = parseFloat(selectedOpt.dataset.price);
-  const newStock = parseInt(selectedOpt.dataset.stock ?? 9999);
+
+  const newAttrId  = parseInt(selectedOpt.dataset.attrId);
+  const newPrice   = parseFloat(selectedOpt.dataset.price);
+  const newStock   = parseInt(selectedOpt.dataset.stock ?? 9999);
   const originalQty = tr.dataset.isNew === 'true' ? 0 : parseInt(tr.dataset.originalQty ?? 0);
-  const inStock = selectedOpt.dataset.inStock === 'true';
-  const isNew = tr.dataset.isNew === 'true';
-  const itemId = tr.dataset.itemId;
+  const inStock    = selectedOpt.dataset.inStock === 'true';
+  const isNew      = tr.dataset.isNew === 'true';
+  const itemId     = tr.dataset.itemId;
   const attrChanged = String(newAttrId) !== tr.dataset.attrId;
-  const effectiveStock = attrChanged ? newStock : newStock + originalQty;
- 
+
   if (!newAttrId || isNaN(newPrice)) return;
- 
+
   const oldAttrId = parseInt(tr.dataset.attrId);
-  tr.dataset.attrId = String(newAttrId);
+  tr.dataset.attrId    = String(newAttrId);
   tr.dataset.unitPrice = String(newPrice);
-  tr.dataset.stock = String(newStock);
- 
+  tr.dataset.stock     = String(newStock);
+
   const unitCell = tr.querySelector('.unit-price-cell');
   if (unitCell) unitCell.textContent = '৳ ' + newPrice.toFixed(1);
- 
+
   if (isNew) {
-    const ni = newItems.find(i => i.product_attribute_id === oldAttrId);
+    const rowKey   = tr.dataset.rowKey;
+    const ni       = newItems.find(i => i.product_attribute_id === oldAttrId) ||
+                     newItems.find(i => i.rowKey === rowKey);
     if (ni) ni.product_attribute_id = newAttrId;
-    else {
-      const rowKey = tr.dataset.rowKey;
-      const niByKey = newItems.find(i => i.rowKey === rowKey);
-      if (niByKey) niByKey.product_attribute_id = newAttrId;
-    }
   } else {
     attributeSwaps[itemId] = newAttrId;
   }
- 
-  // Re-check stock violation after variant change
+
   checkRowStockViolation(tr);
- 
   if (!inStock) showToast('Warning: this variant is out of stock!', 'warning');
   recalc();
 }
- 
-// ─── Tab switching ──────────
+
+// ─── Tab switching ─────────────────────────────────────────────────────────────
 document.querySelectorAll('[data-tab]').forEach(link => {
-  link.addEventListener('click', function(e) {
+  link.addEventListener('click', function (e) {
     e.preventDefault();
     document.querySelectorAll('[data-tab]').forEach(l => l.classList.remove('active'));
     this.classList.add('active');
@@ -688,11 +843,13 @@ document.querySelectorAll('[data-tab]').forEach(link => {
     if (tab === 'add') fetchCatalog();
   });
 });
- 
-// ─── Table body click handler ────────
-document.getElementById('orderItemsBody').addEventListener('click', function(e) {
+
+// ─── Table body click handler ──────────────────────────────────────────────────
+document.getElementById('orderItemsBody').addEventListener('click', function (e) {
   const tr = e.target.closest('tr');
   if (!tr) return;
+
+  // QTY MINUS
   if (e.target.closest('.qty-minus')) {
     const span = tr.querySelector('.qty-val');
     const qty  = parseInt(span.textContent);
@@ -703,18 +860,17 @@ document.getElementById('orderItemsBody').addEventListener('click', function(e) 
     }
     return;
   }
- 
-  // ── QTY PLUS — allow over-stock, but warn ──
-  if (e.target.closest('.qty-plus')) {
-    const span = tr.querySelector('.qty-val');
-    const current = parseInt(span.textContent);
-    const stock = parseInt(tr.dataset.stock ?? 9999);
-    const originalQty = parseInt(tr.dataset.originalQty ?? 0);
 
+  // QTY PLUS
+  if (e.target.closest('.qty-plus')) {
+    const span        = tr.querySelector('.qty-val');
+    const current     = parseInt(span.textContent);
+    const stock       = parseInt(tr.dataset.stock ?? 9999);
+    const originalQty = parseInt(tr.dataset.originalQty ?? 0);
     const effectiveStock = stock + originalQty;
- 
-    span.textContent = current + 1;  
- 
+
+    span.textContent = current + 1;
+
     if (current + 1 > effectiveStock) {
       showRowViolationWarning(tr, current + 1, effectiveStock);
       showToast(
@@ -724,12 +880,12 @@ document.getElementById('orderItemsBody').addEventListener('click', function(e) 
     } else {
       clearRowViolationWarning(tr);
     }
- 
+
     recalc();
     return;
   }
- 
-  // ── REMOVE ──
+
+  // REMOVE
   if (e.target.closest('.remove-item-btn')) {
     const isNew = tr.dataset.isNew === 'true';
     if (isNew) {
@@ -745,162 +901,27 @@ document.getElementById('orderItemsBody').addEventListener('click', function(e) 
     return;
   }
 });
- 
-// ─── Stock violation helpers ───────
 
-function checkRowStockViolation(tr) {
-  const qty = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
-  const stock = parseInt(tr.dataset.stock ?? 9999);
-  const originalQty = parseInt(tr.dataset.originalQty ?? 0);
-  const effectiveStock = stock + originalQty;
-
-  if (qty > effectiveStock) {
-    showRowViolationWarning(tr, qty, effectiveStock);
-  } else {
-    clearRowViolationWarning(tr);
-  }
-}
- 
-
-function showRowViolationWarning(tr, qty, stock) {
-  tr.classList.add('stock-violated-row');
-  tr.style.background = 'rgba(220,53,69,0.06)';
- 
-  // Remove old badge if any
-  const existing = tr.querySelector('.stock-violation-badge');
-  if (existing) existing.remove();
- 
-  const qtyTd = tr.querySelector('.qty-val');
-  if (qtyTd) {
-    const badge = document.createElement('div');
-    badge.className = 'stock-violation-badge';
-    badge.style.cssText = 'font-size:10px;color:#dc3545;margin-top:2px;white-space:nowrap';
-    badge.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Stock: ${stock} | Over by ${qty - stock}`;
-    qtyTd.parentElement.appendChild(badge);
-  }
-}
- 
-/**
- * Removes the violation badge and row highlight.
- */
-function clearRowViolationWarning(tr) {
-  tr.classList.remove('stock-violated-row');
-  if (tr.dataset.isNew !== 'true') {
-    tr.style.background = '';
-  }
-  const badge = tr.querySelector('.stock-violation-badge');
-  if (badge) badge.remove();
-}
- 
-/**
- * Returns { violated: bool, violatedQty: int } for a row.
- */
-function getRowViolation(tr) {
-  const qty = parseInt(tr.querySelector('.qty-val')?.textContent || 0);
-  const stock = parseInt(tr.dataset.stock ?? 9999);
-  const originalQty = parseInt(tr.dataset.originalQty ?? 0);
-  const effectiveStock = tr.dataset.isNew === 'true' ? stock + 0 : stock + originalQty;
-
-  return {
-    violated: qty > effectiveStock,
-    violatedQty: Math.max(0, qty - effectiveStock),
-  };
-}
- 
-// ─── Payment toggle ────────
-document.getElementById('editPaymentToggle').addEventListener('change', function() {
+// ─── Payment toggle ────────────────────────────────────────────────────────────
+document.getElementById('editPaymentToggle').addEventListener('change', function () {
   document.getElementById('payStatusLabel').textContent = this.checked ? 'Paid' : 'Pending';
 });
- 
-// ─── Live recalc ───────────
-function recalc() {
-  let subtotal = 0;
-  let newCount = 0;
-  let hasViolation = false;
- 
-  document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
-    const unitPrice = parseFloat(tr.dataset.unitPrice || 0);
-    const qty  = parseInt(tr.querySelector('.qty-val')?.textContent || 1);
-    const rowTotal = unitPrice * qty;
-    const totalCell = tr.querySelector('.row-total');
-    if (totalCell) totalCell.textContent = '৳ ' + rowTotal.toFixed(2);
-    subtotal += rowTotal;
-    if (tr.dataset.isNew === 'true') newCount++;
 
-    // ── use effectiveStock, same logic as qty-plus ──
-    const stock = parseInt(tr.dataset.stock ?? 9999);
-    const originalQty = parseInt(tr.dataset.originalQty ?? 0);
-    const effectiveStock = tr.dataset.isNew === 'true' ? stock : stock + originalQty;
-
-    if (qty > effectiveStock) hasViolation = true;
-  });
- 
-  const grand = subtotal + currentDelivery - COUPON + VAT_GST;
-  const delta = grand - ORIGINAL_TOTAL;
- 
-  document.getElementById('editSubtotal').textContent = '৳ ' + subtotal.toFixed(2);
-  document.getElementById('editGrandTotal').textContent = '৳ ' + grand.toFixed(2);
-  document.getElementById('summarySubtotal').textContent = '৳ ' + subtotal.toFixed(2);
-  document.getElementById('summaryGrandTotal').textContent = '৳ ' + grand.toFixed(2);
-  document.getElementById('summaryCoupon').textContent = '৳ ' + COUPON.toFixed(2);
-  document.getElementById('summaryVatTax').textContent = '৳ ' + VAT_GST.toFixed(2);
-  document.getElementById('newItemsCount').textContent = newCount + ' item' + (newCount !== 1 ? 's' : '');
-  document.getElementById('itemCountLabel').textContent = document.querySelectorAll('#orderItemsBody tr').length + ' item(s)';
- 
-  const banner = document.getElementById('changeBanner');
-  if (Math.abs(delta) > 0.005) {
-    banner.style.display = 'flex';
-    document.getElementById('changeDelta').textContent =
-      (delta > 0 ? '+' : '') + '৳ ' + delta.toFixed(2);
-  } else {
-    banner.style.display = 'none';
-  }
- 
-  // Show/hide global violation warning banner
-  let violationBanner = document.getElementById('stockViolationBanner');
-  if (hasViolation) {
-    if (!violationBanner) {
-      violationBanner = document.createElement('div');
-      violationBanner.id = 'stockViolationBanner';
-      violationBanner.className = 'alert alert-warning d-flex align-items-center gap-2 mb-3';
-      violationBanner.style.fontSize = '13px';
-      violationBanner.innerHTML = `
-        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size:16px"></i>
-        <span>
-          <b>Stock violation detected.</b> Some items exceed available stock.
-        </span>`;
-      const tableWrapper = document.querySelector('#tab-current .table-responsive');
-      if (tableWrapper) tableWrapper.parentElement.insertBefore(violationBanner, tableWrapper);
-    }
-    violationBanner.style.display = 'flex';
-  } else {
-    if (violationBanner) violationBanner.style.display = 'none';
-  }
-}
-recalc();
- 
-function renumberRows() {
-  document.querySelectorAll('#orderItemsBody tr').forEach((tr, i) => {
-    const cell = tr.querySelector('.row-num');
-    if (cell) cell.textContent = i + 1;
-  });
-}
- 
-// ─── Catalog search ─────────
+// ─── Catalog search ────────────────────────────────────────────────────────────
 let searchTimer;
-document.getElementById('productSearchInput').addEventListener('input', function() {
+document.getElementById('productSearchInput').addEventListener('input', function () {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(fetchCatalog, 300);
 });
 document.getElementById('categoryFilter').addEventListener('change', fetchCatalog);
- 
+
 function fetchCatalog() {
-  const q = document.getElementById('productSearchInput').value.trim();
-  const cat = document.getElementById('categoryFilter').value;
+  const q    = document.getElementById('productSearchInput').value.trim();
+  const cat  = document.getElementById('categoryFilter').value;
   const grid = document.getElementById('productCatalogGrid');
- 
+
   grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:#aaa;font-size:12px">Loading…</div>';
- 
+
   fetch(`${SEARCH_URL}?q=${encodeURIComponent(q)}&category_id=${encodeURIComponent(cat)}&order_id=${ORDER_ID}`)
     .then(r => r.json())
     .then(data => renderCatalog(data.products))
@@ -908,7 +929,7 @@ function fetchCatalog() {
       grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:red;font-size:12px">Error loading products.</div>';
     });
 }
- 
+
 function renderCatalog(products) {
   const grid = document.getElementById('productCatalogGrid');
   if (!products.length) {
@@ -942,9 +963,9 @@ function renderCatalog(products) {
       </div>
     </div>
   `).join('');
- 
+
   grid.querySelectorAll('.prod-card').forEach(card => {
-    card.addEventListener('click', function() {
+    card.addEventListener('click', function () {
       addProductToOrder(
         parseInt(this.dataset.attrId),
         parseInt(this.dataset.productId),
@@ -957,27 +978,25 @@ function renderCatalog(products) {
     });
   });
 }
- 
-// ─── Add new product row ───────
+
+// ─── Add new product row ───────────────────────────────────────────────────────
 let rowKeyCounter = 0;
- 
+
 function addProductToOrder(attrId, productId, name, size, color, price, image) {
-  const existing = document.querySelector(`#orderItemsBody tr[data-product-id="${productId}"][data-is-new="true"]`);
- 
   const rowKey = 'new_' + (++rowKeyCounter);
   newItems.push({ product_attribute_id: attrId, rowKey });
- 
+
   const tbody  = document.getElementById('orderItemsBody');
   const rowNum = tbody.querySelectorAll('tr').length + 1;
-  const tr = document.createElement('tr');
-  tr.dataset.itemId = 'new';
-  tr.dataset.rowKey = rowKey;
-  tr.dataset.attrId = String(attrId);
+  const tr     = document.createElement('tr');
+  tr.dataset.itemId    = 'new';
+  tr.dataset.rowKey    = rowKey;
+  tr.dataset.attrId    = String(attrId);
   tr.dataset.productId = String(productId);
   tr.dataset.unitPrice = String(price);
-  tr.dataset.isNew = 'true';
-  tr.style.background = 'rgba(127,119,221,0.04)';
- 
+  tr.dataset.isNew     = 'true';
+  tr.style.background  = 'rgba(127,119,221,0.04)';
+
   tr.innerHTML = `
     <td class="row-num">${rowNum}</td>
     <td>
@@ -1019,16 +1038,16 @@ function addProductToOrder(attrId, productId, name, size, color, price, image) {
       </button>
     </td>
   `;
- 
+
   tbody.appendChild(tr);
   loadVariantsForRow(tr);
   recalc();
   document.querySelector('[data-tab="current"]').click();
   showToast(`"${name}" added to order.`, 'success');
 }
- 
-// ─── Save order ───────
-document.getElementById('saveOrderBtn').addEventListener('click', function() {
+
+// ─── Save order ────────────────────────────────────────────────────────────────
+document.getElementById('saveOrderBtn').addEventListener('click', function () {
   const btn = this;
   btn.disabled  = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
@@ -1037,13 +1056,13 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
 
   // Existing rows
   document.querySelectorAll('#orderItemsBody tr[data-is-new="false"]').forEach(tr => {
-    const itemId        = tr.dataset.itemId;
-    const swappedAttrId = attributeSwaps[itemId] || null;
-    const qty           = parseInt(tr.querySelector('.qty-val').textContent);
-    const stock         = parseInt(tr.dataset.stock ?? 9999);
-    const originalQty   = parseInt(tr.dataset.originalQty ?? 0);
+    const itemId         = tr.dataset.itemId;
+    const swappedAttrId  = attributeSwaps[itemId] || null;
+    const qty            = parseInt(tr.querySelector('.qty-val').textContent);
+    const stock          = parseInt(tr.dataset.stock ?? 9999);
+    const originalQty    = parseInt(tr.dataset.originalQty ?? 0);
     const effectiveStock = stock + originalQty;
-    const violated      = qty > effectiveStock;
+    const violated       = qty > effectiveStock;
 
     items.push({
       id:                       parseInt(itemId),
@@ -1079,13 +1098,15 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
     items.push({ id, is_new: false, is_deleted: true });
   });
 
-  // Build payload — use _manualValues if admin explicitly saved totals
+  // Build payload.
+  // When _totalsEdited is true, send the manually-entered values so the backend
+  // uses them verbatim instead of auto-recalculating from items.
+  // Keys must match exactly what update_order_ajax reads via data.get(...)
   const payload = {
-    order_id:       ORDER_ID,
-    order_status:   document.getElementById('editOrderStatus').value,
-    payment_status: document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
+    order_id:        ORDER_ID,
+    order_status:    document.getElementById('editOrderStatus').value,
+    payment_status:  document.getElementById('editPaymentToggle').checked ? 'paid' : 'pending',
     items,
-    // Send null when not manually edited → backend auto-recalculates
     subtotal:        _totalsEdited ? _manualValues.subtotal  : null,
     coupon_price:    _totalsEdited ? _manualValues.coupon    : null,
     shipping_charge: _totalsEdited ? _manualValues.shipping  : null,
@@ -1102,32 +1123,39 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
     if (data.success) {
       showToast('Order saved successfully!', 'success');
 
-      // Update _manualValues from server response so a re-edit shows correct numbers
+      // Sync live JS vars + _manualValues from server response so any subsequent
+      // edits in this same page session start from the correct baseline.
       if (data.new_tax !== undefined) {
-        _manualValues.vat = parseFloat(data.new_tax);
-        VAT_GST = _manualValues.vat;
+        VAT_GST              = parseFloat(data.new_tax);
+        _manualValues.vat    = VAT_GST;
       }
-      if (data.new_shipping_charge) {
-        _manualValues.shipping = parseFloat(data.new_shipping_charge);
-        currentDelivery = _manualValues.shipping;
-        document.querySelectorAll('.delivery-charge-display').forEach(el => {
-          el.textContent = '৳ ' + _manualValues.shipping.toFixed(2);
-        });
-        const shippingDisplay = document.getElementById('shippingChargeDisplay');
-        if (shippingDisplay) shippingDisplay.textContent = '৳ ' + _manualValues.shipping.toFixed(2);
-        recalc();
+      if (data.new_shipping_charge !== undefined) {
+        currentDelivery           = parseFloat(data.new_shipping_charge);
+        _manualValues.shipping    = currentDelivery;
+        document.getElementById('shippingChargeDisplay').textContent = '৳ ' + currentDelivery.toFixed(2);
+      }
+      if (data.sub_total_after_discount !== undefined) {
+        _manualValues.subtotal = parseFloat(data.sub_total_after_discount);
+      }
+      if (data.new_coupon !== undefined) {
+        COUPON              = parseFloat(data.new_coupon);
+        _manualValues.coupon = COUPON;
       }
 
+      // Reset state after syncing from server
+      _totalsEdited  = false;
       deletedItemIds = [];
       attributeSwaps = {};
       newItems       = [];
-      _totalsEdited  = false;
 
+      // Mark previously-new rows as existing so they behave correctly if the
+      // admin continues editing without navigating away
       document.querySelectorAll('#orderItemsBody tr[data-is-new="true"]').forEach(tr => {
         tr.dataset.isNew    = 'false';
         tr.style.background = '';
       });
 
+      recalc();
       setTimeout(() => { window.location.href = "{% url 'order_list' %}"; }, 200);
     } else {
       showToast('Error: ' + (data.error || 'Could not save.'), 'danger');
@@ -1139,67 +1167,67 @@ document.getElementById('saveOrderBtn').addEventListener('click', function() {
     btn.innerHTML = '<i class="bi bi-check-lg"></i> Save changes';
   });
 });
- 
-// ─── Address edit ────────
-const editAddressBtn = document.getElementById('editAddressBtn');
+
+// ─── Address edit ──────────────────────────────────────────────────────────────
+const editAddressBtn   = document.getElementById('editAddressBtn');
 const cancelAddressBtn = document.getElementById('cancelAddressBtn');
-const saveAddressBtn = document.getElementById('saveAddressBtn');
-const addressDisplay = document.getElementById('addressDisplay');
-const addressForm = document.getElementById('addressForm');
- 
-editAddressBtn.addEventListener('click', function() {
+const saveAddressBtn   = document.getElementById('saveAddressBtn');
+const addressDisplay   = document.getElementById('addressDisplay');
+const addressForm      = document.getElementById('addressForm');
+
+editAddressBtn.addEventListener('click', function () {
   addressDisplay.style.display = 'none';
   addressForm.style.display    = 'block';
   editAddressBtn.style.display = 'none';
 });
-cancelAddressBtn.addEventListener('click', function() {
+cancelAddressBtn.addEventListener('click', function () {
   addressDisplay.style.display = 'block';
   addressForm.style.display    = 'none';
   editAddressBtn.style.display = '';
 });
-saveAddressBtn.addEventListener('click', function() {
+saveAddressBtn.addEventListener('click', function () {
   const btn = this;
   btn.disabled  = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving…';
- 
+
   const payload = {
-    order_id: ORDER_ID,
-    full_name: document.getElementById('addr-full-name').value.trim(),
-    phone_no: document.getElementById('addr-phone-no').value.trim(),
+    order_id:     ORDER_ID,
+    full_name:    document.getElementById('addr-full-name').value.trim(),
+    phone_no:     document.getElementById('addr-phone-no').value.trim(),
     address_line: document.getElementById('addr-address-line').value.trim(),
-    city: document.getElementById('addr-city').value.trim(),
-    thana: document.getElementById('addr-thana').value.trim(),
-    upozila: document.getElementById('addr-upozila').value.trim(),
-    postal_code: document.getElementById('addr-postal-code').value.trim(),
-    note: document.getElementById('addr-note').value.trim(),
+    city:         document.getElementById('addr-city').value.trim(),
+    thana:        document.getElementById('addr-thana').value.trim(),
+    upozila:      document.getElementById('addr-upozila').value.trim(),
+    postal_code:  document.getElementById('addr-postal-code').value.trim(),
+    note:         document.getElementById('addr-note').value.trim(),
   };
- 
+
   if (!payload.full_name || !payload.phone_no || !payload.address_line || !payload.city) {
     showToast('Please fill in all required fields.', 'danger');
-    btn.disabled = false;
+    btn.disabled  = false;
     btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Address';
     return;
   }
- 
+
   fetch(ADDRESS_SAVE_URL, {
-    method: 'POST',
+    method:  'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
-    body: JSON.stringify(payload),
+    body:    JSON.stringify(payload),
   })
   .then(r => r.json())
   .then(data => {
     if (data.success) {
       const a = data.address;
-      document.getElementById('disp-full-name').textContent = 'Name: ' + a.full_name;
-      document.getElementById('disp-phone-no').textContent = 'Phone: ' + a.phone_no;
-      document.getElementById('disp-address-line').textContent = 'Address: ' + a.address_line;
-      document.getElementById('disp-city').textContent = 'City: ' + a.city;
-      document.getElementById('disp-thana').textContent = 'Thana: ' + a.thana;
-      document.getElementById('disp-upozila').textContent = 'Upazila: ' + a.upozila;
+      document.getElementById('disp-full-name').textContent   = 'Name: '      + a.full_name;
+      document.getElementById('disp-phone-no').textContent    = 'Phone: '     + a.phone_no;
+      document.getElementById('disp-address-line').textContent = 'Address: '  + a.address_line;
+      document.getElementById('disp-city').textContent        = 'City: '      + a.city;
+      document.getElementById('disp-thana').textContent       = 'Thana: '     + a.thana;
+      document.getElementById('disp-upozila').textContent     = 'Upazila: '   + a.upozila;
       document.getElementById('disp-postal-code').textContent = 'Post Code: ' + a.postal_code;
       const noteEl = document.getElementById('disp-note');
       if (a.note) { noteEl.textContent = 'Note: ' + a.note; noteEl.style.display = 'block'; }
-      else { noteEl.style.display = 'none'; }
+      else         { noteEl.style.display = 'none'; }
       addressDisplay.style.display = 'block';
       addressForm.style.display    = 'none';
       editAddressBtn.style.display = '';
@@ -1214,91 +1242,66 @@ saveAddressBtn.addEventListener('click', function() {
     btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Address';
   });
 });
- 
 
-let _totalsEdited = false;
-let _manualValues = {
-  subtotal:  parseFloat("{{ order.sub_total_after_discount|default:'0' }}") || 0,
-  coupon:    parseFloat("{{ order.coupon_price|default:'0' }}") || 0,
-  shipping:  parseFloat("{{ order.shipping_charge|default:'0' }}") || 0,
-  vat:       parseFloat("{{ vat_gst|default:'0' }}") || 0,
-};
-
-// ─── Order Totals Edit ─────────
+// ─── Order Totals Edit ─────────────────────────────────────────────────────────
 const editTotalsBtn   = document.getElementById('editTotalsBtn');
 const cancelTotalsBtn = document.getElementById('cancelTotalsBtn');
 const saveTotalsBtn   = document.getElementById('saveTotalsBtn');
 const totalsDisplay   = document.getElementById('totalsDisplay');
 const totalsForm      = document.getElementById('totalsForm');
- 
-editTotalsBtn.addEventListener('click', function() {
-  document.getElementById('manualSubtotal').value = _manualValues.subtotal;
-  document.getElementById('manualCoupon').value   = _manualValues.coupon;
-  document.getElementById('manualDelivery').value = _manualValues.shipping;
-  document.getElementById('manualVat').value      = _manualValues.vat;
+
+editTotalsBtn.addEventListener('click', function () {
+  // If admin hasn't manually edited yet, pre-fill subtotal from the live item
+  // sum so they see what the items currently add up to as a starting point.
+  if (!_totalsEdited) {
+    let liveSubtotal = 0;
+    document.querySelectorAll('#orderItemsBody tr').forEach(tr => {
+      liveSubtotal += parseFloat(tr.dataset.unitPrice || 0) *
+                      parseInt(tr.querySelector('.qty-val')?.textContent || 1);
+    });
+    _manualValues.subtotal = liveSubtotal;
+  }
+  document.getElementById('manualSubtotal').value = _manualValues.subtotal.toFixed(2);
+  document.getElementById('manualCoupon').value   = _manualValues.coupon.toFixed(2);
+  document.getElementById('manualDelivery').value = _manualValues.shipping.toFixed(2);
+  document.getElementById('manualVat').value      = _manualValues.vat.toFixed(2);
 
   totalsDisplay.style.display = 'none';
   totalsForm.style.display    = 'block';
   editTotalsBtn.style.display = 'none';
 });
-cancelTotalsBtn.addEventListener('click', function() {
+
+cancelTotalsBtn.addEventListener('click', function () {
   totalsDisplay.style.display = 'block';
   totalsForm.style.display    = 'none';
   editTotalsBtn.style.display = '';
 });
-saveTotalsBtn.addEventListener('click', function() {
-  // Read from inputs
+
+saveTotalsBtn.addEventListener('click', function () {
   const subtotal = parseFloat(document.getElementById('manualSubtotal').value) || 0;
   const coupon   = parseFloat(document.getElementById('manualCoupon').value)   || 0;
   const shipping = parseFloat(document.getElementById('manualDelivery').value) || 0;
   const vat      = parseFloat(document.getElementById('manualVat').value)      || 0;
 
-  // Persist to our reliable store
+  // 1. Persist to the reliable manual store
   _manualValues = { subtotal, coupon, shipping, vat };
   _totalsEdited = true;
 
-  // Update live JS vars so recalc() uses new values immediately
+  // 2. Write into the live JS vars so recalc() uses them immediately
   COUPON          = coupon;
   VAT_GST         = vat;
   currentDelivery = shipping;
 
-  const grand = subtotal + shipping - coupon + vat;
+  // 3. recalc() will now recompute grand total using the updated live vars
+  //    and update ALL display spans in one place — no duplication needed here.
+  recalc();
 
-  // Update display spans
-  document.getElementById('editSubtotal').textContent    = '৳ ' + subtotal.toFixed(2);
-  document.getElementById('displayCoupon').textContent   = '৳ ' + coupon.toFixed(2);
-  document.getElementById('displayShipping').textContent = '৳ ' + shipping.toFixed(2);
-  document.getElementById('displayVat').textContent      = '৳ ' + vat.toFixed(2);
-  document.getElementById('editGrandTotal').textContent  = '৳ ' + grand.toFixed(2);
-
-  const summarySubtotal = document.getElementById('summarySubtotal');
-  if (summarySubtotal) summarySubtotal.textContent = '৳ ' + subtotal.toFixed(2);
-  const summaryGrand = document.getElementById('summaryGrandTotal');
-  if (summaryGrand) summaryGrand.textContent = '৳ ' + grand.toFixed(2);
-
-  document.querySelectorAll('.delivery-charge-display').forEach(el => {
-    el.textContent = '৳ ' + shipping.toFixed(2);
-  });
-
+  // 4. Restore display / hide form
   totalsDisplay.style.display = 'block';
   totalsForm.style.display    = 'none';
   editTotalsBtn.style.display = '';
+
   showToast('Totals updated. Click "Save changes" to persist.', 'success');
-})
- 
-// ─── Helpers ───────
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escAttr(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function showToast(msg, type='success') {
-  const el = document.getElementById('saveToast');
-  el.querySelector('div').className = `alert alert-${type} shadow d-flex align-items-center gap-2 mb-0`;
-  document.getElementById('toastMsg').textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 4000);
-}
+});
 </script>
 {% endblock %}
