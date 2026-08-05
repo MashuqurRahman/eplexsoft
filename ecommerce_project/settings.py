@@ -23,7 +23,12 @@ DEBUG = True
 #     'localhost',
 # ]
 ALLOWED_HOSTS = ['*']
+SUPPORT_SERVER = "http://127.0.0.1:8000/dashboard/api/support/create/"
+SUPPORT_LIST_API = "http://127.0.0.1:8000/dashboard/api/support/my-list/"
+SUPPORT_DETAIL_API="http://127.0.0.1:8000/dashboard/api/support/"
+SUPPORT_REPLY_API ="http://127.0.0.1:8000/dashboard/api/support/reply/"
 
+SUPPORT_API_KEY = "eplex_support_2026_@#$%_secret"
 # Application definition
 
 INSTALLED_APPS = [

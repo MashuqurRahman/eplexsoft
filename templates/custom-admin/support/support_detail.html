@@ -1,0 +1,616 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --navy-900: #0B1E3D;
+        --navy-700: #12325C;
+        --navy-500: #1D4374;
+        --teal-600: #0E7C74;
+        --teal-100: #E4F4F2;
+        --gold-500: #C6A15B;
+        --gold-100: #FBF2E1;
+        --ink-900: #17202E;
+        --ink-500: #5B6472;
+        --ink-300: #97A1AF;
+        --line-200: #E4E8F0;
+        --line-100: #EFF2F6;
+        --surface: #F5F7FB;
+        --white: #FFFFFF;
+        --danger-600: #C0322A;
+        --danger-100: #FBEAE9;
+    }
+
+    .console { font-family: 'DM Sans', system-ui, sans-serif; color: var(--ink-900); }
+
+    .console-grid {
+        display: grid;
+        grid-template-columns: 328px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    @media (max-width: 991px) {
+        .console-grid { grid-template-columns: 1fr; }
+    }
+
+    .eyebrow {
+        font-size: .66rem;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--ink-300);
+    }
+
+    /* ---------------- Sidebar (ticket meta) ---------------- */
+    .meta-panel {
+        background: var(--white);
+        border: 1px solid var(--line-200);
+        border-radius: 16px;
+        overflow: hidden;
+        position: sticky;
+        top: 1rem;
+        box-shadow: 0 1px 2px rgba(11, 30, 61, .04);
+    }
+
+    .meta-top {
+        background: linear-gradient(150deg, var(--navy-900) 0%, var(--navy-500) 100%);
+        padding: 1.5rem 1.4rem 1.3rem;
+        position: relative;
+    }
+    .meta-top::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-500), transparent 70%);
+    }
+
+    .ticket-id-copy {
+        cursor: pointer;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.05rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+    }
+    .ticket-id-copy .fa-copy { font-size: .68rem; opacity: .5; transition: opacity .15s ease; }
+    .ticket-id-copy:hover .fa-copy { opacity: 1; }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: .32rem .75rem;
+        border-radius: 999px;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        margin-top: .7rem;
+    }
+    .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+    .status-rejected { background: rgba(251,234,233,.95); color: var(--danger-600); }
+    .status-rejected .dot { background: var(--danger-600); }
+
+    /* Vertical stepper */
+    .v-stepper { margin-top: 1rem; }
+    .v-step {
+        display: flex;
+        align-items: flex-start;
+        gap: .65rem;
+        position: relative;
+        padding-bottom: 1.1rem;
+    }
+    .v-step:last-child { padding-bottom: 0; }
+    .v-step::before {
+        content: "";
+        position: absolute;
+        left: 5px; top: 16px; bottom: -2px;
+        width: 1px;
+        background: rgba(255,255,255,.16);
+    }
+    .v-step:last-child::before { display: none; }
+    .v-step-dot {
+        width: 11px; height: 11px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.18);
+        margin-top: 2px;
+        flex-shrink: 0;
+        transition: background .2s ease, box-shadow .2s ease;
+    }
+    .v-step.is-done .v-step-dot { background: var(--gold-500); }
+    .v-step.is-current .v-step-dot { box-shadow: 0 0 0 3px rgba(198,161,91,.3); }
+    .v-step-label {
+        font-size: .78rem;
+        font-weight: 600;
+        color: rgba(255,255,255,.5);
+        line-height: 1.1;
+    }
+    .v-step.is-done .v-step-label { color: rgba(255,255,255,.92); }
+
+    .meta-body { padding: 1.35rem 1.4rem; }
+
+    .meta-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .7rem;
+        padding: .7rem 0;
+        border-bottom: 1px solid var(--line-100);
+    }
+    .meta-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .meta-row:first-child { padding-top: 0; }
+    .meta-row i {
+        width: 26px; height: 26px;
+        border-radius: 7px;
+        background: var(--teal-100);
+        color: var(--teal-600);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .78rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .meta-row-label {
+        font-size: .66rem;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--ink-300);
+        font-weight: 700;
+        margin-bottom: .15rem;
+    }
+    .meta-row-value {
+        font-size: .89rem;
+        color: var(--ink-900);
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    .problem-label {
+        font-size: .66rem;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--ink-300);
+        font-weight: 700;
+        margin: 1.1rem 0 .55rem;
+        display: block;
+    }
+    .problem-box {
+        background: var(--surface);
+        border: 1px solid var(--line-100);
+        border-left: 3px solid var(--gold-500);
+        border-radius: 4px 10px 10px 4px;
+        padding: .95rem 1.05rem;
+        color: var(--ink-500);
+        line-height: 1.6;
+        white-space: pre-line;
+        font-size: .87rem;
+    }
+
+    /* ---------------- Main column (thread + composer) ---------------- */
+    .thread-panel {
+        background: var(--white);
+        border: 1px solid var(--line-200);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(11, 30, 61, .04);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .thread-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.1rem 1.5rem;
+        border-bottom: 1px solid var(--line-200);
+    }
+    .thread-header h5 {
+        font-weight: 700;
+        color: var(--navy-900);
+        margin: 0;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+    }
+    .thread-header h5 i { color: var(--teal-600); }
+    .msg-count-badge {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--teal-600);
+        background: var(--teal-100);
+        padding: .25rem .65rem;
+        border-radius: 999px;
+    }
+
+    .conversation-panel {
+        background:
+            radial-gradient(circle at 1px 1px, var(--line-100) 1px, transparent 0) 0 0/16px 16px,
+            var(--surface);
+        height: 520px;
+        overflow-y: auto;
+        padding: 1.6rem;
+        scroll-behavior: smooth;
+    }
+    .conversation-panel::-webkit-scrollbar { width: 8px; }
+    .conversation-panel::-webkit-scrollbar-thumb { background: var(--line-200); border-radius: 10px; }
+
+    .msg-row { margin-bottom: 1.4rem; }
+
+    .msg-meta {
+        font-size: .71rem;
+        font-weight: 600;
+        color: var(--ink-300);
+        margin-bottom: .35rem;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .avatar {
+        width: 25px; height: 25px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .66rem;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .avatar-support { background: var(--navy-700); }
+    .avatar-client  { background: var(--teal-600); }
+
+    .bubble {
+        border-radius: 16px;
+        padding: .85rem 1.1rem;
+        line-height: 1.58;
+        font-size: .89rem;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+    }
+    .bubble p:last-child { margin-bottom: 0; }
+    .bubble-support {
+        background: linear-gradient(135deg, var(--navy-700), var(--navy-500));
+        color: #fff;
+        border-bottom-right-radius: 4px;
+    }
+    .bubble-client {
+        background: var(--white);
+        border: 1px solid var(--line-200);
+        color: var(--ink-900);
+        border-bottom-left-radius: 4px;
+    }
+
+    .attachment-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: .6rem;
+        padding: .32rem .68rem;
+        border-radius: 8px;
+        font-size: .76rem;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .attachment-chip-support { background: rgba(255,255,255,.15); color: #fff; }
+    .attachment-chip-support:hover { background: rgba(255,255,255,.26); color: #fff; }
+    .attachment-chip-client { background: var(--teal-100); color: var(--teal-600); }
+    .attachment-chip-client:hover { background: #d7ede9; color: var(--teal-600); }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--ink-300);
+    }
+    .empty-state i { font-size: 2rem; margin-bottom: .6rem; opacity: .5; }
+    .empty-state div { font-size: .87rem; font-weight: 500; }
+
+    /* Composer, docked inside the same thread panel */
+    .composer {
+        border-top: 1px solid var(--line-200);
+        padding: 1.25rem 1.5rem 1.4rem;
+        background: var(--white);
+    }
+    .composer-label {
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: var(--ink-500);
+        margin-bottom: .4rem;
+        display: block;
+    }
+    .composer textarea {
+        border-radius: 10px;
+        border: 1px solid var(--line-200);
+        resize: vertical;
+        min-height: 90px;
+        font-size: .9rem;
+        padding: .75rem .85rem;
+    }
+    .composer textarea:focus {
+        border-color: var(--teal-600);
+        box-shadow: 0 0 0 .2rem rgba(14, 124, 116, .12);
+    }
+    .composer .form-select {
+        border-radius: 10px;
+        border: 1px solid var(--line-200);
+        padding: .5rem .85rem;
+        font-size: .88rem;
+    }
+    .composer .form-select:focus {
+        border-color: var(--teal-600);
+        box-shadow: 0 0 0 .2rem rgba(14, 124, 116, .12);
+    }
+
+    .char-count-pill { font-size: .72rem; color: var(--ink-300); font-weight: 600; }
+    .char-count-pill span { color: var(--ink-500); }
+
+    .file-drop {
+        border: 1.5px dashed var(--line-200);
+        border-radius: 10px;
+        padding: .7rem .9rem;
+        font-size: .82rem;
+        color: var(--ink-500);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        cursor: pointer;
+        transition: border-color .15s ease, background .15s ease;
+        font-weight: 500;
+    }
+    .file-drop:hover { border-color: var(--teal-600); background: var(--teal-100); }
+    .file-drop i { color: var(--teal-600); }
+
+    .btn-send {
+        border-radius: 10px;
+        padding: .6rem 1.5rem;
+        font-weight: 700;
+        font-size: .87rem;
+        letter-spacing: .01em;
+        background: linear-gradient(120deg, var(--navy-700), var(--teal-600));
+        border: none;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(14, 124, 116, .25);
+        transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn-send:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(14, 124, 116, .32);
+        color: #fff;
+    }
+</style>
+
+<div class="console py-4">
+
+    <div class="console-grid">
+
+        <!-- ===== Sidebar: ticket meta ===== -->
+        <div class="meta-panel">
+
+            <div class="meta-top">
+                <div class="eyebrow mb-1" style="color: var(--gold-500);">Support Ticket</div>
+                <div class="ticket-id-copy" title="Click to copy ticket ID"
+                     onclick="navigator.clipboard.writeText('{{ ticket.support_id }}')">
+                    #{{ ticket.support_id }}
+                    <i class="fa fa-copy"></i>
+                </div>
+
+                {% if ticket.status == "rejected" %}
+                    <div><span class="status-pill status-rejected"><span class="dot"></span>Rejected</span></div>
+                {% else %}
+                    <div class="v-stepper">
+                        <div class="v-step is-done">
+                            <span class="v-step-dot"></span><span class="v-step-label">Pending</span>
+                        </div>
+                        <div class="v-step {% if ticket.status == 'processing' or ticket.status == 'completed' %}is-done{% endif %} {% if ticket.status == 'processing' %}is-current{% endif %}">
+                            <span class="v-step-dot"></span><span class="v-step-label">Processing</span>
+                        </div>
+                        <div class="v-step {% if ticket.status == 'completed' %}is-done is-current{% endif %}">
+                            <span class="v-step-dot"></span><span class="v-step-label">Completed</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="meta-body">
+
+                <div class="meta-row">
+                    <i class="fa fa-user"></i>
+                    <div>
+                        <div class="meta-row-label">Name</div>
+                        <div class="meta-row-value">{{ ticket.name }}</div>
+                    </div>
+                </div>
+
+                <div class="meta-row">
+                    <i class="fa fa-envelope"></i>
+                    <div>
+                        <div class="meta-row-label">Email</div>
+                        <div class="meta-row-value">{{ ticket.enlisted_email }}</div>
+                    </div>
+                </div>
+
+                <div class="meta-row">
+                    <i class="fa fa-building"></i>
+                    <div>
+                        <div class="meta-row-label">Business</div>
+                        <div class="meta-row-value">{{ ticket.business_name|default:"—" }}</div>
+                    </div>
+                </div>
+
+                <label class="problem-label">Problem Statement</label>
+                <div class="problem-box">{{ ticket.problem_statement }}</div>
+
+            </div>
+
+        </div>
+
+        <!-- ===== Main: conversation + composer ===== -->
+        <div class="thread-panel">
+
+            <div class="thread-header">
+                <h5><i class="fa fa-comments"></i>Conversation</h5>
+                <span class="msg-count-badge">{{ ticket.replies|length }} message{{ ticket.replies|length|pluralize }}</span>
+            </div>
+
+            <div class="conversation-panel" id="conversationPanel">
+
+                {% for reply in ticket.replies %}
+
+                    {% if reply.is_central_reply %}
+
+                        <!-- Central Reply -->
+                        <div class="msg-row d-flex justify-content-end">
+                            <div style="max-width:72%;">
+
+                                <div class="msg-meta justify-content-end">
+                                    <span>Central Support</span>
+                                    <span class="avatar avatar-support">CS</span>
+                                </div>
+
+                                <div class="bubble bubble-support">
+                                    {{ reply.message|linebreaks }}
+
+                                    {% if reply.attachment %}
+                                        <a href="{{ reply.attachment }}" target="_blank"
+                                           class="attachment-chip attachment-chip-support">
+                                            <i class="fa fa-paperclip"></i> View Attachment
+                                        </a>
+                                    {% endif %}
+                                </div>
+
+                                <div class="text-end text-muted small mt-1">{{ reply.created_at}}</div>
+
+                            </div>
+                        </div>
+
+                    {% else %}
+
+                        <!-- Client Reply -->
+                        <div class="msg-row d-flex justify-content-start">
+                            <div style="max-width:72%;">
+
+                                <div class="msg-meta">
+                                    <span class="avatar avatar-client">{{ ticket.name|slice:":1"|upper }}</span>
+                                    <span>{{ ticket.name }}</span>
+                                </div>
+
+                                <div class="bubble bubble-client">
+                                    {{ reply.message|linebreaks }}
+
+                                    {% if reply.attachment %}
+                                        <a href="{{ reply.attachment }}" target="_blank"
+                                           class="attachment-chip attachment-chip-client">
+                                            <i class="fa fa-paperclip"></i> View Attachment
+                                        </a>
+                                    {% endif %}
+                                </div>
+
+                                <div class="text-muted small mt-1">{{ reply.created_at}}</div>
+
+                            </div>
+                        </div>
+
+                    {% endif %}
+
+                {% empty %}
+
+                    <div class="empty-state">
+                        <i class="fa fa-inbox"></i>
+                        <div>No conversation yet.</div>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- Composer -->
+            <div class="composer">
+
+                <form method="POST"
+                      enctype="multipart/form-data"
+                      action="{% url 'support_reply' ticket.support_id %}">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="composer-label">Reply Message</label>
+                        <textarea
+                            name="message"
+                            id="replyMessage"
+                            rows="3"
+                            class="form-control"
+                            placeholder="Write your reply..."
+                            maxlength="2000"
+                            required></textarea>
+                        <div class="text-end char-count-pill mt-1">
+                            <span id="charCount">0</span>/2000
+                        </div>
+                    </div>
+
+                    <div class="mb-1">
+                        <label class="composer-label">Attachment</label>
+                        <label class="file-drop">
+                            <i class="fa fa-paperclip"></i>
+                            <span>Attach a file (optional)</span>
+                            <input type="file" name="attachment" class="form-control d-none" id="attachmentInput">
+                        </label>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+                        <button type="submit" class="btn btn-send">
+                            <i class="fa fa-paper-plane me-1"></i>
+                            Send Reply
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var panel = document.getElementById("conversationPanel");
+        if (panel) {
+            panel.scrollTop = panel.scrollHeight;
+        }
+
+        var textarea = document.getElementById("replyMessage");
+        var counter = document.getElementById("charCount");
+        if (textarea && counter) {
+            textarea.addEventListener("input", function () {
+                counter.textContent = textarea.value.length;
+            });
+        }
+
+        var fileInput = document.getElementById("attachmentInput");
+        if (fileInput) {
+            fileInput.addEventListener("change", function () {
+                var label = fileInput.closest(".file-drop").querySelector("span");
+                label.textContent = fileInput.files.length
+                    ? fileInput.files[0].name
+                    : "Attach a file (optional)";
+            });
+        }
+    });
+</script>
+
+{% endblock %}
