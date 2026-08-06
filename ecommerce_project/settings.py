@@ -103,9 +103,12 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.mysql',
 
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'odelltec_ecommerce_db_final'),
-        'USER': os.environ.get('DJANGO_DB_USER', 'odelltec_ashraf'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'ashraf@1234'),
+        # 'NAME': os.environ.get('DJANGO_DB_NAME', 'odelltec_ecommerce_db_final'),
+        # 'USER': os.environ.get('DJANGO_DB_USER', 'odelltec_ashraf'),
+        # 'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'ashraf@1234'),
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'ecommerce_db'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
         'HOST': os.environ.get('DJANGO_DB_HOST','127.0.0.1'),
 
         'PORT': os.environ.get('PORT', '3306'),
