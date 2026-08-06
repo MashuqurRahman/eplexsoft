@@ -414,10 +414,10 @@
                         <div class="v-step is-done">
                             <span class="v-step-dot"></span><span class="v-step-label">Pending</span>
                         </div>
-                        <div class="v-step {% if ticket.status == 'processing' or ticket.status == 'completed' %}is-done{% endif %} {% if ticket.status == 'processing' %}is-current{% endif %}">
+                        <div class="v-step {% if ticket.status == 'on_progress' or ticket.status == 'completed' %}is-done{% endif %} {% if ticket.status == 'processing' %}is-current{% endif %}">
                             <span class="v-step-dot"></span><span class="v-step-label">Processing</span>
                         </div>
-                        <div class="v-step {% if ticket.status == 'completed' %}is-done is-current{% endif %}">
+                        <div class="v-step {% if ticket.status == 'solved' %}is-done is-current{% endif %}">
                             <span class="v-step-dot"></span><span class="v-step-label">Completed</span>
                         </div>
                     </div>
