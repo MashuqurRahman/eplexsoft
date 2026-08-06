@@ -28,7 +28,7 @@
         {% endfor %}
     </ul>
 
-    <div class="d-flex justify-content-end mb-3">
+    {% comment %} <div class="d-flex justify-content-end mb-3">
         <a href="{% url 'violated_orders' %}" class="btn btn-sm btn-outline-danger">
             <i class="bi bi-exclamation-triangle-fill"></i>
             Violated Orders
@@ -36,7 +36,7 @@
             <span class="badge bg-danger ms-1">{{ violated_count }}</span>
             {% endif %}
         </a>
-    </div>
+    </div> {% endcomment %}
 
     <div class="card">
         <div class="card-body">
@@ -110,13 +110,13 @@
                                     {% else %}bg-danger{% endif %}">
                                     {{ order.get_order_status_display }}
                                 </span>
-                                {% if order.id in violated_order_ids and violated_count > 0 %}
+                                {% comment %} {% if order.id in violated_order_ids and violated_count > 0 %}
                                 <div class="mt-1">
                                     <span class="badge bg-danger" style="font-size:10px">
                                         <i class="bi bi-exclamation-triangle-fill"></i> Stock Violated
                                     </span>
                                 </div>
-                                {% endif %}
+                                {% endif %} {% endcomment %}
                             </td>
 
                             <td>
@@ -126,13 +126,14 @@
                                         title="View Order">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    {% if order.order_status == 'confirmed' or order.order_status == 'pending' %}
+                                    {% comment %} {% if order.order_status == 'confirmed' or order.order_status == 'pending' %}
                                     <a href="{% url 'order_edit_url' order.id %}" 
                                         class="action-btn action-edit" title="Edit Order"
                                         style="color: white;">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    {% endif %}
+                                    {% endif %} {% endcomment %}
+                                    
                                 </div>
                             </td>
 

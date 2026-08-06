@@ -1,0 +1,114 @@
+{% extends "admin_base.html" %}
+{% load static %}
+
+{% block content %}
+
+
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between">
+            <h5 class="fw-bold">My Support Tickets</h5>
+            <a href="{% url 'support_create' %}" class="btn add-btn btn-sm">+ Add Support</a>
+        </div>
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Support ID</th>
+                        <th>Name</th>
+                        <th>Business</th>
+                        <th>Problem</th>
+                        <th>Status</th>
+                        <th>Attachment</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for support in supports %}
+
+                    <tr style="cursor:pointer;"
+    onclick="window.location='{% url 'support_details' support.support_id %}'">
+
+                        <td>{{ support.support_id }}</td>
+
+                        <td>{{ support.name }}</td>
+
+                        <td>{{ support.business_name|default:"-" }}</td>
+
+                        <td>{{ support.problem_statement }}</td>
+
+                        <td>
+
+                            {% if support.status == "pending" %}
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+
+                            {% elif support.status == "processing" %}
+                                <span class="badge bg-info">
+                                    Processing
+                                </span>
+
+                            {% elif support.status == "completed" %}
+                                <span class="badge bg-success">
+                                    Completed
+                                </span>
+
+                            {% elif support.status == "rejected" %}
+                                <span class="badge bg-danger">
+                                    Rejected
+                                </span>
+
+                            {% else %}
+                                {{ support.status }}
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if support.attachment %}
+                                <a href="{{ support.attachment }}" target="_blank">
+                                    View File
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            No Support Ticket Found.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+
+
+{% endblock %}
