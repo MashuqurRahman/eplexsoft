@@ -21,7 +21,13 @@ class ProductForm(forms.ModelForm):
             'delivery_discount': "Delivery Discount"
         }
         widgets = {
-            'description': forms.TextInput(attrs=({'rows': 1, 'cols': 1})),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 2,
+                'cols': 2,
+                'placeholder': 'Write product description here...',
+                'style': 'resize: vertical;'  # চাইলে user height বাড়াতে/কমাতে পারবে
+            }),
             'categories': forms.Select(attrs={'class': 'select2 form-control'}),
             'sub_categories': forms.Select(attrs={'class': 'select2 form-control'}),
             'delivery_discount': forms.Select(attrs={'class': 'select2 form-control'}),

@@ -404,7 +404,7 @@ Mobile
 
 
 /* mobile */
-@media (max-width: 821px) {
+@media (max-width: 768px) {
     a.nav-link.position-relative {
         text-align: right;
         margin-right: 11px;

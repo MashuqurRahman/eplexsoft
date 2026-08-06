@@ -58,7 +58,14 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []  # no username required
 
     objects = UserManager()
+    @property
+    def user_company(self):
+        from admin_app.models import admin_dashboard_models
 
+        obj = admin_dashboard_models.SiteSetting.objects.first()
+        if obj:
+            return obj.company_name
+        return "N/A"
     @property
     def user_permissions(self):
         userpermission_model = apps.get_model('permission_app', 'AdminPanelPermissions')

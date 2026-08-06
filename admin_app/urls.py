@@ -2,11 +2,15 @@ from django.urls import path
 
 from accounts_app import views
 from courier import views as courier_views
-from .views import dashboard_views, categories_views, products_views, products_management_views, footer_views,order_views,site_setting_views,ajax_views,slider_views, promotion_management_views, delivery_management_views, coupon_management_views, employee_management, theme_setting_views, review_management_views, courier_views as admin_courier_views
+from .views import dashboard_views, categories_views, products_views, products_management_views, footer_views,order_views,site_setting_views,ajax_views,slider_views, promotion_management_views, delivery_management_views, coupon_management_views, employee_management, theme_setting_views, review_management_views, courier_views as admin_courier_views,support_views
 from .recommendation import similarity
 
 urlpatterns = [
     path('', dashboard_views.admin_dashboard_view, name='admin_dashboard_url'),
+    path("support/",support_views.support_create,name="support_create"),
+    path("support/my-supports/",support_views.my_supports,name="my_supports",),
+    path("support/details/<str:support_id>/",support_views.support_details, name="support_details"),
+    path("support/reply/<str:support_id>/",support_views.support_reply, name="support_reply"),
 
     # CATEGORIES URLS
     path('categories-list/', categories_views.categories_index_view, name='categories_list_url'),
@@ -36,7 +40,7 @@ urlpatterns = [
     path('update-products/<int:pk>/', products_views.update_product_view, name='update_product_url'),
     path('delete-products/<int:pk>/', products_views.delete_product_view, name='delete_product_url'),
     path('search-products/', products_views.search_products_view, name='search_product_url'),
-
+    path("product-suggestion/",products_views.product_suggestion,name="product_suggestion"),
     # PRODUCTS ATTRIBUTES
     path('product-attribute/create/<int:pk>/', products_views.product_attribute_create_view, name='product_attribute_create_url'),
     path('product-attribute/update/<int:pk>/', products_views.product_attribute_update_view, name='product_attribute_update_url'),

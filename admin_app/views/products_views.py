@@ -327,3 +327,23 @@ def delete_attribute_image(request, pk):
     image.delete()
     messages.success(request, "Image deleted successfully.")
     return redirect('product_attribute_update_url', image.product_attribute.id)
+from django.http import JsonResponse
+from django.urls import reverse
+def product_suggestion(request):
+    q = request.GET.get("q", "")
+
+    data = []
+
+    if q:
+        products =admin_dashboard_models.Product.objects.filter(product_name__icontains=q)[:8]
+
+        data = [
+            {
+                "id": p.id,
+                "name": p.product_name,
+                "url": reverse("product_details_page_url", args=[p.id])
+            }
+            for p in products
+        ]
+
+    return JsonResponse(data, safe=False)

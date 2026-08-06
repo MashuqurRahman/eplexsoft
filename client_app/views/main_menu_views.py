@@ -649,7 +649,8 @@ def submit_review_view(request):
 
 def category_products(request, category_id=None):
     category = None
-    products, category = [], []
+    sub_category = None
+
     product_qs = admin_dashboard_models.Product.objects.prefetch_related(
         Prefetch(
             'product_varient',
@@ -658,13 +659,20 @@ def category_products(request, category_id=None):
         )
     ).filter(is_active=True).order_by('-id')
 
+    # products সবসময় QuerySet হবে
+    products = product_qs
+
     if category_id:
         category = get_object_or_404(
             admin_dashboard_models.Categories,
             id=category_id
         )
-        sub_category = admin_dashboard_models.SubCategories.objects.filter(categories_id=category_id).first()
-        products = product_qs.filter(categories_id=category_id)
+
+        sub_category = admin_dashboard_models.SubCategories.objects.filter(
+            categories_id=category_id
+        ).first()
+
+        products = products.filter(categories_id=category_id)
 
 
 
@@ -767,7 +775,9 @@ def category_products(request, category_id=None):
     query_params = request.GET.copy()
     if 'page' in query_params:
         query_params.pop('page')
-
+    category_id=None
+    if category:
+        category_id=category.id
     context = {
         "products": products,
         "categories": categories_obj,
@@ -776,7 +786,7 @@ def category_products(request, category_id=None):
         "brands": brands_obj,
         "colors": colors_obj,
         "sizes": sizes_obj,
-        "category": category.id,
+        "category": category_id,
         "category_obj": category,
         "sub_category": sub_category,
         "is_category": True,
@@ -805,6 +815,7 @@ def category_products(request, category_id=None):
         'client/filter/categories_products.html',
         context
     )
+
 
 
 def most_popular_products(request):
