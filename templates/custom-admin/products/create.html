@@ -3,7 +3,35 @@
 {% load crispy_forms_tags %}
 {% block title %}Add Product{% endblock  %}
 {% block Style %}
-
+<style>
+    .attribute-block {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        background-color: #fff;
+        position: relative;
+    }
+    .attribute-block .block-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+    .attribute-block .row {
+        margin-bottom: 10px;
+    }
+    .attribute-block .row:last-child {
+        margin-bottom: 0;
+    }
+    .attribute-block label {
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+</style>
 {% endblock Style %}
 {% block content %}
     {% if messages %}
@@ -79,7 +107,6 @@
                         {{ form.approval|as_crispy_field }}
                     </div>
                 {% endif %}
-                
             </div>
 
             <div class="row mb-4">
@@ -96,70 +123,140 @@
                     {{ form.is_popular|as_crispy_field }}
                 </div>
             </div>
-            <div class="table-responsive">
-                <table id="extra_cost_table" class="table table-bordered" style="width: 200%">
-                    <thead>
-                        <tr>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;" class="color">Color *</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;" class="size">Size *</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Regular Price *</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Discounted Price </th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Buying Price *</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Height(in)</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Width(in)</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Weight(gm) *</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Stock *</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Attribute Images</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Product Image *</th>
-                            <th style="background-color:#e9ecef; text-align:center; font-size:13px; padding:6px;">Is Cover *</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{ product_attribute_formset.management_form }}
-                        {% for form in product_attribute_formset %}
-                        <tr class="extra_cost_form">
-                            {{ form.id }}
-                            <td>{{ form.color }}</td>
-                            <td>{{ form.size }}</td>
-                            <td>{{ form.regular_price }}</td>
-                            <td>{{ form.discount_price }}</td>
-                            <td>{{ form.buying_price }}</td>
-                            <td>{{ form.height }}</td>
-                            <td>{{ form.width }}</td>
-                            <td>{{ form.weight }}</td>
-                            <td>{{ form.stock }}</td>
-                            <td>
-                                <input type="file" name="attribute_images_{{ forloop.counter0 }}" multiple class="form-control">
-                            </td>
-                            <td>{{ form.image }}</td>
-                            <td style="text-align:center;">{{ form.is_cover }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
 
-                <table style="display:none;" style="width: 200%">
-                    <tbody>
-                        <tr id="empty_product_attribute_form" class="extra_cost_form">
-                            {{ product_attribute_formset.empty_form.id }}
-                            <td>{{ product_attribute_formset.empty_form.color }}</td>
-                            <td>{{ product_attribute_formset.empty_form.size }}</td>
-                            <td>{{ product_attribute_formset.empty_form.regular_price }}</td>
-                            <td>{{ product_attribute_formset.empty_form.discount_price }}</td>
-                            <td>{{ product_attribute_formset.empty_form.buying_price }}</td>
-                            <td>{{ product_attribute_formset.empty_form.height }}</td>
-                            <td>{{ product_attribute_formset.empty_form.width }}</td>
-                            <td>{{ product_attribute_formset.empty_form.weight }}</td>
-                            <td>{{ product_attribute_formset.empty_form.stock }}</td>
-                            <td>
-                                <input type="file" name="attribute_images___prefix__" multiple class="form-control">
-                            </td>
-                            <td>{{ product_attribute_formset.empty_form.image }}</td>
-                            <td style="text-align:center;">{{ product_attribute_formset.empty_form.is_cover }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- ===== Product Attribute Blocks ===== -->
+            <div id="extra_cost_table">
+                {{ product_attribute_formset.management_form }}
+                {% for form in product_attribute_formset %}
+                <div class="attribute-block extra_cost_form">
+                    {{ form.id }}
+                    <div class="block-title">Variant {{ forloop.counter }}</div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Color *</label>
+                            {{ form.color }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Size *</label>
+                            {{ form.size }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Regular Price *</label>
+                            {{ form.regular_price }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Discounted Price</label>
+                            {{ form.discount_price }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Buying Price *</label>
+                            {{ form.buying_price }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Height (in)</label>
+                            {{ form.height }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Width (in)</label>
+                            {{ form.width }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Weight (gm) *</label>
+                            {{ form.weight }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Stock *</label>
+                            {{ form.stock }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Attribute Images</label>
+                            <input type="file" name="attribute_images_{{ forloop.counter0 }}" multiple class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Product Image *</label>
+                            {{ form.image }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Is Cover *</label><br>
+                            {{ form.is_cover }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
+
+            <!-- Hidden empty-form template used for cloning new blocks -->
+            <div style="display:none;">
+                <div id="empty_product_attribute_form" class="attribute-block extra_cost_form">
+                    {{ product_attribute_formset.empty_form.id }}
+                    <div class="block-title">New Variant</div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Color *</label>
+                            {{ product_attribute_formset.empty_form.color }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Size *</label>
+                            {{ product_attribute_formset.empty_form.size }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Regular Price *</label>
+                            {{ product_attribute_formset.empty_form.regular_price }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Discounted Price</label>
+                            {{ product_attribute_formset.empty_form.discount_price }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Buying Price *</label>
+                            {{ product_attribute_formset.empty_form.buying_price }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Height (in)</label>
+                            {{ product_attribute_formset.empty_form.height }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Width (in)</label>
+                            {{ product_attribute_formset.empty_form.width }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Weight (gm) *</label>
+                            {{ product_attribute_formset.empty_form.weight }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Stock *</label>
+                            {{ product_attribute_formset.empty_form.stock }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Attribute Images</label>
+                            <input type="file" name="attribute_images___prefix__" multiple class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Product Image *</label>
+                            {{ product_attribute_formset.empty_form.image }}
+                        </div>
+                        <div class="col-md-3">
+                            <label>Is Cover *</label><br>
+                            {{ product_attribute_formset.empty_form.is_cover }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row mt-2">
                 <ul class="action d-flex gap-2 list-unstyled">
                     <li style="margin-right: 5px;">
@@ -170,10 +267,6 @@
                     </li>
                 </ul>
             </div>
-            
-
-                        
-
 
             <div class="text-center pt-3 pb-4">
                 <button type="submit" id="submit_btn" class="btn add-btn">Submit</button>
@@ -198,13 +291,11 @@ $(document).ready(function () {
         });
     }
 
-
     setTimeout(function () {
-        $('#extra_cost_table tbody tr').each(function () {
+        $('#extra_cost_table .extra_cost_form').each(function () {
             initSelect2OnRow(this);
         });
     }, 200);
-
 
     $('select.select2').not('#extra_cost_table select').not('#empty_product_attribute_form select').each(function () {
         if (!$(this).hasClass('select2-hidden-accessible')) {
@@ -225,16 +316,17 @@ $(document).ready(function () {
     $("#add_product_attribute").click(function (event) {
         event.preventDefault();
 
-        let emptyRowHtml = $("#empty_product_attribute_form")[0].outerHTML;
-        emptyRowHtml = emptyRowHtml.replace(/__prefix__/g, totalForms);
+        let emptyBlockHtml = $("#empty_product_attribute_form")[0].outerHTML;
+        emptyBlockHtml = emptyBlockHtml.replace(/__prefix__/g, totalForms);
 
-        let newRow = $(emptyRowHtml);
-        newRow.removeAttr('id').show();
+        let newBlock = $(emptyBlockHtml);
+        newBlock.removeAttr('id').show();
+        newBlock.find('.block-title').text('Variant ' + (totalForms + 1));
 
-        $("#extra_cost_table tbody").append(newRow);
+        $("#extra_cost_table").append(newBlock);
 
         setTimeout(function () {
-            initSelect2OnRow(newRow);
+            initSelect2OnRow(newBlock);
         }, 50);
 
         totalForms++;
@@ -244,24 +336,24 @@ $(document).ready(function () {
     $("#remove_extra_cost_form").click(function (event) {
         event.preventDefault();
 
-        let rows = $("#extra_cost_table tbody tr");
-        let lastRow = rows.last();
+        let blocks = $("#extra_cost_table .extra_cost_form");
+        let lastBlock = blocks.last();
 
         let isBlank = true;
-        lastRow.find("input[type='text'], input[type='number']").each(function () {
+        lastBlock.find("input[type='text'], input[type='number']").each(function () {
             if ($(this).val().trim() !== "") {
                 isBlank = false;
                 return false;
             }
         });
 
-        if (isBlank && rows.length > 1) {
-            lastRow.find('select').each(function () {
+        if (isBlank && blocks.length > 1) {
+            lastBlock.find('select').each(function () {
                 if ($(this).hasClass('select2-hidden-accessible')) {
                     $(this).select2('destroy');
                 }
             });
-            lastRow.remove();
+            lastBlock.remove();
             totalForms--;
             $("#id_" + prefix + "-TOTAL_FORMS").val(totalForms);
         }
@@ -279,7 +371,6 @@ $(document).ready(function () {
             }
         });
     });
-
 
     var load_sub_subcategories_url = "{% url 'ajax_load_sub_subcategories' %}";
     $("#id_sub_categories").change(function () {
