@@ -8,7 +8,7 @@
     <section class="hero-slider">
         <div class="containers">
             <div class="row">
-                <!-- Main Hero Slider -->
+                {% comment %} <!-- Main Hero Slider -->
                 <div class="col-lg-12 col-xl-12">
                     <div class="heroslider">
                         {% for slider in hero_sliders %}
@@ -27,6 +27,42 @@
                             </div>
                         {% endfor %}
                     </div>
+                </div> {% endcomment %}
+
+                <div class="col-lg-9 col-xl-9">
+                    <div class="heroslider">
+                        {% for slider in hero_sliders %}
+                            <div class="items">
+                                <a href="{{slider.slider_url}}"><img src="{{ slider.image.url }}" alt="slider img"></a>
+                            </div>
+                        {% empty %}
+                            <div class="items">
+                                <img src="{% static 'assets/img/UmAixlXz4k9NyQwDpT8zx2ePDzNO3dOOhkbJn6NB.jpg' %}" alt="slider img">
+                            </div>
+                            <div class="items">
+                                <img src="{% static 'assets/img/9t34nYXnE3QGpOta0nqIl2etOyG3tOrMayQ9azTW.jpg' %}" alt="slider img">
+                            </div>
+                            <div class="items">
+                                <img src="{% static 'assets/img/IG73uQqG2GT2QNlIna4CRShJ66NsNRU9NK1xMLDp.jpg' %}" alt="slider img">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Side Sliders -->
+                <div class="col-lg-3 col-xl-3">
+                    {% for side in side_sliders %}
+                        <div class="slideimg {% if not forloop.last %}mb-4{% endif %}">
+                            <a href="{% url 'campaign_products' side.id %}"><img src="{{ side.image.url }}" alt="side slider img"></a>
+                        </div>
+                    {% empty %}
+                    <div class="slideimg mb-4">
+                            <img src="{% static 'assets/img/V6XGxnZXsekvObHLd3yam9R14OwFdtZViZmlQ9ZM.jpg' %}" alt="slider img">
+                        </div>
+                        <div class="slideimg">
+                            <img src="{% static 'assets/img/8iFiqA7eVqpiPab5HhKM1tYcMq1VDRseks75hYQx.jpg' %}" alt="slider img">
+                        </div>
+                    {% endfor %}
                 </div>
 
             </div>
@@ -274,7 +310,7 @@
     </section>
     {% endif %}
 
-    <section class="products-area">
+    {% comment %} <section class="products-area">
         <div class="containers">
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
@@ -290,7 +326,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> {% endcomment %}
     
     <!--Popular products -->
     <section class="products-area">
@@ -529,7 +565,7 @@
     <!-- products -->
 
 
-    <section class="products-area">
+    {% comment %} <section class="products-area">
         <div class="containers">
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
@@ -545,7 +581,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> {% endcomment %}
 
 
     <!-- products -->
