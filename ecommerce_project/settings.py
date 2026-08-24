@@ -23,10 +23,10 @@ DEBUG = True
 #     'localhost',
 # ]
 ALLOWED_HOSTS = ['*']
-SUPPORT_SERVER = "http://127.0.0.1:8000/dashboard/api/support/create/"
-SUPPORT_LIST_API = "http://127.0.0.1:8000/dashboard/api/support/my-list/"
-SUPPORT_DETAIL_API="http://127.0.0.1:8000/dashboard/api/support/"
-SUPPORT_REPLY_API ="http://127.0.0.1:8000/dashboard/api/support/reply/"
+SUPPORT_SERVER = "https://eplexsoft.com/dashboard/api/support/create/"
+SUPPORT_LIST_API = "https://eplexsoft.com/dashboard/api/support/my-list/"
+SUPPORT_DETAIL_API="https://eplexsoft.com/dashboard/api/support/"
+SUPPORT_REPLY_API ="https://eplexsoft.com/dashboard/api/support/reply/"
 
 SUPPORT_API_KEY = "eplex_support_2026_@#$%_secret"
 # Application definition
@@ -107,13 +107,13 @@ DATABASES = {
     'default': {
 
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': os.environ.get('DJANGO_DB_NAME', 'odelltec_ecommerce_db_final'),
-        # 'USER': os.environ.get('DJANGO_DB_USER', 'odelltec_ashraf'),
-        # 'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'ashraf@1234'),
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'ecommerce_db'),
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'odelltec_ecommerce_db_final'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'odelltec_ashraf'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'ashraf@1234'),
+        # 'NAME': os.environ.get('DJANGO_DB_NAME', 'ecommerce_db'),
 
-        'USER': os.environ.get('DJANGO_DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
+        # 'USER': os.environ.get('DJANGO_DB_USER', 'root'),
+        # 'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
         'HOST': os.environ.get('DJANGO_DB_HOST','127.0.0.1'),
 
         'PORT': os.environ.get('PORT', '3306'),
