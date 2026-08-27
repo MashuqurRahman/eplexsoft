@@ -19,48 +19,49 @@
     </div>
 
     <div class="card-body">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>SL</th>
-                    <th>Delivery Location</th>
-                    <th>Initial Charge</th>
-                    <th>Initial Weight</th>
-                    <th>Increment Price/Unit</th>
-                    <th>Active</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for obj in obj_list %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ obj.get_delivery_location_display|default:"N/A" }}</td>
-                    <td>{{ obj.initial_charge|default:"N/A" }}</td>
-                    <td>{{ obj.initial_weight|default:"N/A" }}</td>
-                    <td>{{ obj.increment_weight_per_unit|default:"N/A" }}</td>
-                    <td>{{ obj.is_active|default:"N/A" }}</td>
-                    
-                    <td>
-                        <a href="{% url 'delivery_charge_update_url' obj.id %}" class="edit_btn" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Delivery Location</th>
+                        <th>Initial Charge</th>
+                        <th>Initial Weight</th>
+                        <th>Increment Price/Unit</th>
+                        <th>Active</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in obj_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ obj.get_delivery_location_display|default:"N/A" }}</td>
+                        <td>{{ obj.initial_charge|default:"N/A" }}</td>
+                        <td>{{ obj.initial_weight|default:"N/A" }}</td>
+                        <td>{{ obj.increment_weight_per_unit|default:"N/A" }}</td>
+                        <td>{{ obj.is_active|default:"N/A" }}</td>
+                        
+                        <td>
+                            <a href="{% url 'delivery_charge_update_url' obj.id %}" class="edit_btn" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
 
-                        <a href="{% url 'delivery_charge_delete_url' obj.id %}" class="delete_btn" title="Delete" 
-                            onclick="SweetDelete(event, this.href)">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
+                            <a href="{% url 'delivery_charge_delete_url' obj.id %}" class="delete_btn" title="Delete" 
+                                onclick="SweetDelete(event, this.href)">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
 
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="12" class="text-center">Data is not found</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="12" class="text-center">Data is not found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-                <div class="table-footer">
+            <div class="table-footer">
                 {% if obj_list.has_other_pages %}
                     <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-end">
@@ -114,6 +115,7 @@
                 </nav> 
                 {% endif %}  
             </div>
+        </div>
     </div>
 </div>
 {% endblock %}
