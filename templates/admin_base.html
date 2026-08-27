@@ -425,6 +425,10 @@
                                     </li>
                                 {% endif %}
 
+                                <li>
+                                    <a href="{% url 'pos_dashboard_url' %}"><i class="bi bi-postcard"></i> <span class="hide-item"> POS Management</span></a>
+                                </li>
+
                                 {% comment %} <li><a href="{% url 'admin_contact_url' %}"><i class="bi bi-chat-left-dots"></i> <span class="hide-item"> Conversations </span></a> </li> {% endcomment %}
 
                                 {% if "theme_change_permission" in request.user.user_permissions or request.user.is_superuser == True or request.user.role == 'central_admin' %}

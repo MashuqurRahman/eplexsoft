@@ -10,5 +10,6 @@ urlpatterns = [
     path('permissions/', include('permission_app.urls')),
     path('', include('client_app.urls')),
     path('report/', include('report_app.urls')),
+    path('pos/', include('pos_app.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
   + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

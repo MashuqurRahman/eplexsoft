@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Eplex — POS{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'assets/css/pos/base.css' %}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <a href="{% url 'admin_dashboard_url' %}" style="text-decoration: none; color: white;"><div class="mark">EX</div></a>
+      <div>
+        <h1>Eplex — POS</h1>
+        <div class="sub">POS segment · integrated build</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="branch-pill">
+        <select id="branchSelect">
+          <option>New Market Branch</option>
+          <option>Nilkhet Branch</option>
+          <option>Mirpur Benarasi Palli</option>
+        </select>
+      </div>
+      <div class="avatar-chip">R</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="sidebar" id="sidebar">
+      <div id="navGroups">
+
+        <div class="group" data-g="0">
+          <button class="group-head" data-toggle="0">
+            <span class="label">Home</span>
+            <span class="chev">▾</span>
+          </button>
+          <div class="group-items">
+            <a class="navitem" data-id="dashboard" href="{% url 'pos_dashboard_url' %}">
+              <span class="dot"></span>
+              <span>Dashboard</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="group" data-g="2">
+          <button class="group-head" data-toggle="2">
+            <span class="label">Inventory &amp; Procurement</span>
+            <span class="chev">▾</span>
+          </button>
+          <div class="group-items">
+            <a class="navitem" data-id="supplier" href="{% url 'supplier_index_url' %}">
+              <span class="dot"></span>
+              <span>Supplier</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="group" data-g="4">
+          <button class="group-head" data-toggle="4">
+            <span class="label">Master / Setup Data</span>
+            <span class="chev">▾</span>
+          </button>
+          <div class="group-items">
+            
+            <a class="navitem" data-id="branch-setup" href="{% url 'branch_setup_url' %}">
+              <span class="dot"></span>
+              <span>Branch</span>
+              <span class="imp-tag">◆ ADDED</span>
+            </a>
+            <a class="navitem" data-id="user-management" href="{% url 'pos_user_list_url' %}">
+              <span class="dot"></span>
+              <span>User Management</span>
+              <span class="imp-tag">◆ ADDED</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="group" data-g="5">
+          <button class="group-head" data-toggle="5">
+            <span class="label">Reports</span>
+            <span class="chev">▾</span>
+          </button>
+          <div class="group-items">
+            <a class="navitem" data-id="reports" href="#">
+              <span class="dot"></span>
+              <span>All Reports</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+    <main class="content">
+      {% block content %}
+      
+      
+      {% endblock %}
+    </main>
+  </div>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script>
+  const activeId = "{% block active_nav_id %}dashboard{% endblock %}";
+
+  const activeEl = document.querySelector('.navitem[data-id="' + activeId + '"]');
+  if (activeEl) activeEl.classList.add('active');
+
+  document.querySelectorAll('.group-head').forEach(btn => {
+    btn.addEventListener('click', () => btn.parentElement.classList.toggle('collapsed'));
+  });
+
+  document.getElementById('navSearch').addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('.group').forEach(group => {
+      let anyVisible = false;
+      group.querySelectorAll('.navitem').forEach(item => {
+        const label = item.textContent.trim().toLowerCase();
+        const match = !q || label.includes(q);
+        item.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      });
+      group.style.display = anyVisible ? '' : 'none';
+      group.classList.remove('collapsed');
+    });
+  });
+</script>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,135 @@
+{% extends "pos_base.html" %}
+{% load static %}
+{% block title %}Eplex Master — Branch Setup{% endblock %}
+{% block active_nav_id %}branch-setup{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'assets/css/pos/master_setup/branch_create.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-inner">
+  <div class="wrap">
+
+    <div class="page-topbar">
+      <div>
+        <div class="page-brand">
+          <span class="page-brand-mark">Eplex Master</span>
+          <span class="page-brand-sub">Branch Setup</span>
+        </div>
+        <div class="count-note" id="countNote">{{ branch_count }} branch(es)</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" type="button" onclick="scrollToForm()">＋ Add Branch</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="lbl">Total Branches</div><div class="val" id="kpiBranches">{{ branch_count }}</div></div>
+      <div class="kpi-card"><div class="lbl">Staff Assigned</div><div class="val" id="kpiStaff">{{ staff_assigned_count }}</div></div>
+      <div class="kpi-card"><div class="lbl">Unassigned Branches</div><div class="val" id="kpiUnassigned">{{ unassigned_count }}</div></div>
+    </div>
+
+    <div class="section-label">Every physical location this merchant sells from</div>
+
+    <div class="panel-grid" id="formSection">
+        <form action="{% if edit_branch %}?edit={{ edit_branch.id }}{% endif %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="branch_id" value="{{ edit_branch.id|default:'' }}">
+
+            <div class="panel-outer" id="branchPanel">
+                <div class="panel-head">
+                    <h4 id="branchPanelTitle">{% if edit_branch %}Edit Branch{% else %}Add Branch{% endif %}</h4>
+                    <button class="cancel-edit" id="cancelEditBtn" type="button" style="{% if not edit_branch %}display:none;{% endif %}" onclick="cancelEdit()">Cancel edit</button>
+                </div>
+                <div class="mini-row">
+                    <input type="text" name="name" id="bName" placeholder="Branch name — e.g. Savar Branch" value="{{ form.name.value|default_if_none:'' }}">
+                </div>
+                <div class="mini-row">
+                    <input type="text" name="address" id="bAddr" placeholder="Address / area" value="{{ form.address.value|default_if_none:'' }}">
+                </div>
+                <div class="mini-row">
+                    <input type="text" name="contact_no" id="bContact" placeholder="Contact number" value="{{ form.contact_no.value|default_if_none:'' }}">
+                </div>
+
+                <button class="btn-save" name="save_branch" id="branchSaveBtn" type="submit">
+                    {% if edit_branch %}Update Branch{% else %}Save Branch{% endif %}
+                </button>
+                {% if form.errors %}
+                  <p class="helper-text" style="color:#c0392b;">
+                    {% for field, errs in form.errors.items %}{{ errs|join:" " }} {% endfor %}
+                  </p>
+                {% endif %}
+            </div>
+        </form>
+
+        <div class="panel-outer">
+            <div class="panel-head">
+                <h4>Assign Staff</h4>
+            </div>
+            <div class="mini-row">
+                <select id="sBranch">
+                    {% for branch in branches %}
+                    <option value="{{ branch.name }}">{{ branch.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mini-row">
+                <input type="text" id="sIdentifier" placeholder="User ID or email — e.g. rahim@eplex.com">
+            </div>
+            <div class="mini-row">
+                <select id="sRole">
+                    <option value="Admin">Admin</option>
+                    <option value="Team Admin">Team Admin</option>
+                    <option value="Regular User" selected>Regular User</option>
+                </select>
+            </div>
+            <button class="btn-save" type="button" onclick="showToast('Staff assignment isn\'t wired up yet.')">Assign to Branch</button>
+            <p class="helper-text">Enter the user's staff ID (e.g. USR-1042) or their login email. They'll get access scoped to the selected branch.</p>
+        </div>
+    </div>
+
+    <div class="branch-grid" id="branchGrid">
+      {% for branch in branches %}
+      <div class="branch-card {% if branch.is_main %}primary{% endif %} {% if edit_branch.id == branch.id %}editing{% endif %}">
+        {% if branch.is_main %}<span class="badge">Main</span>{% endif %}
+        <div class="bname">{{ branch.name }}</div>
+        <div class="baddr">📍 {{ branch.address }}</div>
+        <div class="brow"><span>Contact No.</span><span>{{ branch.contact_no|default:"—" }}</span></div>
+        <div class="brow"><span>Staff (0)</span><span></span></div>
+        <div class="staff-empty">No staff assigned yet</div>
+        <div class="card-actions">
+          <a class="edit-btn" href="?edit={{ branch.id }}">Edit branch</a>
+          {% if not branch.is_main %}
+          <form action="{% url 'branch_delete_url' branch.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button class="del-btn" type="button"
+                    onclick="confirmDeleteBranch(this.form, '{{ branch.name|escapejs }}')">Remove branch</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-note">No branches yet — add your first one below.</div>
+      {% endfor %}
+    </div>
+
+
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+
+<script>
+  {% for message in messages %}
+    {% if forloop.first %}
+      window.SERVER_TOAST = "{{ message|escapejs }}";
+    {% endif %}
+  {% endfor %}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
+{% endblock %}

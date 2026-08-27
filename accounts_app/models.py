@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import RegexValidator
 from django.db import models
+from pos_app.models import pos_models
 from django.apps import apps
 
 
@@ -16,6 +17,19 @@ GENDER_CHOICES = (
     ('male', "Male"),
     ('female', "Female"),
     ('custom', "Custom")
+)
+
+USER_TYPE_CHOICES = (
+    ('', "--SELECT--"),
+    ('ecommerce', "E-commerce"),
+    ('pos', "POS"),
+    ('both', "Both"),
+)
+POS_ROLE_CHOICES = (
+    ('', "--SELECT--"),
+    ('central_admin', "Central Admin"),
+    ('branch_admin', "Branch Admin"),
+    ('regular_user', "Regular User"),
 )
 
 class UserManager(BaseUserManager):
@@ -53,6 +67,9 @@ class User(AbstractUser):
     dob = models.DateField(blank=True, null=True)
     image = models.ImageField(blank=True, null=True)
     category = models.ManyToManyField("admin_app.Categories", related_name='user_category', blank=True)
+    user_type = models.CharField(max_length=100, choices=USER_TYPE_CHOICES, blank=True, null=True)
+    pos_role = models.CharField(max_length=100, choices=POS_ROLE_CHOICES, blank=True, null=True)
+    pos_branch = models.ForeignKey(pos_models.BrachName, related_name='pos_user_branch', on_delete=models.CASCADE, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []  # no username required
