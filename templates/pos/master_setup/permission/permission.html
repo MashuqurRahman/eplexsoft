@@ -1,0 +1,134 @@
+{% extends "pos_base.html" %}
+{% load static %}
+{% block title %}Eplex Master — Permission Management{% endblock %}
+{% block active_nav_id %}permission-management{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'assets/css/pos/master_setup/permission.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-inner">
+    <div class="wrap">
+
+        <div class="page-head">
+            <div class="brand-row">
+                <span class="brand-mark">Eplex POS</span>
+                <span class="brand-sub">Permission Access</span>
+            </div>
+            <p class="brand-note">What each person on user can do, branch by branch.</p>
+        </div>
+
+        <section class="staff-layout">
+
+            <aside class="staff-rail">
+                <form method="get" action="{% url 'pos_user_permission_url' %}">
+                    <select name="branch" class="staff-rail-select" onchange="this.form.submit()">
+                        <option value="">All Users</option>
+                        {% for branch in branches %}
+                        <option value="{{ branch.id }}" {% if selected_branch == branch.id|stringformat:"s" %}selected{% endif %}>
+                            {{ branch.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="q" class="staff-rail-search" placeholder="Search name, ID, or email"
+                        value="{{ search_query }}">
+                    <button type="submit" class="search-btn" style="width:100%;margin-bottom:10px;">Search</button>
+                </form>
+
+                <div class="staff-list">
+                    {% for staff in user_list %}
+                    <a class="staff-card {% if selected_user.id == staff.id %}active{% endif %}"
+                        href="?user={{ staff.id }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_branch %}&branch={{ selected_branch }}{% endif %}"
+                        style="text-decoration:none;">
+                        <span class="avatar" style="background:var(--teal-deep)">
+                            {{ staff.name|default:staff.email|slice:":2"|upper }}
+                        </span>
+                        <span class="staff-card-text">
+                            <span class="staff-card-name">{{ staff.name|default:staff.email }}</span>
+                            <span class="staff-card-role">{{ staff.get_pos_role_display }}</span>
+                        </span>
+                    </a>
+                    {% empty %}
+                    <div class="staff-empty">No staff match this search.</div>
+                    {% endfor %}
+                </div>
+            </aside>
+
+            <div class="staff-main">
+                {% if selected_user %}
+                <div class="profile-header">
+                    <div class="profile-id">
+                        <span class="avatar-lg" style="background:var(--clay)">
+                            {{ selected_user.name|default:selected_user.email|slice:":2"|upper }}
+                        </span>
+                        <div>
+                            <div class="profile-name">{{ selected_user.name|default:selected_user.email }}</div>
+                            <div class="profile-meta">{{ selected_user.email }} · {{ selected_user.pos_branch.name|default:"No branch" }}</div>
+                            <span class="role-chip" style="background:var(--clay-tint);color:var(--clay)">
+                                <span class="dot" style="background:var(--clay)"></span>{{ selected_user.get_pos_role_display }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="summary-stats">
+                        <div class="stat"><div class="num">{{ granted_count }}/{{ total_permission_count }}</div><div class="lbl">Granted</div></div>
+                    </div>
+                </div>
+
+                <form method="post" action="{% url 'save_pos_permission_url' selected_user.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="query_string" value="{% if search_query %}q={{ search_query }}{% endif %}{% if selected_branch %}{% if search_query %}&{% endif %}branch={{ selected_branch }}{% endif %}">
+
+                    {% for group in permission_groups %}
+                    <div class="cat-section">
+                        <div class="cat-head"><span class="cat-name">{{ group.name }}</span></div>
+                        <div class="cat-list">
+                            {% for item in group.items %}
+                            <div class="perm-row">
+                                <span class="perm-name">{{ item.label }}</span>
+                                <span class="row-right">
+                                    <input type="checkbox" name="permissions" value="{{ item.key }}" {% if item.granted %}checked{% endif %}>
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="save-permission">Save Permissions</button>
+                </form>
+                {% else %}
+                <div class="staff-empty">No staff found. Adjust your search or branch filter.</div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+
+<script>
+  {% for message in messages %}
+    {% if forloop.first %}
+      window.SERVER_TOAST = "{{ message|escapejs }}";
+    {% endif %}
+  {% endfor %}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  if (window.SERVER_TOAST) {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: window.SERVER_TOAST,
+      showConfirmButton: false,
+      timer: 2500,
+      timerProgressBar: true
+    });
+  }
+</script>
+{% endblock %}

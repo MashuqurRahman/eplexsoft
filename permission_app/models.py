@@ -1,10 +1,6 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
-
-# Create your models here.
 from accounts_app.models import User
+from .choices import POS_PERMISSION_CHOICES
 
 
 PRODUCT_APPROVAL_CHOICES = (
@@ -29,10 +25,20 @@ PRODUCT_APPROVAL_CHOICES = (
     ('report_permission', 'Report Permission'),
 )
 
-
 class AdminPanelPermissions(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="admin_panel_permission_user")
     permission= models.CharField(max_length=150, choices=PRODUCT_APPROVAL_CHOICES)
+
+    class Meta:
+        unique_together = ('user', 'permission')
+
+    def __str__(self):
+        return f"{self.user.email} - {self.permission}"
+
+
+class PosPanelPermissions(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="pos_panel_permission_user")
+    permission= models.CharField(max_length=150, choices=POS_PERMISSION_CHOICES)
 
     class Meta:
         unique_together = ('user', 'permission')

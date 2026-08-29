@@ -74,3 +74,16 @@ class UserSetupForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class CustomerSetupForm(forms.ModelForm):
+    class Meta:
+        model = pos_models.Customer
+        fields = "__all__"
+        widgets = {
+            'address': forms.TextInput(attrs={'rows': 1, 'cols': 1})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['branch'].empty_label = "--SELECT--"
