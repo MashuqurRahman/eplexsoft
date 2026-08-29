@@ -1,0 +1,74 @@
+{% extends "pos_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Eplex Master — Customer Update{% endblock %}
+{% block active_nav_id %}customer-master{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'assets/css/vendor/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/pos/master_setup/branch_create.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-inner">
+  <div class="wrap">
+
+    <div class="page-topbar">
+      <div>
+        <div class="page-brand">
+          <span class="page-brand-mark">Eplex Master</span>
+          <span class="page-brand-sub">Customer Update</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-outer" id="branchPanel">
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-4">
+              {{ form.name|as_crispy_field }}
+            </div>
+            <div class="col-md-4">
+              {{ form.phone|as_crispy_field }}
+            </div>
+            <div class="col-md-4">
+              {{ form.email|as_crispy_field }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              {{ form.branch|as_crispy_field }}
+            </div>
+            <div class="col-md-4">
+              {{ form.address|as_crispy_field }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <button class="btn btn-primary mt-3" type="submit">Update</button>
+            </div>
+          </div>
+
+        </form>
+    </div>
+
+
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+
+<script>
+  {% for message in messages %}
+    {% if forloop.first %}
+      window.SERVER_TOAST = "{{ message|escapejs }}";
+    {% endif %}
+  {% endfor %}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
+{% endblock %}

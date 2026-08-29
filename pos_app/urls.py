@@ -1,5 +1,6 @@
 from django.urls import path, include
 from pos_app.views import dashboard_views, master_setup_data_views, inventory_views
+from permission_app.views import pos_user_permission_view, save_pos_permission
 
 master_patterns = [
     path('branch/', master_setup_data_views.branch_setup_view, name='branch_setup_url'),
@@ -10,6 +11,17 @@ master_patterns = [
     path('user/create/', master_setup_data_views.pos_user_create_view, name='pos_user_create_url'), 
     path('user/update/<int:pk>/', master_setup_data_views.pos_user_update_view, name='pos_user_update_url'), 
     path('user/delete/<int:pk>/', master_setup_data_views.pos_user_delete_view, name='pos_user_delete_url'), 
+
+    # PERMISSION MANAGEMENT
+    path('permission/', pos_user_permission_view, name='pos_user_permission_url'),
+    path("permission/save/<int:user_id>/", save_pos_permission, name="save_pos_permission_url"),
+
+    # POS CUSTOMER
+    path('customer/index/', master_setup_data_views.pos_customer_index_view, name='pos_customer_index_url'),
+    path('customer/create/', master_setup_data_views.pos_customer_create_view, name='pos_customer_create_url'),
+    path('customer/update/<int:pk>/', master_setup_data_views.pos_customer_update_view, name='pos_customer_update_url'),
+    path('customer/delete/<int:pk>/', master_setup_data_views.pos_customer_delete_view, name='pos_customer_delete_url'),
+
 ]
 
 inventory_patterns = [

@@ -116,4 +116,65 @@ def pos_user_delete_view(request, pk):
     messages.success(request, f'User "{user.name}" removed.')
     return redirect('pos_user_list_url')
 
-    
+
+# CUSTOMER SETUP
+
+@login_required
+def pos_customer_index_view(request):
+    obj_list = pos_models.Customer.objects.all().order_by('-id')
+    context = {
+        'obj_list': obj_list
+    }
+    return render(request, 'pos/master_setup/customer/index.html', context)
+
+@login_required
+def pos_customer_create_view(request):
+    if request.user.is_superuser:
+        form = master_setup_forms.CustomerSetupForm()
+        if request.method == "POST":
+            form = master_setup_forms.CustomerSetupForm(request.POST)
+            if form.is_valid():
+                form.save()
+
+                messages.success(request, "Customer Added Successfully!!!")
+                return redirect('pos_customer_index_url')
+                    
+            else:
+                print(form.errors)
+                messages.error(request, "Invalid form")
+        context = {
+            'form': form
+        }
+        return render(request, 'pos/master_setup/customer/create.html', context)
+    else:
+        return render(request, 'permission_denied.html')
+
+@login_required
+def pos_customer_update_view(request, pk):
+    if request.user.is_superuser:
+        get_obj = pos_models.Customer.objects.get(id=pk)
+        form = master_setup_forms.CustomerSetupForm(instance=get_obj)
+        if request.method == "POST":
+            form = master_setup_forms.CustomerSetupForm(request.POST, instance=get_obj)
+            if form.is_valid():
+                form.save()
+
+                messages.success(request, "Customer Updated Successfully!!!")
+                return redirect('pos_customer_index_url')
+                    
+            else:
+                print(form.errors)
+                messages.error(request, "Invalid form")
+        context = {
+            'form': form
+        }
+        return render(request, 'pos/master_setup/customer/update.html', context)
+    else:
+        return render(request, 'permission_denied.html')
+
+@login_required
+def pos_customer_delete_view(request, pk):
+    customer = get_object_or_404(pos_models.Customer, id=pk)
+    customer.delete()
+    messages.success(request, f'Customer "{customer.name}" removed.')
+    return redirect('pos_customer_index_url')

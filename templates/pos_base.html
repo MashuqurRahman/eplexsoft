@@ -45,7 +45,6 @@
           </button>
           <div class="group-items">
             <a class="navitem" data-id="dashboard" href="{% url 'pos_dashboard_url' %}">
-              <span class="dot"></span>
               <span>Dashboard</span>
             </a>
           </div>
@@ -58,7 +57,6 @@
           </button>
           <div class="group-items">
             <a class="navitem" data-id="supplier" href="{% url 'supplier_index_url' %}">
-              <span class="dot"></span>
               <span>Supplier</span>
             </a>
           </div>
@@ -72,14 +70,17 @@
           <div class="group-items">
             
             <a class="navitem" data-id="branch-setup" href="{% url 'branch_setup_url' %}">
-              <span class="dot"></span>
+              <!-- <span class="dot"></span> -->
               <span>Branch</span>
-              <span class="imp-tag">◆ ADDED</span>
             </a>
             <a class="navitem" data-id="user-management" href="{% url 'pos_user_list_url' %}">
-              <span class="dot"></span>
               <span>User Management</span>
-              <span class="imp-tag">◆ ADDED</span>
+            </a>
+            <a class="navitem" data-id="customer-master" href="{% url 'pos_customer_index_url' %}">
+              <span>Customer Management</span>
+            </a>
+            <a class="navitem" data-id="permission-management" href="{% url 'pos_user_permission_url' %}">
+              <span>Permission Management</span>
             </a>
           </div>
         </div>
@@ -91,7 +92,6 @@
           </button>
           <div class="group-items">
             <a class="navitem" data-id="reports" href="#">
-              <span class="dot"></span>
               <span>All Reports</span>
             </a>
           </div>
