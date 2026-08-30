@@ -71,7 +71,14 @@
                         </div>
                     </div>
                     <div class="summary-stats">
-                        <div class="stat"><div class="num">{{ granted_count }}/{{ total_permission_count }}</div><div class="lbl">Granted</div></div>
+                        <div class="stat">
+                            <div class="num">{{ granted_count }}/{{ total_permission_count }}</div>
+                            <div class="lbl">Granted</div>
+                            <label for="selectAllPermissions" style="display:flex;align-items:center;justify-content:flex-end;gap:6px;font-size:12.5px;color:var(--ink-soft);cursor:pointer;margin-top:8px;">
+                                <input type="checkbox" id="selectAllPermissions">
+                                Select All
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -87,7 +94,7 @@
                             <div class="perm-row">
                                 <span class="perm-name">{{ item.label }}</span>
                                 <span class="row-right">
-                                    <input type="checkbox" name="permissions" value="{{ item.key }}" {% if item.granted %}checked{% endif %}>
+                                    <input type="checkbox" class="permission-checkbox" name="permissions" value="{{ item.key }}" {% if item.granted %}checked{% endif %}>
                                 </span>
                             </div>
                             {% endfor %}
@@ -113,6 +120,30 @@
       window.SERVER_TOAST = "{{ message|escapejs }}";
     {% endif %}
   {% endfor %}
+
+  /* ===== Select all permissions ===== */
+  (function () {
+    const selectAll = document.getElementById('selectAllPermissions');
+    if (!selectAll) return;
+
+    const checkboxes = Array.from(document.querySelectorAll('.permission-checkbox'));
+
+    function syncSelectAllState() {
+      selectAll.checked = checkboxes.length > 0 && checkboxes.every(cb => cb.checked);
+    }
+
+    selectAll.addEventListener('change', function () {
+      checkboxes.forEach(function (cb) {
+        cb.checked = selectAll.checked;
+      });
+    });
+
+    checkboxes.forEach(function (cb) {
+      cb.addEventListener('change', syncSelectAllState);
+    });
+
+    syncSelectAllState();
+  })();
 </script>
 {% endblock %}
 

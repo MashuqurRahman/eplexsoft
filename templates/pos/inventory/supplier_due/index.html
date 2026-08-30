@@ -1,0 +1,188 @@
+{% extends "pos_base.html" %}
+{% load static %}
+{% block title %}Eplex Master — Supplier{% endblock %}
+{% block active_nav_id %}supplier-due-payment{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'assets/css/pos/inventory/supplier_due.css' %}">
+<style>
+    .content-inner {
+        padding: 10px 20px 64px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-inner">
+  <div class="supdue">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-mark">Eplex POS</span>
+      <span class="brand-sub">Supplier Due / Payment</span>
+      <span class="brand-note">Outstanding balances owed to suppliers</span>
+    </div>
+    <a class="btn-record" href="#recordPanel">＋ Record Payment</a>
+  </div>
+
+  <!-- ================= KPI CARDS ================= -->
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="ic tint-clay">💸</div><div class="lbl">Total Payable</div><div class="val">৳ 64,200</div><div class="trend">Across {{ supplier_obj|length }} suppliers</div></div>
+    <div class="kpi-card"><div class="ic tint-amber">⏳</div><div class="lbl">Overdue</div><div class="val">৳ 43,600</div><div class="trend">2 suppliers past due date</div></div>
+    <div class="kpi-card"><div class="ic tint-green">✅</div><div class="lbl">Paid This Month</div><div class="val">৳ 31,800</div><div class="trend">5 payments made</div></div>
+    <div class="kpi-card"><div class="ic tint-teal">📅</div><div class="lbl">Next Due</div><div class="val">Aug 8</div><div class="trend">Karim Traders — ৳ 22,000</div></div>
+  </div>
+
+  <!-- ================= REDISTRIBUTED CONTENT: LEDGER LEFT, ACTION RIGHT ================= -->
+  <div class="layout">
+
+    <!-- LEFT: Outstanding ledger -->
+    <div class="col-left">
+      <div class="panel">
+        <div class="section-label">Outstanding by Supplier <span class="count">{{ supplier_obj|length }} suppliers</span></div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Supplier</th>
+                <th>Phone</th>
+                <th>Branch</th>
+                <th class="num">Payable</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if supplier_obj %}
+              {% for obj in supplier_obj %}
+              <tr>
+                <td class="supplier-name">{{ obj.name }}</td>
+                <td>{{ obj.phone }}</td>
+                <td>{{ obj.branch }}</td>
+                <td class="num amt">৳ 22,000</td>
+                <td><span class="chip pending">Pending</span></td>
+                <td class="row-actions"><a href="#recordPanel">Pay</a></td>
+              </tr>
+              {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Record payment form + recent payments -->
+    <div class="col-right">
+      <div class="panel" id="recordPanel">
+        <div class="section-label">Record Payment</div>
+        <div class="field">
+          <label>Supplier</label>
+          <select id="paySupplier">
+            <option value="0" selected>Karim Traders</option>
+            <option value="1">Chattogram Import Co.</option>
+            <option value="2">Bengal Paper Mills</option>
+            <option value="3">Nilkhet Stationers</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Against PO</label>
+            <input type="text" id="payPO" value="PO-1042" readonly>
+          </div>
+          <div class="field">
+            <label>Amount Due</label>
+            <input type="text" id="payDue" value="৳ 22,000" readonly>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Amount Paying</label>
+            <input type="number" id="payAmount" placeholder="0">
+          </div>
+          <div class="field">
+            <label>Method</label>
+            <select id="payMethod">
+              <option>Cash</option>
+              <option>bKash</option>
+              <option>Bank Transfer</option>
+              <option>Card / Cheque</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-submit" type="button">Record Payment</button>
+      </div>
+
+      <div class="panel">
+        <div class="section-label">Recent Payments</div>
+        <div class="pay-list">
+          <div class="pay-row">
+            <div class="left">
+              <div class="supplier">Green Valley Packaging</div>
+              <div class="meta">Aug 1 · PO-1040 · Cash</div>
+            </div>
+            <div class="amt">৳ 9,800</div>
+          </div>
+          <div class="pay-row">
+            <div class="left">
+              <div class="supplier">Mirpur Ribbon House</div>
+              <div class="meta">Jul 30 · PO-1038 · bKash</div>
+            </div>
+            <div class="amt">৳ 5,200</div>
+          </div>
+          <div class="pay-row">
+            <div class="left">
+              <div class="supplier">Dhaka POS Hardware</div>
+              <div class="meta">Jul 26 · PO-1036 · Bank Transfer</div>
+            </div>
+            <div class="amt">৳ 18,000</div>
+          </div>
+          <div class="pay-row">
+            <div class="left">
+              <div class="supplier">Karim Traders</div>
+              <div class="meta">Jul 20 · PO-1032 · Cash</div>
+            </div>
+            <div class="amt">৳ 12,000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
+
+<script>
+  {% for message in messages %}
+    {% if forloop.first %}
+      window.SERVER_TOAST = "{{ message|escapejs }}";
+    {% endif %}
+  {% endfor %}
+
+  function confirmDeleteUser(event, url, userName) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Are you sure?',
+      html: 'This will remove <strong>' + userName + '</strong>. This cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Remove',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#c0392b',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = url;
+      }
+    });
+    return false;
+  }
+</script>
+{% endblock %}

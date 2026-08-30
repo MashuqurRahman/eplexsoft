@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <link rel="stylesheet" href="{% static 'assets/css/pos/base.css' %}">
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -58,6 +60,9 @@
           <div class="group-items">
             <a class="navitem" data-id="supplier" href="{% url 'supplier_index_url' %}">
               <span>Supplier</span>
+            </a>
+            <a class="navitem" data-id="supplier-due-payment" href="{% url 'supplier_due_index_url' %}">
+              <span>Supplier Due</span>
             </a>
           </div>
         </div>

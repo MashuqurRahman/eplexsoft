@@ -4,6 +4,7 @@ class BrachName(models.Model):
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     contact_no = models.CharField(max_length=255)
+    active_status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
@@ -19,6 +20,7 @@ class Supplier(models.Model):
     email = models.EmailField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     payable_amount = models.FloatField(blank=True, null=True)
+    due_amount = models.FloatField(blank=True, null=True)
     branch = models.ForeignKey(BrachName, on_delete=models.CASCADE, related_name='supplier_branch_name', blank=True, null=True)
 
     def __str__(self):

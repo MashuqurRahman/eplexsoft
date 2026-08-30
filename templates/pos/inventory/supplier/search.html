@@ -1,0 +1,51 @@
+<table class="table table-responsive table-bordered" id="ShowTable">
+    <thead>
+    <tr>
+        <th>SL</th>
+        <th>Name</th>
+        <th>E-Mail</th>
+        <th>Phone</th>
+        <th>Branch</th>
+        <th>Address</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if supplier_obj %}
+    {% for obj in supplier_obj %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ obj.name }}</td>
+        <td>{{ obj.email|default:"N/A" }}</td>
+        <td>{{ obj.phone }}</td>
+        <td>{{ obj.branch|default:"N/A" }}</td>
+        <td>{{ obj.address|default:"N/A" }}</td>
+        <td>
+        <div class="action-cell">
+            <a class="edit-btn" href="{% url 'supplier_update_url' obj.id %}" title="Edit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+            </svg>
+            </a>
+            <a class="del-btn" href="{% url 'supplier_delete_url' obj.id %}" title="Delete"
+                onclick="confirmDeleteUser(event, this.href, '{{ obj.name|escapejs }}')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"/>
+                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/>
+                <path d="M14 11v6"/>
+            </svg>
+            </a>
+        </div>
+        </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td colspan="8" class="text-center">Data is not found</td>
+    </tr>
+    {% endif %}
+    </tbody>
+</table>
