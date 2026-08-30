@@ -1,0 +1,197 @@
+.supdue{
+  --paper:#F1EEE6;
+  --paper-raised:#FBFAF6;
+  --ink:#1C2B2A;
+  --ink-soft:#5B6B69;
+  --line:#D8D2C4;
+  --line-strong:#B9B19E;
+  --teal:#0E5C52;
+  --teal-deep:#0A4640;
+  --teal-tint:#E4EFEC;
+  --amber:#E19A32;
+  --amber-deep:#B87A1F;
+  --amber-tint:#FBEDD6;
+  --clay:#B5543C;
+  --clay-tint:#F5E4DF;
+  --green:#3E7A4C;
+  --green-tint:#E5F0E6;
+  --radius:4px;
+  --shadow:0 1px 2px rgba(28,43,42,0.06);
+
+  width:100%;
+  max-width:1180px;
+  margin:0 auto;
+  overflow-x:hidden;
+  box-sizing:border-box;
+  color:var(--ink);
+  font-family:'Inter','Hind Siliguri',sans-serif;
+  font-size:14px;
+  line-height:1.4;
+}
+.supdue *{box-sizing:border-box;}
+
+/* ---------- Top bar ---------- */
+.supdue .topbar{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  margin-bottom:16px;
+  padding-bottom:14px;
+  border-bottom:2px solid var(--ink);
+  flex-wrap:wrap;
+  gap:10px;
+  background:transparent;
+}
+.supdue .brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.supdue .brand-mark{
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;font-size:22px;color:var(--teal-deep);letter-spacing:-0.02em;
+}
+.supdue .brand-sub{
+  font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.08em;
+}
+.supdue .brand-note{font-size:12px;color:var(--ink-soft);margin-left:4px;}
+.supdue .btn-record{
+  background:var(--teal-deep);color:#fff;border:none;
+  border-radius:var(--radius);padding:10px 18px;
+  font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12.5px;
+  cursor:pointer;white-space:nowrap;
+  text-decoration:none;display:inline-block;
+}
+.supdue .btn-record:hover{background:var(--teal);}
+
+/* ---------- Improvised banner ---------- */
+.supdue .imp-banner{
+  display:flex;align-items:center;gap:10px;
+  background:var(--teal-tint);border:1px solid #C6DDD8;border-left:3px solid var(--teal-deep);
+  border-radius:var(--radius);
+  padding:9px 14px;margin-bottom:18px;
+  font-size:12px;color:var(--teal-deep);
+}
+.supdue .imp-banner .ic{font-size:13px;}
+
+/* ---------- Section label ---------- */
+.supdue .section-label{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;
+  color:var(--teal-deep);margin:0 0 12px;
+  display:flex;align-items:center;gap:8px;
+}
+.supdue .section-label::after{content:"";flex:1;height:1px;background:var(--line);}
+.supdue .section-label .count{
+  font-size:10.5px;font-weight:600;color:var(--ink-soft);
+  background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--radius);padding:2px 8px;
+  text-transform:none;letter-spacing:0;
+}
+
+/* ---------- KPI cards ---------- */
+.supdue .kpi-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;
+}
+.supdue .kpi-card{
+  background:var(--paper-raised);border:1px solid var(--line);
+  border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);
+  min-width:0;
+}
+.supdue .kpi-card .ic{
+  width:26px;height:26px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:10px;
+}
+.supdue .kpi-card .ic.tint-clay{background:var(--clay-tint);}
+.supdue .kpi-card .ic.tint-amber{background:var(--amber-tint);}
+.supdue .kpi-card .ic.tint-green{background:var(--green-tint);}
+.supdue .kpi-card .ic.tint-teal{background:var(--teal-tint);}
+.supdue .kpi-card .lbl{font-size:11px;color:var(--ink-soft);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em;}
+.supdue .kpi-card .val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;}
+.supdue .kpi-card .trend{font-size:11px;margin-top:6px;color:var(--ink-soft);border-top:1px dashed var(--line);padding-top:6px;}
+
+/* ---------- Two column layout ---------- */
+.supdue .layout{
+  display:grid;
+  grid-template-columns:1.5fr 1fr;
+  gap:20px;
+  align-items:start;
+  width:100%;
+}
+.supdue .col-left, .supdue .col-right{
+  min-width:0; /* prevents grid blowout from table/content width */
+}
+
+.supdue .panel{
+  background:var(--paper-raised);border:1px solid var(--line);
+  border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;
+  min-width:0;
+}
+
+/* ---------- Outstanding table ---------- */
+.supdue table{width:100%;border-collapse:collapse;}
+.supdue th{
+  text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--ink-soft);font-weight:600;padding:0 8px 10px;border-bottom:1px solid var(--line);
+  background:var(--paper);
+}
+.supdue td{padding:11px 8px;font-size:13px;border-bottom:1px solid #EFECE3;vertical-align:middle;}
+.supdue tr:last-child td{border-bottom:none;}
+.supdue .num{text-align:right;}
+.supdue .amt{font-family:'Space Grotesk',sans-serif;font-weight:700;font-variant-numeric:tabular-nums;}
+.supdue .supplier-name{font-weight:600;color:var(--ink);}
+.supdue .chip{
+  font-size:9.5px;font-weight:600;padding:3px 9px;border-radius:var(--radius);display:inline-block;white-space:nowrap;
+  text-transform:uppercase;letter-spacing:0.03em;
+}
+.supdue .chip.pending{background:var(--amber-tint);color:var(--amber-deep);}
+.supdue .chip.overdue{background:var(--clay-tint);color:var(--clay);}
+.supdue .row-actions a{
+  font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:11.5px;
+  border-radius:var(--radius);padding:6px 12px;cursor:pointer;
+  background:var(--teal-deep);color:#fff;border:1px solid var(--teal-deep);
+  text-decoration:none;display:inline-block;
+}
+.supdue .row-actions a:hover{background:var(--teal);}
+.supdue .table-scroll{overflow-x:auto;}
+
+/* ---------- Record payment form (right column) ---------- */
+.supdue .field{margin-bottom:12px;}
+.supdue .field label{
+  display:block;font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;font-weight:500;
+}
+.supdue .field select, .supdue .field input{
+  width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);
+  background:#fff;border:1px solid var(--line-strong);border-radius:var(--radius);padding:9px 10px;
+}
+.supdue .field select:focus, .supdue .field input:focus{
+  outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-tint);
+}
+.supdue .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.supdue .btn-submit{
+  width:100%;background:var(--amber);color:var(--ink);border:none;
+  border-radius:var(--radius);padding:12px;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;letter-spacing:0.02em;
+  cursor:pointer;margin-top:4px;transition:background .15s ease;
+}
+.supdue .btn-submit:hover{background:var(--amber-deep);color:#fff;}
+
+/* ---------- Recent payments (receipt list, right column) ---------- */
+.supdue .pay-list{border:1px solid var(--line-strong);border-radius:var(--radius);background:#fff;}
+.supdue .pay-row{
+  padding:10px 12px;border-bottom:1px solid #EFECE3;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+}
+.supdue .pay-row:last-child{border-bottom:none;}
+.supdue .pay-row .left{min-width:0;}
+.supdue .pay-row .supplier{font-size:12.5px;font-weight:600;color:var(--ink);}
+.supdue .pay-row .meta{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+.supdue .pay-row .amt{
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;
+  color:var(--green);white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+
+@media (max-width:900px){
+  .supdue .layout{grid-template-columns:1fr;}
+  .supdue .kpi-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:480px){
+  .supdue .kpi-grid{grid-template-columns:1fr;}
+  .supdue .field-row{grid-template-columns:1fr;}
+}

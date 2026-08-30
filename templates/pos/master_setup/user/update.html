@@ -26,25 +26,28 @@
         <form action="" method="post">
           {% csrf_token %}
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               {{ form.name|as_crispy_field }}
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               {{ form.email|as_crispy_field }}
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               {{ form.phone|as_crispy_field }}
+            </div>
+            <div class="col-md-3">
+              {{ form.pos_role|as_crispy_field }}
             </div>
           </div>
           <div class="row">
-            <div class="col-md-4">
-              {{ form.gender|as_crispy_field }}
-            </div>
-            <div class="col-md-4">
-              {{ form.pos_role|as_crispy_field }}
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               {{ form.pos_branch|as_crispy_field }}
+            </div>
+            <div class="col-md-3">
+              {{ form.joining_date|as_crispy_field }}
+            </div>
+            <div class="col-md-3" style="margin-top: 37px;">
+              {{ form.active_status|as_crispy_field }}
             </div>
           </div>
           <div class="row">

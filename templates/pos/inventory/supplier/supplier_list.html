@@ -64,16 +64,29 @@
     </div>
 
     <div class="panel-outer">
-      <div class="table-responsive">
+      <div class="table-toolbar">
+        <div class="search-group">
+          <input type="search" id="SearchInput" placeholder="Search..." autocomplete="off">
+          <button type="button" class="search-icon" id="SearchBtn" title="Search" aria-label="Search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive" id="ShowTable">
         <table class="table table-responsive table-bordered">
           <thead>
             <tr>
               <th>SL</th>
               <th>Name</th>
-              <th>E-Mail</th>
               <th>Phone</th>
               <th>Branch</th>
               <th>Address</th>
+              <th>Total Order</th>
+              <th>Total Due</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -83,10 +96,11 @@
             <tr>
               <td>{{ forloop.counter }}</td>
               <td>{{ obj.name }}</td>
-              <td>{{ obj.email|default:"N/A" }}</td>
               <td>{{ obj.phone }}</td>
               <td>{{ obj.branch|default:"N/A" }}</td>
               <td>{{ obj.address|default:"N/A" }}</td>
+              <td>{{ obj.payable_amount|default:"N/A" }}</td>
+              <td>{{ obj.due_amount|default:"N/A" }}</td>
               <td>
                 <div class="action-cell">
                   <a class="edit-btn" href="{% url 'supplier_update_url' obj.id %}" title="Edit">
@@ -125,6 +139,12 @@
 
 <div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
 
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
+
 <script>
   {% for message in messages %}
     {% if forloop.first %}
@@ -151,9 +171,37 @@
     return false;
   }
 </script>
-{% endblock %}
 
-{% block extra_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
+<script>
+  $(document).ready(function(){
+    var search_url = "{% url 'pos_supplier_search_url' %}"
+    var redirect_url = "{% url 'supplier_list_url' %}"
+
+    $('#SearchInput').keypress(function(e){
+      if (e.keyCode == 13){
+        $('#SearchBtn').click();
+      }
+    });
+
+    $('#SearchBtn').click(function(){
+      var search_text = $('#SearchInput').val();
+
+      if(search_text){
+        $.ajax({
+          url: search_url,
+          data: {
+            'search_text': search_text
+          },
+          success: function(data){
+            $('#ShowTable').html(data)
+          }
+        });
+      }
+      else {
+        location.href = redirect_url
+      }
+    });
+  });
+</script>
+
 {% endblock %}

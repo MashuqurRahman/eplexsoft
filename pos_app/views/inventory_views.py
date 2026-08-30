@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from pos_app.forms import inventory_forms
 from pos_app.models import pos_models
@@ -63,3 +64,26 @@ def supplier_delete_view(request, pk):
     get_obj.delete()
     messages.success(request, "Supplier Deleted Successfully!!!")
     return redirect('supplier_list_url')
+
+@login_required
+def pos_supplier_search_view(request):
+    search_text = request.GET.get('search_text').strip()
+    supplier_obj = pos_models.Supplier.objects.all().order_by('-id')
+    obj_list = supplier_obj.filter(
+        Q(name__icontains=search_text)|
+        Q(email__icontains=search_text)|
+        Q(phone__icontains=search_text)|
+        Q(address__icontains=search_text)|
+        Q(branch__name__icontains=search_text)
+    )
+    return render(request, 'pos/inventory/supplier/search.html', {'supplier_obj': obj_list})
+
+# SUPPLIER DUE
+
+@login_required
+def supplier_due_index_view(request):
+    supplier_obj = pos_models.Supplier.objects.all().order_by('-id')
+    context = {
+        "supplier_obj": supplier_obj
+    }
+    return render(request, 'pos/inventory/supplier_due/index.html', context)

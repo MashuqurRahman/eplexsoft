@@ -1,6 +1,7 @@
 import json
 from django.contrib import messages
 from django.db import transaction
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -10,6 +11,7 @@ from accounts_app.models import User
 
 @login_required
 def branch_setup_view(request):
+
     edit_branch = None
     edit_id = request.GET.get("edit")
     if edit_id:
@@ -30,6 +32,9 @@ def branch_setup_view(request):
         form = master_setup_forms.BranchForm(instance=edit_branch)
 
     branches = pos_models.BrachName.objects.all()
+    active_brance_count = branches.filter(active_status=True).count()
+    inactive_brance_count = branches.filter(active_status=False).count()
+    pos_user_count = User.objects.filter(user_type='pos').count()
 
 
     context = {
@@ -38,6 +43,9 @@ def branch_setup_view(request):
         "branch_count": branches.count(),
         "staff_assigned_count": 0,
         "edit_branch": edit_branch,
+        "pos_user_count": pos_user_count,
+        "active_brance_count": active_brance_count,
+        "inactive_brance_count": inactive_brance_count,
     }
     
     return render(request, 'pos/master_setup/branch/create.html', context)
@@ -53,7 +61,7 @@ def branch_delete_view(request, pk):
 
 @login_required
 def pos_user_list_view(request):
-    obj_list = User.objects.filter(user_type='pos')
+    obj_list = User.objects.filter(user_type='pos').order_by('-id')
     context = {
         'obj_list': obj_list
     }
@@ -69,6 +77,7 @@ def pos_user_create_view(request):
             if form.is_valid():
                 instance = form.save(commit=False)
                 instance.user_type = 'pos'
+                instance.active_status = True
                 instance.save()
 
                 messages.success(request, "User Added Successfully!!!")
@@ -88,9 +97,9 @@ def pos_user_create_view(request):
 def pos_user_update_view(request, pk):
     if request.user.is_superuser:
         get_obj = User.objects.get(id=pk)
-        form = master_setup_forms.UserSetupForm(instance=get_obj)
+        form = master_setup_forms.UserSetupUpdateForm(instance=get_obj)
         if request.method == "POST":
-            form = master_setup_forms.UserSetupForm(request.POST, instance=get_obj)
+            form = master_setup_forms.UserSetupUpdateForm(request.POST, instance=get_obj)
             if form.is_valid():
                 instance = form.save(commit=False)
                 instance.user_type = 'pos'
@@ -115,6 +124,19 @@ def pos_user_delete_view(request, pk):
     user.delete()
     messages.success(request, f'User "{user.name}" removed.')
     return redirect('pos_user_list_url')
+
+@login_required
+def pos_user_search_view(request):
+    search_text = request.GET.get('search_text').strip()
+    user_obj = User.objects.filter(user_type='pos').order_by('-id')
+    obj_list = user_obj.filter(
+        Q(name__icontains=search_text)|
+        Q(email__icontains=search_text)|
+        Q(phone__icontains=search_text)|
+        Q(gender__icontains=search_text)|
+        Q(pos_branch__name__icontains=search_text)
+    )
+    return render(request, 'pos/master_setup/user/search.html', {'obj_list': obj_list})
 
 
 # CUSTOMER SETUP
@@ -178,3 +200,16 @@ def pos_customer_delete_view(request, pk):
     customer.delete()
     messages.success(request, f'Customer "{customer.name}" removed.')
     return redirect('pos_customer_index_url')
+
+@login_required
+def pos_customer_search_view(request):
+    search_text = request.GET.get('search_text').strip()
+    customer_obj = pos_models.Customer.objects.all().order_by('-id')
+    obj_list = customer_obj.filter(
+        Q(name__icontains=search_text)|
+        Q(email__icontains=search_text)|
+        Q(phone__icontains=search_text)|
+        Q(address__icontains=search_text)|
+        Q(branch__name__icontains=search_text)
+    )
+    return render(request, 'pos/master_setup/customer/search.html', {'obj_list': obj_list})

@@ -69,6 +69,8 @@ class User(AbstractUser):
     category = models.ManyToManyField("admin_app.Categories", related_name='user_category', blank=True)
     user_type = models.CharField(max_length=100, choices=USER_TYPE_CHOICES, blank=True, null=True)
     pos_role = models.CharField(max_length=100, choices=POS_ROLE_CHOICES, blank=True, null=True)
+    joining_date = models.DateField(blank=True, null=True)
+    active_status = models.BooleanField(default=True)
     pos_branch = models.ForeignKey(pos_models.BrachName, related_name='pos_user_branch', on_delete=models.CASCADE, blank=True, null=True)
 
     USERNAME_FIELD = 'email'

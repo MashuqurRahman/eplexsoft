@@ -5,6 +5,20 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'assets/css/pos/master_setup/branch_create.css' %}">
+<style>
+  .search-bar{
+    display:flex;align-items:center;gap:8px;
+    background:#fff;border:1px solid #B9B19E;
+    border-radius: 4px;padding:9px 12px;
+    flex:1;min-width:220px;
+  }
+  .search-bar .sic{color:#5B6B69;font-size:13px;}
+  .search-bar input{
+    border:none;background:transparent;outline:none;flex:1;
+    font-size:13.5px;font-family:inherit;color: #1C2B2A;
+  }
+  .search-bar input::placeholder{color:#5B6B69;}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -19,15 +33,18 @@
         </div>
         <div class="count-note" id="countNote">{{ branch_count }} branch(es)</div>
       </div>
-      <div class="header-actions">
-        <button class="btn btn-primary" type="button" onclick="scrollToForm()">＋ Add Branch</button>
-      </div>
+    </div>
+
+    <div class="search-bar mb-3">
+      <span class="sic">🔍</span>
+      <input type="text" id="branchSearchInput" placeholder="Search branch by name, contact number or address..." autocomplete="off">
     </div>
 
     <div class="kpi-grid">
       <div class="kpi-card"><div class="lbl">Total Branches</div><div class="val" id="kpiBranches">{{ branch_count }}</div></div>
-      <div class="kpi-card"><div class="lbl">Staff Assigned</div><div class="val" id="kpiStaff">{{ staff_assigned_count }}</div></div>
-      <div class="kpi-card"><div class="lbl">Unassigned Branches</div><div class="val" id="kpiUnassigned">{{ unassigned_count }}</div></div>
+      <a href="{% url 'pos_user_list_url' %}" style="text-decoration: none; color: black;"><div class="kpi-card"><div class="lbl">Total Users</div><div class="val" id="kpiStaff">{{ pos_user_count }}</div></div></a>
+      <div class="kpi-card"><div class="lbl">Active Branches</div><div class="val" id="kpiUnassigned">{{ active_brance_count }}</div></div>
+      <div class="kpi-card"><div class="lbl">Inactive Branches</div><div class="val" id="kpiUnassigned">{{ inactive_brance_count }}</div></div>
     </div>
 
     <div class="section-label">Every physical location this merchant sells from</div>
@@ -37,7 +54,7 @@
             {% csrf_token %}
             <input type="hidden" name="branch_id" value="{{ edit_branch.id|default:'' }}">
 
-            <div class="panel-outer" id="branchPanel">
+            <div class="panel-outer py-3" id="branchPanel">
                 <div class="panel-head">
                     <h4 id="branchPanelTitle">{% if edit_branch %}Edit Branch{% else %}Add Branch{% endif %}</h4>
                     <button class="cancel-edit" id="cancelEditBtn" type="button" style="{% if not edit_branch %}display:none;{% endif %}" onclick="cancelEdit()">Cancel edit</button>
@@ -51,6 +68,14 @@
                 <div class="mini-row">
                     <input type="text" name="contact_no" id="bContact" placeholder="Contact number" value="{{ form.contact_no.value|default_if_none:'' }}">
                 </div>
+                {% if edit_branch %}
+                <div class="mini-row">
+                    <select name="active_status" id="bStatus">
+                        <option value="True" {% if form.active_status.value %}selected{% endif %}>Active</option>
+                        <option value="False" {% if not form.active_status.value %}selected{% endif %}>Inactive</option>
+                    </select>
+                </div>
+                {% endif %}
 
                 <button class="btn-save" name="save_branch" id="branchSaveBtn" type="submit">
                     {% if edit_branch %}Update Branch{% else %}Save Branch{% endif %}
@@ -63,7 +88,7 @@
             </div>
         </form>
 
-        <div class="panel-outer">
+        {% comment %} <div class="panel-outer">
             <div class="panel-head">
                 <h4>Assign Staff</h4>
             </div>
@@ -86,14 +111,25 @@
             </div>
             <button class="btn-save" type="button" onclick="showToast('Staff assignment isn\'t wired up yet.')">Assign to Branch</button>
             <p class="helper-text">Enter the user's staff ID (e.g. USR-1042) or their login email. They'll get access scoped to the selected branch.</p>
-        </div>
+        </div> {% endcomment %}
     </div>
 
     <div class="branch-grid" id="branchGrid">
       {% for branch in branches %}
-      <div class="branch-card {% if branch.is_main %}primary{% endif %} {% if edit_branch.id == branch.id %}editing{% endif %}">
+      <div class="branch-card {% if branch.is_main %}primary{% endif %} {% if edit_branch.id == branch.id %}editing{% endif %}"
+           data-name="{{ branch.name|lower }}"
+           data-address="{{ branch.address|default:''|lower }}"
+           data-contact="{{ branch.contact_no|default:'' }}">
         {% if branch.is_main %}<span class="badge">Main</span>{% endif %}
-        <div class="bname">{{ branch.name }}</div>
+
+        <div class="bname">{{ branch.name }}
+          {% if branch.active_status == True %}
+          <span style="color: green;">(Active)</span>
+          {% else %}
+          <span style="color: red;">(Inactive)</span>
+          {% endif %}
+        </div>
+
         <div class="baddr">📍 {{ branch.address }}</div>
         <div class="brow"><span>Contact No.</span><span>{{ branch.contact_no|default:"—" }}</span></div>
         <div class="brow"><span>Staff (0)</span><span></span></div>
@@ -112,6 +148,8 @@
       {% empty %}
       <div class="empty-note">No branches yet — add your first one below.</div>
       {% endfor %}
+
+      <div class="empty-note" id="branchNoMatch" style="display:none;">No branches match your search.</div>
     </div>
 
 
@@ -126,6 +164,33 @@
       window.SERVER_TOAST = "{{ message|escapejs }}";
     {% endif %}
   {% endfor %}
+
+  /* ===== Branch grid search filter ===== */
+  (function () {
+    const input = document.getElementById('branchSearchInput');
+    const grid = document.getElementById('branchGrid');
+    const cards = Array.from(grid.querySelectorAll('.branch-card'));
+    const noMatch = document.getElementById('branchNoMatch');
+
+    if (!input || !cards.length) return;
+
+    input.addEventListener('input', function () {
+      const query = input.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach(function (card) {
+        const name = card.dataset.name || '';
+        const address = card.dataset.address || '';
+        const contact = card.dataset.contact || '';
+        const matches = !query || name.includes(query) || address.includes(query) || contact.includes(query);
+
+        card.style.display = matches ? '' : 'none';
+        if (matches) visibleCount++;
+      });
+
+      noMatch.style.display = visibleCount === 0 ? '' : 'none';
+    });
+  })();
 </script>
 {% endblock %}
 

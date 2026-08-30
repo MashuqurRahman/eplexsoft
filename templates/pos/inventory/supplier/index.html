@@ -19,13 +19,13 @@
   <div class="toolbar">
     <div class="search-bar">
       <span class="sic">🔍</span>
-      <input type="text" placeholder="Search suppliers by name, category, or phone…">
+      <input type="text" id="supplierSearchInput" placeholder="Search suppliers by name, or phone…" autocomplete="off">
     </div>
-    <div class="filter-chips">
+    {% comment %} <div class="filter-chips">
       <span class="filter-chip active">All</span>
       <span class="filter-chip">Payable Due</span>
       <span class="filter-chip">Cleared</span>
-    </div>
+    </div> {% endcomment %}
     <div class="toolbar-actions">
       <button class="btn" onclick="toast('Opening purchase order history…')">📄 Order History</button>
       <a href="{% url 'supplier_create_url' %}" style="text-decoration: none;"><button class="btn btn-primary">＋ Add Supplier</button></a>
@@ -35,23 +35,25 @@
   <!-- ================= KPI CARDS ================= -->
   <div class="section-label">Overview</div>
   <div class="kpi-grid">
-    <div class="kpi-card payable">
-      <div class="ic">💸</div>
-      <div class="lbl">Total Payable</div>
-      <div class="val">৳ 64,200</div>
-      <div class="trend">Across 4 suppliers</div>
-    </div>
-    
+    <a href="{% url 'supplier_due_index_url' %}" style="text-decoration: none; color: black;">
+      <div class="kpi-card payable">
+        <div class="ic">💸</div>
+        <div class="lbl">Total Payable</div>
+        <div class="val">৳ 64,200</div>
+        <div class="trend">Across {{ supplier_obj|length }} suppliers</div>
+      </div>
+    </a>
+
     <a href="{% url 'supplier_list_url' %}" style="text-decoration: none; color: black;">
       <div class="kpi-card suppliers">
         <div class="ic">🤝</div>
         <div class="lbl">Suppliers</div>
-        <div class="val">{{supplier_obj|length}}</div>
+        <div class="val">{{ supplier_obj|length }}</div>
         <div class="trend">0 added this month</div>
       </div>
     </a>
 
-    <div class="kpi-card pos">
+    {% comment %} <div class="kpi-card pos">
       <div class="ic">📦</div>
       <div class="lbl">Pending Orders</div>
       <div class="val">3</div>
@@ -62,20 +64,23 @@
       <div class="lbl">Next Payment Due</div>
       <div class="val">Aug 8</div>
       <div class="trend">Karim Traders — ৳ 22,000</div>
-    </div>
+    </div> {% endcomment %}
   </div>
 
   <!-- ================= SUPPLIER CARDS ================= -->
-  <div class="section-label">Your Suppliers <span class="count">{{ suppliers|length }} total</span></div>
+  <div class="section-label">Your Suppliers <span class="count">{{ supplier_obj|length }} total</span></div>
 
   <div class="supplier-grid" id="supplierGrid">
     {% for s in supplier_obj %}
-      <div class="supplier-card">
+      <div class="supplier-card"
+           data-name="{{ s.name|lower }}"
+           data-phone="{{ s.phone|default:'' }}"
+           data-cat="{{ s.cat|default:''|lower }}">
         <div class="supplier-top">
-          <div class="supplier-avatar" style="background:{{ s.color }};">{{ s.init }}</div>
+          <div class="supplier-avatar" style="background: #0A4640;">{{ s.name|slice:":2"|upper }}</div>
           <div class="supplier-info">
             <div class="name">{{ s.name }}</div>
-            <div class="cat">{{ s.cat }}</div>
+            <div class="cat">{{ s.branch|default:"Branch not found" }}</div>
           </div>
           <div class="supplier-status {{ s.status }}">
             {% if s.status == 'good' %}Cleared
@@ -86,7 +91,7 @@
         </div>
 
         <div class="supplier-meta">
-          <span class="payable-lbl">Payable · Last order {{ s.last_order }}</span>
+          <span class="payable-lbl">Contact No. {{ s.phone }}</span>
           <span class="payable-val {% if s.payable == 0 %}clear{% endif %}">
             {% if s.payable == 0 %}৳ 0{% else %}৳ {{ s.payable|floatformat:0 }}{% endif %}
           </span>
@@ -100,12 +105,19 @@
     {% empty %}
       <div class="empty-state">No suppliers yet. Click "Add Supplier" to create one.</div>
     {% endfor %}
+
+    <div class="empty-state" id="supplierNoMatch" style="display:none;">No suppliers match your search.</div>
   </div>
 
 
 </div>
 
 <div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
 
 <script>
   {% for message in messages %}
@@ -117,7 +129,7 @@
   function confirmDeleteUser(event, url, userName) {
     event.preventDefault();
     Swal.fire({
-      title: 'Remove user?',
+      title: 'Are you sure?',
       html: 'This will remove <strong>' + userName + '</strong>. This cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
@@ -132,10 +144,32 @@
     });
     return false;
   }
-</script>
-{% endblock %}
 
-{% block extra_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
+  /* ===== Supplier grid search filter ===== */
+  (function () {
+    const input = document.getElementById('supplierSearchInput');
+    const grid = document.getElementById('supplierGrid');
+    const cards = Array.from(grid.querySelectorAll('.supplier-card'));
+    const noMatch = document.getElementById('supplierNoMatch');
+
+    if (!input || !cards.length) return;
+
+    input.addEventListener('input', function () {
+      const query = input.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach(function (card) {
+        const name = card.dataset.name || '';
+        const phone = card.dataset.phone || '';
+        const cat = card.dataset.cat || '';
+        const matches = !query || name.includes(query) || phone.includes(query) || cat.includes(query);
+
+        card.style.display = matches ? '' : 'none';
+        if (matches) visibleCount++;
+      });
+
+      noMatch.style.display = visibleCount === 0 ? '' : 'none';
+    });
+  })();
+</script>
 {% endblock %}
