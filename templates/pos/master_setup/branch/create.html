@@ -18,6 +18,11 @@
     font-size:13.5px;font-family:inherit;color: #1C2B2A;
   }
   .search-bar input::placeholder{color:#5B6B69;}
+
+  .kpi-card.kpi-selected{
+    border-color: var(--teal, #0A4640);
+    box-shadow: 0 0 0 2px var(--teal-tint, #E4EFEC);
+  }
 </style>
 {% endblock %}
 
@@ -41,10 +46,16 @@
     </div>
 
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="lbl">Total Branches</div><div class="val" id="kpiBranches">{{ branch_count }}</div></div>
+      <div class="kpi-card" id="kpiTotalCard" onclick="filterByStatus('all')" style="cursor:pointer;">
+        <div class="lbl">Total Branches</div><div class="val" id="kpiBranches">{{ branch_count }}</div>
+      </div>
       <a href="{% url 'pos_user_list_url' %}" style="text-decoration: none; color: black;"><div class="kpi-card"><div class="lbl">Total Users</div><div class="val" id="kpiStaff">{{ pos_user_count }}</div></div></a>
-      <div class="kpi-card"><div class="lbl">Active Branches</div><div class="val" id="kpiUnassigned">{{ active_brance_count }}</div></div>
-      <div class="kpi-card"><div class="lbl">Inactive Branches</div><div class="val" id="kpiUnassigned">{{ inactive_brance_count }}</div></div>
+      <div class="kpi-card" id="kpiActiveCard" onclick="filterByStatus('active')" style="cursor:pointer;">
+        <div class="lbl">Active Branches</div><div class="val" id="kpiUnassigned">{{ active_brance_count }}</div>
+      </div>
+      <div class="kpi-card" id="kpiInactiveCard" onclick="filterByStatus('inactive')" style="cursor:pointer;">
+        <div class="lbl">Inactive Branches</div><div class="val" id="kpiUnassignedInactive">{{ inactive_brance_count }}</div>
+      </div>
     </div>
 
     <div class="section-label">Every physical location this merchant sells from</div>
@@ -119,7 +130,8 @@
       <div class="branch-card {% if branch.is_main %}primary{% endif %} {% if edit_branch.id == branch.id %}editing{% endif %}"
            data-name="{{ branch.name|lower }}"
            data-address="{{ branch.address|default:''|lower }}"
-           data-contact="{{ branch.contact_no|default:'' }}">
+           data-contact="{{ branch.contact_no|default:'' }}"
+           data-status="{% if branch.active_status %}active{% else %}inactive{% endif %}">
         {% if branch.is_main %}<span class="badge">Main</span>{% endif %}
 
         <div class="bname">{{ branch.name }}
@@ -165,31 +177,62 @@
     {% endif %}
   {% endfor %}
 
-  /* ===== Branch grid search filter ===== */
+  /* ===== Branch grid: search + status filter (combined) ===== */
   (function () {
     const input = document.getElementById('branchSearchInput');
     const grid = document.getElementById('branchGrid');
     const cards = Array.from(grid.querySelectorAll('.branch-card'));
     const noMatch = document.getElementById('branchNoMatch');
 
-    if (!input || !cards.length) return;
+    let currentStatus = 'all';
 
-    input.addEventListener('input', function () {
-      const query = input.value.trim().toLowerCase();
+    function applyFilters() {
+      const query = (input.value || '').trim().toLowerCase();
       let visibleCount = 0;
 
       cards.forEach(function (card) {
         const name = card.dataset.name || '';
         const address = card.dataset.address || '';
         const contact = card.dataset.contact || '';
-        const matches = !query || name.includes(query) || address.includes(query) || contact.includes(query);
+        const status = card.dataset.status || '';
 
-        card.style.display = matches ? '' : 'none';
-        if (matches) visibleCount++;
+        const matchesQuery = !query || name.includes(query) || address.includes(query) || contact.includes(query);
+        const matchesStatus = currentStatus === 'all' || status === currentStatus;
+        const visible = matchesQuery && matchesStatus;
+
+        card.style.display = visible ? '' : 'none';
+        if (visible) visibleCount++;
       });
 
       noMatch.style.display = visibleCount === 0 ? '' : 'none';
-    });
+    }
+
+    function updateActiveKpi() {
+      document.getElementById('kpiTotalCard').classList.remove('kpi-selected');
+      document.getElementById('kpiActiveCard').classList.remove('kpi-selected');
+      document.getElementById('kpiInactiveCard').classList.remove('kpi-selected');
+
+      if (currentStatus === 'active') {
+        document.getElementById('kpiActiveCard').classList.add('kpi-selected');
+      } else if (currentStatus === 'inactive') {
+        document.getElementById('kpiInactiveCard').classList.add('kpi-selected');
+      } else {
+        document.getElementById('kpiTotalCard').classList.add('kpi-selected');
+      }
+    }
+
+    window.filterByStatus = function (status) {
+      // clicking the already-active filter again resets to 'all'
+      currentStatus = (currentStatus === status && status !== 'all') ? 'all' : status;
+      updateActiveKpi();
+      applyFilters();
+    };
+
+    if (input) {
+      input.addEventListener('input', applyFilters);
+    }
+
+    updateActiveKpi();
   })();
 </script>
 {% endblock %}

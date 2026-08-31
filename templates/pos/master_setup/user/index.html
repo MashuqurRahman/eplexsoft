@@ -105,7 +105,7 @@
               <td>{{ obj.get_pos_role_display }}</td>
               <td>{{ obj.pos_branch }}</td>
               <td>{{ obj.joining_date }}</td>
-              <td>{{ obj.active_status }}</td>
+              <td>{% if obj.active_status %}Active {% else %} Inactive {% endif %}</td>
               <td>
                 <div class="action-cell">
                   <a class="edit-btn" href="{% url 'pos_user_update_url' obj.id %}" title="Edit">
