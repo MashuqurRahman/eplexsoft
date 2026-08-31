@@ -19,7 +19,7 @@
             <p class="brand-note">What each person on user can do, branch by branch.</p>
         </div>
 
-        <section class="staff-layout">
+        <section class="staff-layout{% if selected_user %} has-selection{% endif %}" id="staffLayout">
 
             <aside class="staff-rail">
                 <form method="get" action="{% url 'pos_user_permission_url' %}">
@@ -31,7 +31,7 @@
                         </option>
                         {% endfor %}
                     </select>
-                    <input type="text" name="q" class="staff-rail-search" placeholder="Search name, ID, or email"
+                    <input type="text" name="q" id="staffSearchInput" class="staff-rail-search" placeholder="Search name, ID, or email"
                         value="{{ search_query }}">
                     <button type="submit" class="search-btn" style="width:100%;margin-bottom:10px;">Search</button>
                 </form>
@@ -64,7 +64,7 @@
                         </span>
                         <div>
                             <div class="profile-name">{{ selected_user.name|default:selected_user.email }}</div>
-                            <div class="profile-meta">{{ selected_user.email }} · {{ selected_user.pos_branch.name|default:"No branch" }}</div>
+                            <div class="profile-meta"> {{ selected_user.pos_branch.name|default:"No branch" }}</div>
                             <span class="role-chip" style="background:var(--clay-tint);color:var(--clay)">
                                 <span class="dot" style="background:var(--clay)"></span>{{ selected_user.get_pos_role_display }}
                             </span>
@@ -143,6 +143,21 @@
     });
 
     syncSelectAllState();
+  })();
+
+  /* ===== Mobile: hide staff list once a user is selected, ===== */
+  /* ===== reveal it again when the search box is used       ===== */
+  (function () {
+    const layout = document.getElementById('staffLayout');
+    const searchInput = document.getElementById('staffSearchInput');
+    if (!layout || !searchInput) return;
+
+    function revealList() {
+      layout.classList.add('show-list');
+    }
+
+    searchInput.addEventListener('focus', revealList);
+    searchInput.addEventListener('input', revealList);
   })();
 </script>
 {% endblock %}

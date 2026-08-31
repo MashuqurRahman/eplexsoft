@@ -16,20 +16,21 @@ class SupplierForm(forms.ModelForm):
         self.fields['branch'].empty_label = "--SELECT--"
 
     def clean_email(self):
-        email = self.cleaned_data.get("email", "").strip()
-        if not email:
-            return email
-        qs = pos_models.Supplier.objects.filter(email__iexact=email)
-        if self.instance.pk:
-            qs = qs.exclude(pk=self.instance.pk)
-        if qs.exists():
-            raise forms.ValidationError("This email already exists.")
+        if self.instance.email:
+            email = self.cleaned_data.get("email", "").strip()
+            if not email:
+                return email
+            qs = pos_models.Supplier.objects.filter(email__iexact=email)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError("This email already exists.")
  
-        return email
+            return email
 
     def clean_phone(self):
         phone = self.cleaned_data["phone"].strip()
-        if not re.fullmatch(r'[0-9+\-]+', phone):
+        if not re.fullmatch(r'[0-9০-৯+\-]+', phone):
             raise forms.ValidationError("Phone number can only contain digits")
  
         qs = pos_models.Supplier.objects.filter(phone=phone)

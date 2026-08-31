@@ -23,7 +23,10 @@ def branch_setup_view(request):
 
         form = master_setup_forms.BranchForm(request.POST, instance=instance)
         if form.is_valid():
-            form.save()
+            branch = form.save(commit=False)
+            if not branch_id:
+                branch.active_status = True
+            branch.save()
             messages.success(request, "Branch updated." if branch_id else "Branch added.")
             return redirect("branch_setup_url")
         else:

@@ -40,7 +40,7 @@ class BranchForm(forms.ModelForm):
 
     def clean_phone(self):
         phone = self.cleaned_data["phone"].strip()
-        if not re.fullmatch(r'[0-9+\-]+', phone):
+        if not re.fullmatch(r'[0-9০-৯+\-]+', phone):
             raise forms.ValidationError("Phone number can only contain digits")
  
         qs = pos_models.BrachName.objects.filter(phone=phone)
@@ -80,7 +80,7 @@ class UserSetupForm(forms.ModelForm):
 
     def clean_phone(self):
         phone = self.cleaned_data["phone"].strip()
-        if not re.fullmatch(r'[0-9+\-]+', phone):
+        if not re.fullmatch(r'[0-9০-৯+\-]+', phone):
             raise forms.ValidationError("Phone number can only contain digits")
     
         qs = User.objects.filter(phone=phone)
@@ -118,7 +118,7 @@ class UserSetupUpdateForm(forms.ModelForm):
 
     def clean_phone(self):
         phone = self.cleaned_data["phone"].strip()
-        if not re.fullmatch(r'[0-9+\-]+', phone):
+        if not re.fullmatch(r'[0-9০-৯+\-]+', phone):
             raise forms.ValidationError("Phone number can only contain digits")
     
         qs = User.objects.filter(phone=phone)
@@ -165,7 +165,7 @@ class CustomerSetupForm(forms.ModelForm):
 
     def clean_phone(self):
         phone = self.cleaned_data["phone"].strip()
-        if not re.fullmatch(r'[0-9+\-]+', phone):
+        if not re.fullmatch(r'[0-9০-৯+\-]+', phone):
             raise forms.ValidationError("Phone number can only contain digits")
     
         qs = pos_models.Customer.objects.filter(phone=phone)
