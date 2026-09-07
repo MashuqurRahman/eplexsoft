@@ -44,6 +44,8 @@ class SubCategoriesForm(forms.ModelForm):
         role = kwargs.pop('role', None)
         super().__init__(*args, **kwargs)
         self.fields['categories'].empty_label = "--SELECT--"
+        self.fields['column'].required = True
+        self.fields['position'].required = True
         category_ids = admin_dashboard_models.EmployeeCategories.objects.filter(employee=user, employee__role=role).values_list('category', flat=True)
         if role == 'section_admin' or role == 'employee':
             self.fields['categories'].queryset = admin_dashboard_models.Categories.objects.filter(id__in=list(category_ids))

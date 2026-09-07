@@ -36,8 +36,8 @@ class Categories(models.Model):
 class SubCategories(models.Model):
     categories = models.ForeignKey(Categories, on_delete=models.PROTECT, related_name='sub_categories')
     sub_cat_name = models.CharField(max_length=250)
-    column = models.CharField(max_length=10, choices=COLUMN_CHOICES)
-    position = models.PositiveIntegerField()
+    column = models.CharField(max_length=10, choices=COLUMN_CHOICES, blank=True, null=True)
+    position = models.PositiveIntegerField(blank=True, null=True)
     has_sub_sub_cat = models.BooleanField(default=False)
     image = models.ImageField(upload_to='sub_categories/',blank=True,null=True)
     description = models.TextField(blank=True, null=True)

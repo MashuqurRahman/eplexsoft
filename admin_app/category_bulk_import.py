@@ -7,6 +7,8 @@ from .bulk_import_common import RowError, ImageResolver, _clean, display_row_num
 SUB_CATEGORIES_SHEET_NAMES = ["Sub Categories", "Category_Subcategory"]
 SUB_SUB_CATEGORIES_SHEET_NAMES = ["Sub Sub Categories"]
 
+TRUTHY_VALUES = {"yes", "y", "true", "1", "x"}
+
 
 def _find_sheet(wb, candidate_names):
     for name in candidate_names:
@@ -32,6 +34,27 @@ def _cell(row, idx):
     if idx is None or idx >= len(row):
         return None
     return row[idx]
+
+
+def _clean_or_none(value):
+    text = _clean(value)
+    return text or None
+
+
+def _clean_position(value):
+    if value is None or _clean(value) == "":
+        return None
+    try:
+        pos = int(value)
+    except (TypeError, ValueError):
+        return None
+    return pos if pos >= 0 else None
+
+
+def _clean_bool(value, default=False):
+    if value is None or _clean(value) == "":
+        return default
+    return _clean(value).lower() in TRUTHY_VALUES
 
 
 def _resolve_optional_image(resolver, value, sheet_name, row_num, name_for_message, result):
@@ -119,6 +142,9 @@ def run_category_bulk_import(excel_file, images_zip_file=None):
             "sub": ["sub category name", "sub category", "subcategory"],
             "description": ["description"],
             "image": ["image"],
+            "column": ["column"],
+            "position": ["position"],
+            "has_sub_sub_cat": ["has sub sub cat", "has sub sub category"],
             "sl": ["sl", "sl no", "sl no.", "sl.", "serial no", "serial number"],
         })
         cat_idx = cols["category"] if cols["category"] is not None else 0
@@ -132,6 +158,9 @@ def run_category_bulk_import(excel_file, images_zip_file=None):
             sub_name = _clean(_cell(row, sub_idx))
             description = _clean(_cell(row, cols["description"]))
             image_value = _cell(row, cols["image"])
+            column_value = _clean_or_none(_cell(row, cols["column"]))
+            position_value = _clean_position(_cell(row, cols["position"]))
+            has_sub_sub_cat_value = _clean_bool(_cell(row, cols["has_sub_sub_cat"]), default=False)
 
             if not cat_name or not sub_name:
                 result["errors"].append({"sheet": "Sub Categories", "row": display_row, "field": "Category/Sub Category Name", "message": "Both Category Name and Sub Category Name are required"})
@@ -146,7 +175,12 @@ def run_category_bulk_import(excel_file, images_zip_file=None):
                 obj, created = SubCategories.objects.get_or_create(
                     categories=category,
                     sub_cat_name=sub_name,
-                    defaults={"description": description or None},
+                    defaults={
+                        "description": description or None,
+                        "column": column_value,
+                        "position": position_value,
+                        "has_sub_sub_cat": has_sub_sub_cat_value,
+                    },
                 )
                 if created:
                     image_file = _resolve_optional_image(resolver, image_value, "Sub Categories", display_row, sub_name, result)
