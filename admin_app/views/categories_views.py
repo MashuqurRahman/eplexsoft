@@ -50,6 +50,7 @@ def bulk_upload_categories_view(request):
             images_zip = request.FILES.get('images_zip')
             if not excel_file:
                 form_error = "Please select an Excel (.xlsx) file."
+                
             elif not excel_file.name.lower().endswith('.xlsx'):
                 form_error = "Only .xlsx files can be uploaded."
             else:
