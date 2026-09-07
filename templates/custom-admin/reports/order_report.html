@@ -86,7 +86,8 @@
                     <td>{{ order.order_no }}</td>
                     <td>{{ order.order_wise_products }}</td>
                     <td>{{ order.order_wise_buying_price }}</td>
-                    <td>{{ order.order_wise_selling_price }}</td>
+                    <td>{{ order.sub_total_after_discount }}</td>
+                    {% comment %} <td>{{ order.order_wise_selling_price }}</td> {% endcomment %}
                     <td>{{ order.order_wise_profit }}</td>
                     <td>{{ order.shipping_charge }}</td>
                     <td>{{ order.total_vat_gst_amount }}</td>
