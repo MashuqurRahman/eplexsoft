@@ -9,6 +9,13 @@ admin.site.register(admin_dashboard_models.Categories)
 admin.site.register(admin_dashboard_models.SubCategories)
 admin.site.register(admin_dashboard_models.SubSubCategories)
 admin.site.register(admin_dashboard_models.Product)
+admin.site.register(admin_dashboard_models.ProductVarient)
+admin.site.register(admin_dashboard_models.ProductAttribute)
+admin.site.register(admin_dashboard_models.ProductAttributeImage)
+admin.site.register(admin_dashboard_models.Brand)
+admin.site.register(admin_dashboard_models.Color)
+admin.site.register(admin_dashboard_models.Size)
+admin.site.register(admin_dashboard_models.Unit)
 
 @admin.register(admin_dashboard_models.SteadfastConsignment)
 class SteadfastConsignmentAdmin(admin.ModelAdmin):
