@@ -14,6 +14,7 @@ urlpatterns = [
 
     # CATEGORIES URLS
     path('categories-list/', categories_views.categories_index_view, name='categories_list_url'),
+    path('upload-categories/', categories_views.bulk_upload_categories_view, name='bulk_upload_categories_url'),
     path('add-categories/', categories_views.add_categories_view, name='add_categories_url'),
     path('edit-categories/<int:pk>/', categories_views.update_categories_view, name='edit_categories_url'),
     path('delete-categories/<int:pk>/', categories_views.delete_categories_view, name='delete_categories_url'),
@@ -35,6 +36,9 @@ urlpatterns = [
 
     # PRODUCTS URLS
     path('products-list/', products_views.product_list_index_view, name='products_list_url'),
+    path('upload-products/', products_views.bulk_upload_products_view, name='bulk_upload_products_url'),
+    path('bulk-approve-products/', products_views.bulk_approve_products_view, name='bulk_approve_products_url'),
+    path('repair-missing-cover-images/', products_views.repair_missing_cover_images_view, name='repair_missing_cover_images_url'),
     path('add-products/', products_views.add_product_view, name='add_product_url'),
     path('products-details/<int:pk>/', products_views.product_details_view, name='product_details_url'),
     path('update-products/<int:pk>/', products_views.update_product_view, name='update_product_url'),

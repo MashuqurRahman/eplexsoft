@@ -1,0 +1,150 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% block title %}Bulk Upload{% endblock  %}
+{% block Style %}
+<style>
+.summary-cards{ display:flex; gap:14px; flex-wrap:wrap; margin: 18px 0; }
+.summary-card{ background:#fff; border:1px solid #e4e8ef; border-radius:10px; padding:14px 18px; flex:1; min-width:150px; }
+.summary-card .n{ font-size:24px; font-weight:700; }
+.summary-card .l{ font-size:12px; color:#888; text-transform:uppercase; letter-spacing:.3px; }
+.summary-card.ok .n{ color:#1a9c6a; }
+.summary-card.warn .n{ color:#c98a00; }
+.hint-text{ font-size:13px; color:#777; margin-top:6px; }
+</style>
+{% endblock Style %}
+{% block content %}
+
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% if form_error %}
+        <div class="alert alert-danger">{{ form_error }}</div>
+    {% endif %}
+<section class="boxs">
+    <h6 class="subtitle">Bulk Upload — Category / Sub Category / Sub Sub Category</h6>
+    <hr>
+
+    
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label>Upload Excel (.xlsx) <span class="text-danger">*</span></label>
+                <input type="file" name="excel_file" id="id_excel_file" class="form-control" accept=".xlsx" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label>Images (.zip)</label>
+                <input type="file" name="images_zip" class="form-control" accept=".zip">
+            </div>
+        </div>
+        <div class="text-center pt-3 pb-2">
+            <button type="submit" class="btn add-btn">Upload &amp; Import</button>
+        </div>
+    </form>
+
+    {% if result %}
+
+    {% if result.sheets_missing %}
+    <div class="alert alert-warning">
+        The following sheet(s) were not found in your Excel file, so that part wasn't imported: <b>{{ result.sheets_missing|join:", " }}</b>.
+        Sheets found in your file: {{ result.sheets_found|join:", " }}. Fix the sheet names (or copy from the template) and upload again.
+    </div>
+    {% endif %}
+
+    <div class="summary-cards">
+        <div class="summary-card ok"><div class="n">{{ result.cat_created }}</div><div class="l">Categories Created</div></div>
+        <div class="summary-card"><div class="n">{{ result.cat_existing }}</div><div class="l">Categories Already Existed</div></div>
+        <div class="summary-card ok"><div class="n">{{ result.sub_created }}</div><div class="l">Sub Categories Created</div></div>
+        <div class="summary-card"><div class="n">{{ result.sub_existing }}</div><div class="l">Sub Categories Already Existed</div></div>
+        <div class="summary-card ok"><div class="n">{{ result.subsub_created }}</div><div class="l">Sub Sub Categories Created</div></div>
+        <div class="summary-card"><div class="n">{{ result.subsub_existing }}</div><div class="l">Sub Sub Categories Already Existed</div></div>
+        <div class="summary-card {% if result.total_skipped_errors %}warn{% endif %}">
+            <div class="n">{{ result.total_skipped_errors }}</div>
+            <div class="l">Skipped / Errors</div>
+        </div>
+        <div class="summary-card {% if result.image_warnings %}warn{% endif %}">
+            <div class="n">{{ result.image_warnings|length }}</div>
+            <div class="l">Image Warnings</div>
+        </div>
+    </div>
+
+    {% if result.image_warnings %}
+    <h6 class="subtitle mt-4">Image Warnings (category was created, but the image was skipped)</h6>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead><tr><th>Sheet</th><th>Row</th><th>Name</th><th>Problem</th></tr></thead>
+            <tbody>
+                {% for w in result.image_warnings %}
+                <tr><td>{{ w.sheet }}</td><td>{{ w.row }}</td><td>{{ w.name }}</td><td>{{ w.message }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if result.errors %}
+    <h6 class="subtitle mt-4">Row-level errors</h6>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead><tr><th>Sheet</th><th>Row</th><th>Field</th><th>Problem</th></tr></thead>
+            <tbody>
+                {% for e in result.errors %}
+                <tr><td>{{ e.sheet }}</td><td>{{ e.row }}</td><td>{{ e.field }}</td><td>{{ e.message }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if result.sub_skipped %}
+    <h6 class="subtitle mt-4">Skipped Sub Categories (Category not found)</h6>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead><tr><th>Sub Category Name</th><th>Expected Category Name</th></tr></thead>
+            <tbody>
+                {% for s in result.sub_skipped %}
+                <tr><td>{{ s.subcategory }}</td><td>{{ s.category }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if result.subsub_skipped %}
+    <h6 class="subtitle mt-4">Skipped Sub Sub Categories (Sub Category not found)</h6>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead><tr><th>Sub Sub Category Name</th><th>Expected Category</th><th>Expected Sub Category</th></tr></thead>
+            <tbody>
+                {% for s in result.subsub_skipped %}
+                <tr><td>{{ s.sub_sub_category }}</td><td>{{ s.category }}</td><td>{{ s.subcategory }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% endif %}
+</section>
+{% endblock  %}
+
+{% block JS %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Uploading...";
+    });
+});
+</script>
+{% endblock  %}

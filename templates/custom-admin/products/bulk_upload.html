@@ -1,0 +1,116 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% block title %}Bulk Upload Products{% endblock  %}
+{% block Style %}
+<style>
+.summary-cards{ display:flex; gap:14px; flex-wrap:wrap; margin: 18px 0; }
+.summary-card{ background:#fff; border:1px solid #e4e8ef; border-radius:10px; padding:14px 18px; flex:1; min-width:150px; }
+.summary-card .n{ font-size:24px; font-weight:700; }
+.summary-card .l{ font-size:12px; color:#888; text-transform:uppercase; letter-spacing:.3px; }
+.summary-card.ok .n{ color:#1a9c6a; }
+.summary-card.warn .n{ color:#c98a00; }
+.hint-text{ font-size:13px; color:#777; margin-top:6px; }
+</style>
+{% endblock Style %}
+{% block content %}
+
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<section class="boxs">
+    <h6 class="subtitle">Bulk Upload — Products</h6>
+    <hr>
+
+    {% if form_error %}
+        <div class="alert alert-danger">{{ form_error }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label>Product Excel (.xlsx) <span class="text-danger">*</span></label>
+                <input type="file" name="excel_file" class="form-control" accept=".xlsx" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label>Images (.zip) — (Optional)</label>
+                <input type="file" name="images_zip" class="form-control" accept=".zip">
+            </div>
+        </div>
+        <div class="text-center pt-3 pb-2">
+            <button type="submit" class="btn add-btn">Upload &amp; Import</button>
+        </div>
+    </form>
+
+    {% if result %}
+
+    {% if result.sheets_missing %}
+    <div class="alert alert-warning">
+        The following sheet(s) were not found in your Excel file: <b>{{ result.sheets_missing|join:", " }}</b>.
+        The following sheet(s) were found in your Excel file: <b>{{ result.sheets_found|join:", " }}</b>.
+    </div>
+    {% endif %}
+
+    <div class="summary-cards">
+        <div class="summary-card ok"><div class="n">{{ result.product_created }}</div><div class="l">Products Created</div></div>
+        <div class="summary-card {% if result.product_errors %}warn{% endif %}"><div class="n">{{ result.product_errors|length }}</div><div class="l">Products Failed</div></div>
+        <div class="summary-card ok"><div class="n">{{ result.variant_created }}</div><div class="l">Variants Created</div></div>
+        <div class="summary-card {% if result.variant_errors %}warn{% endif %}"><div class="n">{{ result.variant_errors|length }}</div><div class="l">Variants Failed</div></div>
+    </div>
+
+    {% if result.product_created or result.variant_created %}
+    <a href="{% url 'products_list_url' %}" class="btn add-btn btn-sm">→ See Products List </a>
+    {% endif %}
+
+    {% if result.product_errors %}
+    <h6 class="subtitle mt-4">Product row errors</h6>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead><tr><th>Row</th><th>Product Key</th><th>Problem</th></tr></thead>
+            <tbody>
+                {% for e in result.product_errors %}
+                <tr><td>{{ e.row }}</td><td>{{ e.key }}</td><td>{{ e.message }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if result.variant_errors %}
+    <h6 class="subtitle mt-4">Variant row errors</h6>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead><tr><th>Row</th><th>Product Key</th><th>Problem</th></tr></thead>
+            <tbody>
+                {% for e in result.variant_errors %}
+                <tr><td>{{ e.row }}</td><td>{{ e.key }}</td><td>{{ e.message }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% endif %}
+</section>
+{% endblock  %}
+
+{% block JS %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Uploading...";
+    });
+});
+</script>
+{% endblock  %}

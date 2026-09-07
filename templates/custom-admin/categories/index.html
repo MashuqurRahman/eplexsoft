@@ -41,9 +41,14 @@
         <h6 class="subtitle mb-0">Categories List</h6>
 
         {% if request.user.is_superuser or request.user.role == 'central_admin' %}
-        <a href="{% url 'add_categories_url' %}" class="btn add-btn btn-sm">
-            <i class="fas fa-plus"></i> Add Category
-        </a>
+        <div>
+            <a href="{% url 'bulk_upload_categories_url' %}" class="btn add-btn btn-sm">
+                <i class="fas fa-file-excel"></i> Bulk Upload (Excel)
+            </a>
+            <a href="{% url 'add_categories_url' %}" class="btn add-btn btn-sm">
+                <i class="fas fa-plus"></i> Add Category
+            </a>
+        </div>
         {% endif %}
     </div>
     <hr>
