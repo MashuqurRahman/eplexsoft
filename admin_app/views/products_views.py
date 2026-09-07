@@ -6,6 +6,7 @@ from django.db import transaction
 from django.contrib import messages
 from ..models import admin_dashboard_models
 from ..forms import products_forms
+from ..product_bulk_import import run_product_bulk_import
 
 def format_form_errors(form):
     errors = []
@@ -13,6 +14,13 @@ def format_form_errors(form):
         for error in field_errors:
             errors.append(f"{field.replace('_', ' ').title()}: {error}")
     return errors
+
+def _can_bulk_approve(user):
+    return (
+        user.is_superuser
+        or user.role == 'central_admin'
+        or ("product_approval_permission" in user.user_permissions and user.role in ('section_admin', 'employee'))
+    )
 
 @login_required
 def product_list_index_view(request):
@@ -25,6 +33,10 @@ def product_list_index_view(request):
     else:
         return render(request, 'permission_denied.html')
 
+    approval_filter = request.GET.get('approval')
+    if approval_filter in ('approved', 'not_approved'):
+        obj_list = obj_list.filter(approval=approval_filter)
+
     page = request.GET.get('page')
     paginator = Paginator(obj_list, 30)
     try:
@@ -35,9 +47,85 @@ def product_list_index_view(request):
         obj_list = paginator.page(paginator.num_pages)
 
     context = {
-        'obj_list': obj_list
+        'obj_list': obj_list,
+        'can_bulk_approve': _can_bulk_approve(request.user),
     }
     return render(request, 'custom-admin/products/index.html', context)
+
+
+@login_required
+def repair_missing_cover_images_view(request):
+    if not (request.user.is_superuser or request.user.role == 'central_admin'):
+        return render(request, 'permission_denied.html')
+
+    fixed_count = 0
+    broken_products = admin_dashboard_models.Product.all_objects.filter(cover_product_attribute__isnull=True)
+    for product in broken_products:
+        attribute = (
+            admin_dashboard_models.ProductAttribute.objects.filter(product=product, is_cover=True).first()
+            or admin_dashboard_models.ProductAttribute.objects.filter(product=product).order_by('id').first()
+        )
+        if attribute:
+            attribute.is_cover = True
+            attribute.save() 
+            fixed_count += 1
+
+    if fixed_count:
+        messages.success(request, f"Cover Image fixed for {fixed_count} Product(s).")
+    else:
+        messages.success(request, "No products found with missing cover images — all are correct.")
+
+    return redirect('products_list_url')
+
+@login_required
+def bulk_approve_products_view(request):
+    if not _can_bulk_approve(request.user):
+        return render(request, 'permission_denied.html')
+
+    if request.method == "POST":
+        selected_ids = request.POST.getlist('selected_products')
+        if not selected_ids:
+            messages.error(request, "No Product selected.")
+        else:
+            qs = admin_dashboard_models.Product.all_objects.filter(id__in=selected_ids)
+            if request.user.role in ('section_admin', 'employee'):
+                category_ids = admin_dashboard_models.EmployeeCategories.objects.filter(
+                    employee=request.user, employee__role=request.user.role
+                ).values_list('category', flat=True)
+                qs = qs.filter(categories__id__in=list(category_ids))
+            updated_count = qs.update(approval='approved')
+            if updated_count:
+                messages.success(request, f"{updated_count} Product(s) approved.")
+            else:
+                messages.error(request, "Selected Product(s) could not be approved (they may be outside your Category).")
+
+    return redirect('products_list_url')
+
+@login_required
+def bulk_upload_products_view(request):
+    if request.user.is_superuser or request.user.role == 'central_admin':
+        result = None
+        form_error = None
+        if request.method == "POST":
+            excel_file = request.FILES.get('excel_file')
+            images_zip = request.FILES.get('images_zip')
+            if not excel_file:
+                form_error = "Please select an Excel (.xlsx) file."
+            elif not excel_file.name.lower().endswith('.xlsx'):
+                form_error = "Only .xlsx files can be uploaded."
+            else:
+                try:
+                    result = run_product_bulk_import(excel_file, images_zip)
+                    messages.success(request, "Bulk Product Upload completed successfully!")
+                except Exception as e:
+                    form_error = f"Error: {e}"
+        context = {
+            'result': result,
+            'form_error': form_error,
+        }
+        return render(request, 'custom-admin/products/bulk_upload.html', context)
+    else:
+        return render(request, 'permission_denied.html')
 
 @login_required
 def add_product_view(request):
@@ -80,7 +168,7 @@ def add_product_view(request):
                                 raise ValueError("Invalid discount price")
                             
                         if not has_cover:
-                            messages.error(request, "Please select at least one cover photo in is cover section")
+                            messages.error(request, "Please select at least one cover photo in the cover section")
                             raise ValueError("Cover image not selected")
                             
 

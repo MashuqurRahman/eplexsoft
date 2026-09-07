@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Page, PageNotAnInteger, Paginator, EmptyPage
 from django.contrib import messages
 from django.db.models.deletion import ProtectedError
+
+from admin_app.category_bulk_import import run_category_bulk_import
 from ..models import admin_dashboard_models
 from ..forms import categories_forms
 
@@ -37,6 +39,32 @@ def categories_index_view(request):
         'obj_list': obj_list
     }
     return render(request, 'custom-admin/categories/index.html', context)
+
+@login_required
+def bulk_upload_categories_view(request):
+    if request.user.is_superuser or request.user.role == 'central_admin':
+        result = None
+        form_error = None
+        if request.method == "POST":
+            excel_file = request.FILES.get('excel_file')
+            images_zip = request.FILES.get('images_zip')
+            if not excel_file:
+                form_error = "Please select an Excel (.xlsx) file."
+            elif not excel_file.name.lower().endswith('.xlsx'):
+                form_error = "Only .xlsx files can be uploaded."
+            else:
+                try:
+                    result = run_category_bulk_import(excel_file, images_zip)
+                    messages.success(request, "Bulk Upload Completed Successfully!")
+                except Exception as e:
+                    form_error = f"Error: {e}"
+        context = {
+            'result': result,
+            'form_error': form_error,
+        }
+        return render(request, 'custom-admin/categories/bulk_upload.html', context)
+    else:
+        return render(request, 'permission_denied.html')
 
 
 @login_required

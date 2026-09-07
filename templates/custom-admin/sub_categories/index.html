@@ -20,9 +20,14 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h6 class="subtitle mb-0">Sub Categories List</h6>
 
-        <a href="{% url 'add_sub_categories_url' %}" class="btn add-btn btn-sm">
-            <i class="fas fa-plus"></i> Add Sub Category
-        </a>
+        <div>
+            <a href="{% url 'bulk_upload_categories_url' %}" class="btn add-btn btn-sm">
+                <i class="fas fa-file-excel"></i> Bulk Upload (Excel)
+            </a>
+            <a href="{% url 'add_sub_categories_url' %}" class="btn add-btn btn-sm">
+                <i class="fas fa-plus"></i> Add Sub Category
+            </a>
+        </div>
     </div>
 
     
@@ -48,8 +53,6 @@
                     <th class="text-center">SL No</th>
                     <th>Category Name</th>
                     <th>Sub Category Name</th>
-                    <th>Position</th>
-                    <th>Has Sub Sub Category</th>
                     <th>Description</th>
                     <th class="text-center">Action</th>
                 </tr>
@@ -61,8 +64,6 @@
                     <td class="text-center">{{forloop.counter}}</td>
                     <td>{{obj.categories}}</td>
                     <td>{{obj.sub_cat_name}}</td>
-                    <td>Column: {{obj.column}}, Position: {{obj.position}}</td>
-                    <td>{{obj.has_sub_sub_cat}}</td>
                     <td>{{obj.description|default:"N/A"}}</td>
                     <td>
                         <a href="{% url 'update_sub_categories_url' obj.id %}" class="edit_btn" title="Edit">
@@ -78,7 +79,7 @@
                 {% endfor %}
                 {% else %}
                 <tr>
-                    <td colspan="8" class="text-center">Data is not found</td>
+                    <td colspan="5" class="text-center">Data is not found</td>
                 </tr>
                 {% endif %}
             </tbody>
