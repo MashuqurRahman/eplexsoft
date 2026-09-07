@@ -5,6 +5,10 @@ from .models import admin_dashboard_models
 
 # Register your models here.
 admin.site.register(admin_dashboard_models.SubSubCategoryDeliveryCharge)
+admin.site.register(admin_dashboard_models.Categories)
+admin.site.register(admin_dashboard_models.SubCategories)
+admin.site.register(admin_dashboard_models.SubSubCategories)
+admin.site.register(admin_dashboard_models.Product)
 
 @admin.register(admin_dashboard_models.SteadfastConsignment)
 class SteadfastConsignmentAdmin(admin.ModelAdmin):
