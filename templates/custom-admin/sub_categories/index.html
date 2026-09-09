@@ -21,9 +21,9 @@
         <h6 class="subtitle mb-0">Sub Categories List</h6>
 
         <div>
-            <a href="{% url 'bulk_upload_categories_url' %}" class="btn add-btn btn-sm">
+            {% comment %} <a href="{% url 'bulk_upload_categories_url' %}" class="btn add-btn btn-sm">
                 <i class="fas fa-file-excel"></i> Bulk Upload (Excel)
-            </a>
+            </a> {% endcomment %}
             <a href="{% url 'add_sub_categories_url' %}" class="btn add-btn btn-sm">
                 <i class="fas fa-plus"></i> Add Sub Category
             </a>

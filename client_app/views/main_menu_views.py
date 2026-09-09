@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, Page
+from client_app.context_processors import _build_column_buckets
 from client_app.models import client_models
 import pickle
 import numpy as np
@@ -66,6 +67,20 @@ def get_home_page_context(request):
         .filter(
             is_active=True,
             is_popular=True
+        )
+        .prefetch_related(
+            Prefetch(
+                'product_attribute',
+                queryset=admin_dashboard_models.ProductAttribute.objects.all()
+            )
+        ).order_by('-id')
+        .distinct()[:10]
+        
+    )
+    all_products = (
+        admin_dashboard_models.Product.objects
+        .filter(
+            is_active=True,
         )
         .prefetch_related(
             Prefetch(
@@ -156,16 +171,23 @@ def get_home_page_context(request):
             
 
     else:
-        just_for_you_products = popular_products[:PRODUCT_LIMIT]
+        just_for_you_products = all_products[:PRODUCT_LIMIT]
 
 
 
    
 
-    categories = (
-        admin_dashboard_models.Categories.objects.all().order_by('-id')
-        .order_by('name')
-    )
+    categories = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories = list(categories)
+    _build_column_buckets(categories)
+
     hero_sliders =  admin_dashboard_models.Slider.objects.filter(is_active=True).order_by('-created_at')
     side_sliders =  admin_dashboard_models.SideSlider.objects.filter(campaign_type='campaign').order_by('-created_at')[:2]
 
@@ -370,7 +392,18 @@ def products_page_view(request, pk):
     max_price = request.GET.get('max_price')
     sort_by = request.GET.get('sort_by', 'default')
 
-    categories_obj = admin_dashboard_models.Categories.objects.all()
+    categories_obj = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories_obj = list(categories_obj)
+    _build_column_buckets(categories_obj)
+
+    # categories_obj = admin_dashboard_models.Categories.objects.all()
     sub_categories_obj = admin_dashboard_models.SubCategories.objects.filter(categories=category_id)
     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.filter(sub_categories__categories_id=category_id)
     brands_obj = admin_dashboard_models.Brand.objects.filter(product_brand__product__categories_id=category_id).distinct()
@@ -687,7 +720,18 @@ def category_products(request, category_id=None):
     max_price = request.GET.get('max_price')
     sort_by = request.GET.get('sort_by', 'default')
 
-    categories_obj = admin_dashboard_models.Categories.objects.all()
+    categories_obj = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories_obj = list(categories_obj)
+    _build_column_buckets(categories_obj)
+
+    # categories_obj = admin_dashboard_models.Categories.objects.all()
     sub_categories_obj = admin_dashboard_models.SubCategories.objects.filter(categories_id=category_id)
     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.filter(sub_categories__categories_id=category_id)
     brands_obj = admin_dashboard_models.Brand.objects.filter(product_brand__product__categories_id=category_id).distinct()
@@ -836,7 +880,18 @@ def most_popular_products(request):
     max_price = request.GET.get('max_price')
     sort_by = request.GET.get('sort_by', 'default')
 
-    categories_obj = admin_dashboard_models.Categories.objects.all()
+    categories_obj = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories_obj = list(categories_obj)
+    _build_column_buckets(categories_obj)
+
+    # categories_obj = admin_dashboard_models.Categories.objects.all()
     sub_categories_obj = admin_dashboard_models.SubCategories.objects.all()
     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.all()
     brands_obj = admin_dashboard_models.Brand.objects.all()
@@ -980,7 +1035,18 @@ def best_deal_products(request):
     max_price = request.GET.get('max_price')
     sort_by = request.GET.get('sort_by', 'default')
 
-    categories_obj = admin_dashboard_models.Categories.objects.all()
+    categories_obj = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories_obj = list(categories_obj)
+    _build_column_buckets(categories_obj)
+
+    # categories_obj = admin_dashboard_models.Categories.objects.all()
     sub_categories_obj = admin_dashboard_models.SubCategories.objects.all()
     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.all()
     brands_obj = admin_dashboard_models.Brand.objects.all()
@@ -1121,7 +1187,18 @@ def flash_sell_products(request):
     max_price = request.GET.get('max_price')
     sort_by = request.GET.get('sort_by', 'default')
 
-    categories_obj = admin_dashboard_models.Categories.objects.all()
+    categories_obj = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories_obj = list(categories_obj)
+    _build_column_buckets(categories_obj)
+
+    # categories_obj = admin_dashboard_models.Categories.objects.all()
     sub_categories_obj = admin_dashboard_models.SubCategories.objects.all()
     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.all()
     brands_obj = admin_dashboard_models.Brand.objects.all()
@@ -1432,7 +1509,18 @@ def campaign_products_view(request, campaign_id):
     max_price = request.GET.get('max_price')
     sort_by = request.GET.get('sort_by', 'default')
 
-    categories_obj = admin_dashboard_models.Categories.objects.all()
+    categories_obj = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories_obj = list(categories_obj)
+    _build_column_buckets(categories_obj)
+
+    # categories_obj = admin_dashboard_models.Categories.objects.all()
     sub_categories_obj = admin_dashboard_models.SubCategories.objects.all()
     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.all()
     brands_obj = admin_dashboard_models.Brand.objects.all()
@@ -1708,7 +1796,18 @@ def sub_category_product_show_view(request, sub_cat_id):
     max_price = request.GET.get('max_price')
     sort_by = request.GET.get('sort_by', 'default')
 
-    categories_obj = admin_dashboard_models.Categories.objects.all()
+    categories_obj = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories_obj = list(categories_obj)
+    _build_column_buckets(categories_obj)
+
+    # categories_obj = admin_dashboard_models.Categories.objects.all()
     sub_categories_obj = admin_dashboard_models.SubCategories.objects.filter(categories=category_id)
     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.filter(sub_categories__categories_id=category_id)
     brands_obj = admin_dashboard_models.Brand.objects.filter(product_brand__product__categories_id=category_id).distinct()
@@ -1918,7 +2017,18 @@ def just_for_you_products_show_view(request):
     max_price = request.GET.get('max_price')
     sort_by = request.GET.get('sort_by', 'default')
 
-    categories_obj = admin_dashboard_models.Categories.objects.all()
+    categories_obj = admin_dashboard_models.Categories.objects.prefetch_related(
+        Prefetch(
+            'sub_categories',
+            queryset=admin_dashboard_models.SubCategories.objects.order_by('column', 'position').prefetch_related(
+                'sub_sub_categories'
+            )
+        )
+    ).all()
+    categories_obj = list(categories_obj)
+    _build_column_buckets(categories_obj)
+
+    # categories_obj = admin_dashboard_models.Categories.objects.all()
     sub_categories_obj = admin_dashboard_models.SubCategories.objects.all()
     sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.all()
     brands_obj = admin_dashboard_models.Brand.objects.all()

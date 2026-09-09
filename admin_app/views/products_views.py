@@ -84,20 +84,43 @@ def bulk_approve_products_view(request):
 
     if request.method == "POST":
         selected_ids = request.POST.getlist('selected_products')
+        action = request.POST.get('bulk_action')
+
+        if not action:
+            messages.error(request, "No action selected.")
+            return redirect('products_list_url')
+
         if not selected_ids:
             messages.error(request, "No Product selected.")
-        else:
-            qs = admin_dashboard_models.Product.all_objects.filter(id__in=selected_ids)
-            if request.user.role in ('section_admin', 'employee'):
-                category_ids = admin_dashboard_models.EmployeeCategories.objects.filter(
-                    employee=request.user, employee__role=request.user.role
-                ).values_list('category', flat=True)
-                qs = qs.filter(categories__id__in=list(category_ids))
+            return redirect('products_list_url')
+
+        qs = admin_dashboard_models.Product.all_objects.filter(id__in=selected_ids)
+        if request.user.role in ('section_admin', 'employee'):
+            category_ids = admin_dashboard_models.EmployeeCategories.objects.filter(
+                employee=request.user, employee__role=request.user.role
+            ).values_list('category', flat=True)
+            qs = qs.filter(categories__id__in=list(category_ids))
+
+        if action == 'approve':
             updated_count = qs.update(approval='approved')
-            if updated_count:
-                messages.success(request, f"{updated_count} Product(s) approved.")
-            else:
-                messages.error(request, "Selected Product(s) could not be approved (they may be outside your Category).")
+            success_msg = f"{updated_count} Product(s) approved."
+        elif action == 'is_best_deal':
+            updated_count = qs.update(is_best_deal=True)
+            success_msg = f"{updated_count} Product(s) marked as Best Deal."
+        elif action == 'is_popular':
+            updated_count = qs.update(is_popular=True)
+            success_msg = f"{updated_count} Product(s) marked as Popular."
+        elif action == 'is_applicable':
+            updated_count = qs.update(is_applicable=True)
+            success_msg = f"{updated_count} Product(s) marked as Percent."
+        else:
+            messages.error(request, "Invalid action.")
+            return redirect('products_list_url')
+
+        if updated_count:
+            messages.success(request, success_msg)
+        else:
+            messages.error(request, "Selected Product(s) could not be updated (they may be outside your Category).")
 
     return redirect('products_list_url')
 

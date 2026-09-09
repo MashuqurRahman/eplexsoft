@@ -11,6 +11,26 @@ PRODUCT_DETAIL_URLS = [
     'product_details_page_url',
 ]
 
+def _build_column_buckets(categories):
+    for category in categories:
+        subs = list(category.sub_categories.all())
+        buckets = {"1": [], "2": [], "3": [], "4": []}
+        leftovers = []
+
+        for sub in subs:
+            col = str(sub.column) if sub.column else ""
+            if col in buckets:
+                buckets[col].append(sub)
+            else:
+                leftovers.append(sub)
+
+        for i, sub in enumerate(leftovers):
+            buckets[str((i % 4) + 1)].append(sub)
+
+        category.column_buckets = [buckets["1"], buckets["2"], buckets["3"], buckets["4"]]
+
+    return categories
+
 def categories_context(request):
     cart = None
 
@@ -89,6 +109,8 @@ def categories_context(request):
             )
         )
     ).all()
+    categories = list(categories)
+    _build_column_buckets(categories)
 
     return {
         # 'categories': admin_dashboard_models.Categories.objects.prefetch_related(

@@ -55,9 +55,19 @@
                 <a href="{% url 'products_list_url' %}?approval=not_approved" class="btn btn-sm {% if request.GET.approval == 'not_approved' %}btn-warning{% else %}btn-outline-warning{% endif %}">Not Approved</a>
                 <a href="{% url 'products_list_url' %}?approval=approved" class="btn btn-sm {% if request.GET.approval == 'approved' %}btn-success text-white{% else %}btn-outline-success{% endif %}">Approved</a>
             </div>
-            <button type="submit" form="bulk_approve_form" class="btn add-btn btn-sm" id="bulk_approve_btn">
-                <i class="fas fa-check-double"></i> Bulk Approve Selected (<span id="selected_count">0</span>)
-            </button>
+            <div class="d-flex align-items-center" style="gap:8px;">
+                <span>Selected: <span id="selected_count">0</span></span>
+                <select id="bulk_action_select" name="bulk_action" form="bulk_approve_form" class="form-select form-select-sm" style="width: 127px;">
+                    <option value="">--SELECT--</option>
+                    <option value="approve">Bulk Approve</option>
+                    <option value="is_best_deal">Is Best Deal</option>
+                    <option value="is_popular">Is Populer</option>
+                    <option value="is_applicable">VAT/GST %</option>
+                </select>
+                <button type="submit" form="bulk_approve_form" class="btn add-btn btn-sm" id="bulk_apply_btn">
+                    <i class="fas fa-check-double"></i> Apply
+                </button>
+            </div>
         </div>
         {% endif %}
 
@@ -68,7 +78,7 @@
                 <thead>
                     <tr>
                         {% if can_bulk_approve %}
-                        <th class="text-center"><input type="checkbox" id="select_all_products" title="সব সিলেক্ট করো"></th>
+                        <th class="text-center"><input type="checkbox" id="select_all_products" title="Select All"></th>
                         {% endif %}
                         <th class="text-center">SL No</th>
                         <th>Category</th>
@@ -89,9 +99,7 @@
                     <tr>
                         {% if can_bulk_approve %}
                         <td class="text-center">
-                            {% if obj.approval == "not_approved" %}
                             <input type="checkbox" name="selected_products" value="{{ obj.id }}" class="product_checkbox">
-                            {% endif %}
                         </td>
                         {% endif %}
                         <td class="text-center">{{forloop.counter}}</td>
@@ -235,28 +243,46 @@
         eplexUpdateSelectedCount();
     });
 
+    var eplexActionLabels = {
+        "approve": "Approve",
+        "is_best_deal": "Mark as Best Deal",
+        "is_popular": "Mark as Popular"
+    };
+
     $("#bulk_approve_form").on("submit", function (e) {
         e.preventDefault();
         var form = this;
         var count = $(".product_checkbox:checked").length;
+        var action = $("#bulk_action_select").val();
+
+        if (!action) {
+            Swal.fire({
+                icon: "warning",
+                title: "No Action Selected",
+                text: "Please select an action from the dropdown.",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#3085d6"
+            });
+            return false;
+        }
+
         if (count === 0) {
             Swal.fire({
                 icon: "warning",
                 title: "No Product Selected",
-                text: "Please select at least one Product to approve.",
+                text: "Please select at least one Product.",
                 confirmButtonText: "OK",
                 confirmButtonColor: "#3085d6"
             });
-
             return false;
         }
 
         Swal.fire({
             title: "Are you sure?",
-            text: `Do you want to approve ${count} Product(s)?`,
+            text: `Do you want to "${eplexActionLabels[action]}" for ${count} Product(s)?`,
             icon: "question",
             showCancelButton: true,
-            confirmButtonText: "Yes, Approve",
+            confirmButtonText: "Yes, Apply",
             cancelButtonText: "Cancel",
             confirmButtonColor: "#28a745",
             cancelButtonColor: "#6c757d"

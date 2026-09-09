@@ -287,10 +287,10 @@
                                 {% endif %}
 
                                 {% if request.user.is_superuser == True or request.user.role == 'central_admin' or request.user.role == 'employee' or request.user.role == 'section_admin' %}
-                                    <li class="{% if request.resolver_match.url_name in 'categories_list_url sub_categories_index_url sub_sub_cat_index_url' %}active{% endif %}">
+                                    <li class="{% if request.resolver_match.url_name in 'categories_list_url sub_categories_index_url sub_sub_cat_index_url bulk_upload_categories_url' %}active{% endif %}">
                                         <a href="javascript:void(0)"><i class="bi bi-columns-gap"></i> <span class="hide-item">Category Management</span> <span class="drop-icon"><i class="bi bi-chevron-down"></i></span></a>
 
-                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name in 'categories_list_url add_categories_url edit_categories_url sub_categories_index_url add_sub_categories_url update_sub_categories_url sub_sub_cat_index_url add_sub_sub_categories_url update_sub_sub_categories_url' %}display: block;{% endif %}">
+                                        <ul class="sub-menu" style="{% if request.resolver_match.url_name in 'categories_list_url add_categories_url edit_categories_url sub_categories_index_url add_sub_categories_url update_sub_categories_url sub_sub_cat_index_url add_sub_sub_categories_url update_sub_sub_categories_url bulk_upload_categories_url' %}display: block;{% endif %}">
 
                                             <li class="{% if request.resolver_match.url_name == 'categories_list_url' or request.resolver_match.url_name == 'add_categories_url' or request.resolver_match.url_name == 'edit_categories_url' %}active{% endif %}"
                                                 style="{% if request.resolver_match.url_name == 'categories_list_url' or request.resolver_match.url_name == 'add_categories_url' or request.resolver_match.url_name == 'edit_categories_url' %}background: var(--primary-color) !important;{% endif %}">
@@ -306,6 +306,12 @@
                                                 style="{% if request.resolver_match.url_name == 'sub_sub_cat_index_url' or request.resolver_match.url_name == 'add_sub_sub_categories_url' or request.resolver_match.url_name == 'update_sub_sub_categories_url' %}background: var(--primary-color) !important;{% endif %}">
                                                 <a style="{% if request.resolver_match.url_name == 'add_sub_sub_categories_url' or request.resolver_match.url_name == 'update_sub_sub_categories_url' %}color: white !important;{% endif %}" href="{% url 'sub_sub_cat_index_url' %}">All Sub Sub Category</a>
                                             </li>
+                                            {% if request.user.is_superuser %}
+                                            <li class="{% if request.resolver_match.url_name == 'bulk_upload_categories_url' %}active{% endif %}"
+                                                style="{% if request.resolver_match.url_name == 'bulk_upload_categories_url' %}background: var(--primary-color) !important;{% endif %}">
+                                                <a style="{% if request.resolver_match.url_name == 'bulk_upload_categories_url' %}color: white !important;{% endif %}" href="{% url 'bulk_upload_categories_url' %}">Bulk Upload</a>
+                                            </li>
+                                            {% endif %}
 
                                         </ul>
                                     </li>
