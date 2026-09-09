@@ -681,12 +681,11 @@
                                     <div class="mega-menu-wrap" style="padding: 4px 70px; box-shadow: 0 -3px 3px -2px rgba(0, 0, 0, 0.15)">
                                         <div class="row">
 
-                                            {% for col_num in "1234" %}
+                                            {% for column_subs in category.column_buckets %}
                                             <div class="col-md-3">
                                                 <ul class="icon-des" >
 
-                                                    {% for sub in category.sub_categories.all %}
-                                                    {% if sub.column == col_num %}
+                                                    {% for sub in column_subs %}
 
                                                     <li class="sub-category-title">
                                                         <strong class="fw-bold">
@@ -711,7 +710,6 @@
                                                     </li>
                                                     {% endfor %}
 
-                                                    {% endif %}
                                                     {% endfor %}
 
                                                 </ul>

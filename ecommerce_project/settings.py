@@ -109,7 +109,7 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.mysql',
 
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'ecommerce_db'),
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'ecom_sep_db'),
         'USER': os.environ.get('DJANGO_DB_USER', 'root'),
         'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
         'HOST': os.environ.get('DJANGO_DB_HOST','127.0.0.1'),
