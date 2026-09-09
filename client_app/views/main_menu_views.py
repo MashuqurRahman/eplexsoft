@@ -77,6 +77,20 @@ def get_home_page_context(request):
         .distinct()[:10]
         
     )
+    all_products = (
+        admin_dashboard_models.Product.objects
+        .filter(
+            is_active=True,
+        )
+        .prefetch_related(
+            Prefetch(
+                'product_attribute',
+                queryset=admin_dashboard_models.ProductAttribute.objects.all()
+            )
+        ).order_by('-id')
+        .distinct()[:10]
+        
+    )
 
     best_deal_products = (
         admin_dashboard_models.Product.objects
@@ -157,7 +171,7 @@ def get_home_page_context(request):
             
 
     else:
-        just_for_you_products = popular_products[:PRODUCT_LIMIT]
+        just_for_you_products = all_products[:PRODUCT_LIMIT]
 
 
 

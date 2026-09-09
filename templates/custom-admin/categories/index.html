@@ -42,9 +42,9 @@
 
         {% if request.user.is_superuser or request.user.role == 'central_admin' %}
         <div>
-            <a href="{% url 'bulk_upload_categories_url' %}" class="btn add-btn btn-sm">
+            {% comment %} <a href="{% url 'bulk_upload_categories_url' %}" class="btn add-btn btn-sm">
                 <i class="fas fa-file-excel"></i> Bulk Upload (Excel)
-            </a>
+            </a> {% endcomment %}
             <a href="{% url 'add_categories_url' %}" class="btn add-btn btn-sm">
                 <i class="fas fa-plus"></i> Add Category
             </a>
