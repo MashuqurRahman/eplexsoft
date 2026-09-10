@@ -410,7 +410,7 @@
                                     <img src="{{ item.cover_product_attribute.image.url }}" alt="icons">
                                 </div>
                                 <div class="flex-grow-1 ms-3 productcon">
-                                    <a href="{% url 'product_details_page_url' item.id %}">{{ item.product_name }}</a>
+                                    <a href="{% url 'product_details_page_url' item.id %}">{{ item.product_name|capfirst }}</a>
                                     {% if item.cover_product_attribute.final_discount.total_discount %}
                                         <h5>৳ {{ item.cover_product_attribute.product_final_price  }} <del>৳ {{ item.cover_product_attribute.regular_price }}</del></h5>
                                     {% else %}
