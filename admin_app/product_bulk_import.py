@@ -169,15 +169,15 @@ def run_product_bulk_import(excel_file, images_zip_file=None):
                 sub_name = _clean(g("sub_category"))
                 subsub_name = _clean(g("sub_sub_category"))
                 product_name = _clean(g("product_name"))
-                description = _clean(g("description"))
+                description = _clean(g("description")) or None
                 unit_name = _clean(g("unit"))
 
                 if not cat_name or not sub_name:
                     raise RowError("Both Category Name and Sub Category Name are required")
                 if not product_name:
                     raise RowError("Product Name cannot be left empty")
-                if not description:
-                    raise RowError("Description cannot be left empty")
+                # if not description:
+                #     raise RowError("Description cannot be left empty")
                 if not unit_name:
                     raise RowError("Unit Name cannot be left empty")
 
@@ -280,7 +280,7 @@ def run_product_bulk_import(excel_file, images_zip_file=None):
                 discount_price = _to_decimal(g("discount_price"), "Discount Price", required=False, min_value=Decimal("1"))
                 if discount_price is not None and discount_price >= regular_price:
                     raise RowError("Discount Price must be less than Regular Price")
-                buying_price = _to_decimal(g("buying_price"), "Buying Price", required=True, min_value=Decimal("1"))
+                buying_price = _to_decimal(g("buying_price"), "Buying Price", required=False, min_value=Decimal("0")) or Decimal("0")
                 height = _to_float(g("height"))
                 width = _to_float(g("width"))
                 weight = _to_float(g("weight"))
