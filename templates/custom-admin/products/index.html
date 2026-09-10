@@ -103,10 +103,10 @@
                         </td>
                         {% endif %}
                         <td class="text-center">{{forloop.counter}}</td>
-                        <td>{{obj.categories}}</td>
-                        <td>{{obj.sub_categories}}</td>
-                        <td>{{obj.sub_sub_categories}}</td>
-                        <td>{{obj.product_name}}</td>
+                        <td>{{obj.categories.name|capfirst}}</td>
+                        <td>{{obj.sub_categories.sub_cat_name|capfirst}}</td>
+                        <td>{{obj.sub_sub_categories.sub_sub_cat_name|capfirst|default:"N/A"}}</td>
+                        <td>{{obj.product_name|capfirst}}</td>
                         <td>{{obj.product_stock_status.stock_qty}}</td>
                         <td>{{obj.is_applicable}}</td>
                         <td>{{obj.is_popular}}</td>

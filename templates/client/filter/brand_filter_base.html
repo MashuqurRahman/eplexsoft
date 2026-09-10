@@ -46,7 +46,7 @@ Categories
            name="category"
            value="{{cat.id}}" {% if cat.id|stringformat:"s" in selected_categories %}checked{% endif %}>
     <label class="form-check-label">
-        {{cat.name}}
+        {{cat.name|capfirst}}
     </label>
 </div>
 {% endfor %}
@@ -58,7 +58,7 @@ Categories
            name="category"
            value="{{cat.id}}" {% if cat.id|stringformat:"s" in selected_categories %}checked{% endif %}>
     <label class="form-check-label">
-        {{cat.name}}
+        {{cat.name|capfirst}}
     </label>
 </div>
 {% endfor %}
@@ -92,7 +92,7 @@ Sub Categories
            name="sub_category"
            value="{{sub_cat.id}}" {% if sub_cat.id|stringformat:"s" in selected_sub_categories %}checked{% endif %}>
     <label class="form-check-label">
-        {{sub_cat.sub_cat_name}}
+        {{sub_cat.sub_cat_name|capfirst}}
     </label>
 </div>
 {% endfor %}
@@ -126,7 +126,7 @@ Sub Sub Categories
            name="sub_sub_category"
            value="{{sub_sub_cat.id}}" {% if sub_sub_cat.id|stringformat:"s" in selected_sub_sub_categories %}checked{% endif %}>
     <label class="form-check-label">
-        {{sub_sub_cat.sub_sub_cat_name}}
+        {{sub_sub_cat.sub_sub_cat_name|capfirst}}
     </label>
 </div>
 {% endfor %}

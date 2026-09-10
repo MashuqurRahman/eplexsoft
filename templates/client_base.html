@@ -597,7 +597,7 @@
                                             <div class="d-flex justify-content-between align-items-center">
 
                                                 <a href="{% url 'category_products' category.id %}" class="{% if current_category_id == category.id %} active_mega_menu {% endif %}">
-                                                    {{ category.name }}
+                                                    {{ category.name|capfirst }}
                                                 </a>
 
                                                 <button class="btn p-0"
@@ -617,7 +617,7 @@
                                                     <div class="d-flex justify-content-between align-items-center">
 
                                                         <a href="{% url 'sub_category_products_shows_url' sub.id %}" class="{% if current_sub_category_id == sub.id %} active_mega_menu {% endif %}">
-                                                            {{ sub.sub_cat_name }}
+                                                            {{ sub.sub_cat_name|capfirst }}
                                                         </a>
                                                         {% if sub.has_sub_sub_cat %}
                                                         <button class="btn p-0"
@@ -638,7 +638,7 @@
                                                                 <img src="{{ subsub.image.url }}" alt="{{ subsub.sub_sub_cat_name }}" class="subsub-img no-zoom">
                                                             {% endif %} &nbsp;
                                                             <a href="{% url 'products_page_url' subsub.id %}" class="{% if current_sub_sub_category_id == subsub.id %} active_mega_menu {% endif %} me-2">
-                                                                {{ subsub.sub_sub_cat_name }}
+                                                                {{ subsub.sub_sub_cat_name|capfirst }}
                                                             </a>
                                                         </li>
                                                         {% endfor %}
@@ -674,7 +674,7 @@
                                 <a href="{% url 'category_products' category.id %}" 
                                     class="{% if current_category_id == category.id %}active_mega_menu{% endif %}" 
                                     style="font-size: 18px !important;">
-                                    <i class="fa fa-list"></i> {{ category.name }}
+                                    <i class="fa fa-list"></i> {{ category.name|capfirst }}
                                 </a>
 
                                 <div class="animated fadeIn mega-menu pt-2">
@@ -692,7 +692,7 @@
                                                             <a href="{% url 'sub_category_products_shows_url' sub.id %}"
                                                                 class="{% if current_sub_category_id == sub.id %}active_mega_menu{% endif %}"
                                                                 style="font-size: 16px !important;">
-                                                                <i class="fa fa-list"></i> {{ sub.sub_cat_name }}
+                                                                <i class="fa fa-list"></i> {{ sub.sub_cat_name|capfirst }}
                                                             </a>
                                                         </strong>
                                                     </li>
@@ -705,7 +705,7 @@
                                                         <a href="{% url 'products_page_url' subsub.id %}"
                                                                 class="{% if current_sub_sub_category_id == subsub.id %}active_mega_menu{% endif %}"
                                                                 style="font-size: 16px !important;">
-                                                            {{ subsub.sub_sub_cat_name }}
+                                                            {{ subsub.sub_sub_cat_name|capfirst }}
                                                         </a>
                                                     </li>
                                                     {% endfor %}

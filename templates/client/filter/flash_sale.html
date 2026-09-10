@@ -44,7 +44,7 @@
 
                 <div class="productcon">
                     <a href="{% url 'product_details_page_url' item.id %}">
-                        {{ item.product_name }}
+                        {{ item.product_name|capfirst }}
                     </a>
 
                     {% if item.cover_product_attribute.final_discount.total_discount %}

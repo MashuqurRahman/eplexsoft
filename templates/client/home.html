@@ -154,7 +154,7 @@
                         </div>
                         {% endif %}
                         <div class="productcon">
-                            <a href="{% url 'product_details_page_url' item.id %}">{{item.product_name}}</a>
+                            <a href="{% url 'product_details_page_url' item.id %}">{{item.product_name|capfirst}}</a>
                             {% for varient in item.product_attribute.all %}
                                 {% if varient.discount_price %}
                                     <h5>৳ {{ varient.discount_price }} <del>৳ {{ varient.regular_price }}</del></h5>
@@ -242,7 +242,7 @@
 
                     <div class="productcon">
                         <a href="{% url 'product_details_page_url' item.id %}">
-                            {{ item.product_name }}
+                            {{ item.product_name|capfirst }}
                         </a>
 
                         {% if item.cover_product_attribute.final_discount.total_discount %}
@@ -371,7 +371,7 @@
 
                     <div class="productcon">
                         <a href="{% url 'product_details_page_url' item.id %}">
-                            {{ item.product_name }}
+                            {{ item.product_name|capfirst }}
                         </a>
 
                         {% if item.cover_product_attribute.final_discount.total_discount %}
@@ -489,7 +489,7 @@
 
                     <div class="productcon">
                         <a href="{% url 'product_details_page_url' item.id %}">
-                            {{ item.product_name }}
+                            {{ item.product_name|capfirst }}
                         </a>
 
                         {% if item.cover_product_attribute.final_discount.total_discount %}
