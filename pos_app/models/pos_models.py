@@ -37,11 +37,11 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
-# class PosProduct(models.Model):
-#     attribute = models.ForeignKey(admin_dashboard_models.ProductAttribute, on_delete=models.PROTECT, related_name='pos_product_attribute')
-#     branch = models.ForeignKey(BrachName, on_delete=models.PROTECT, related_name='pos_product_branch')
-#     stock = models.PositiveIntegerField()
+class PosProduct(models.Model):
+    attribute = models.ForeignKey('admin_app.ProductAttribute', on_delete=models.PROTECT, related_name='pos_product_attribute')
+    branch = models.ForeignKey(BrachName, on_delete=models.PROTECT, related_name='pos_product_branch')
+    stock = models.PositiveIntegerField()
 
-#     def __str__(self):
-#         return f'{self.branch.name}/{self.attribute.product.product_name}'
+    def __str__(self):
+        return f'{self.branch.name}/{self.attribute.product.product_name}'
         

@@ -175,3 +175,17 @@ class CustomerSetupForm(forms.ModelForm):
             raise forms.ValidationError("This phone number already exists.")
     
         return phone
+
+
+class PosProductFrom(forms.ModelForm):
+    class Meta:
+        model = pos_models.PosProduct
+        fields = "__all__"
+        labels = {
+            'attribute': "Product Name"
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['attribute'].empty_label = "--SELECT--"
+        self.fields['branch'].empty_label = "--SELECT--"
