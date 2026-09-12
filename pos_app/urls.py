@@ -24,6 +24,14 @@ master_patterns = [
     path('customer/delete/<int:pk>/', master_setup_data_views.pos_customer_delete_view, name='pos_customer_delete_url'),
     path('customer/search/', master_setup_data_views.pos_customer_search_view, name='pos_customer_search_url'),
 
+    # POS PRODUCT
+    path('product/index/', master_setup_data_views.pos_product_list_view, name='pos_product_list_url'),
+    path('product/create/', master_setup_data_views.pos_product_create_view, name='pos_product_create_url'),
+    path('product/update/<int:pk>/', master_setup_data_views.pos_product_update_view, name='pos_product_update_url'),
+    path('product/deleted/<int:pk>/', master_setup_data_views.pos_product_delete_view, name='pos_product_delete_url'),
+    path('product/search/', master_setup_data_views.pos_product_search_view, name='pos_product_search_url'),
+    path('product/subcategories/', master_setup_data_views.pos_get_subcategories_view, name='pos_get_subcategories_url'),
+
 ]
 
 inventory_patterns = [

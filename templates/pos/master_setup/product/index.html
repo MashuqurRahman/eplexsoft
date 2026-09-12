@@ -1,0 +1,192 @@
+{% extends "pos_base.html" %}
+{% load static %}
+{% block title %}Eplex Master — Product List{% endblock %}
+{% block active_nav_id %}product-master{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'assets/css/pos/master_setup/product_index.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
+<style>
+  .panel-outer .table-responsive { width: 100%; overflow-x: auto; }
+  .panel-outer table.table { width: 100% !important; border-collapse: collapse; table-layout: auto; }
+  .panel-outer table.table.table-bordered th,
+  .panel-outer table.table.table-bordered td { border: 1px solid #d8dde3 !important; padding: 8px 5px; font-size: 12px; }
+  .panel-outer table.table thead th { background: #f5f6f8; text-align: left; font-weight: 600; }
+  .action-cell { display: flex; gap: 14px; align-items: center; white-space: nowrap; }
+  .action-cell a { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: inherit; }
+  .action-cell .edit-btn svg { stroke: #1a6f5c; }
+  .action-cell .del-btn svg { stroke: #c0392b; }
+  .action-cell a:hover svg { opacity: 0.7; }
+
+  .select2-container{ width: 100% !important; }
+  .select2-container .select2-selection--single{ height: 44px; padding-top: 6px; }
+  .select2-container--bootstrap-5 .select2-selection:focus,
+  .select2-container--bootstrap-5 .select2-selection--single:focus,
+  .select2-selection:focus,
+  .select2-container .select2-search--dropdown .select2-search__field:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: var(--line-strong, #ccc) !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-inner" style="padding: 10px 20px 64px;">
+  <div class="wrap">
+
+    <div class="topbarr">
+      <div>
+        <div class="brand">
+          <span class="brand-mark">Eplex POS</span>
+          <span class="brand-sub">Product Master</span>
+        </div>
+        <div class="count-note" id="countNote">{{ obj_list|length }} product</div>
+      </div>
+      <a href="{% url 'pos_product_create_url' %}"><button class="btn-primary">＋ Add Product</button></a>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="lbl">Total Products</div><div class="val" id="kpiTotal">{{ obj_list|length }}</div></div>
+      <div class="kpi-card"><div class="lbl">Categories</div><div class="val" id="kpiCats">{{ total_categories }}</div></div>
+      <div class="kpi-card"><div class="lbl">Sub Categories</div><div class="val" id="kpiSubCats">{{ total_subcategories }}</div></div>
+    </div>
+
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Search product name or SKU…">
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-field">
+        <label>Category</label>
+        <select id="filterCat" onchange="onFilterCatChange()">
+          <option value="All" selected>--SELECT--</option>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}">{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-field">
+        <label>Sub-category</label>
+        <select id="filterSub" onchange="loadProducts()" disabled>
+          <option value="All" selected>--SELECT--</option>
+        </select>
+      </div>
+      <button type="button" class="filter-clear" onclick="clearFilters()">Clear filters</button>
+    </div>
+    <div class="filter-summary" id="filterSummary">Showing every product across all categories.</div>
+
+    <div class="panel-outer">
+      <div class="table-responsive" id="ShowTable">
+        {% include 'pos/master_setup/product/product_table_partial.html' %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
+
+<script>
+  {% for message in messages %}
+    {% if forloop.first %}window.SERVER_TOAST = "{{ message|escapejs }}";{% endif %}
+  {% endfor %}
+
+  function confirmDeleteUser(event, url, productName) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Remove product?',
+      html: 'This will remove <strong>' + productName + '</strong>. This cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Remove',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#c0392b',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) window.location.href = url;
+    });
+    return false;
+  }
+
+  var searchDebounce;
+
+  function loadProducts() {
+    var search_text = $('#searchInput').val();
+    var category = $('#filterCat').val();
+    var sub_category = $('#filterSub').val();
+
+    $.ajax({
+      url: "{% url 'pos_product_search_url' %}",
+      data: { search_text: search_text, category: category, sub_category: sub_category },
+      success: function (data) {
+        $('#ShowTable').html(data.html);
+        $('#countNote').text(data.count + ' product');
+        $('#kpiTotal').text(data.count);
+        updateFilterSummary(search_text, category, sub_category);
+      }
+    });
+  }
+
+  function updateFilterSummary(search_text, category, sub_category) {
+    var parts = [];
+    if (category !== 'All') parts.push('Category: <b>' + $('#filterCat option:selected').text() + '</b>');
+    if (sub_category !== 'All') parts.push('Sub-category: <b>' + $('#filterSub option:selected').text() + '</b>');
+    if (search_text) parts.push('Search: <b>"' + search_text + '"</b>');
+    $('#filterSummary').html(parts.length ? 'Filtering by ' + parts.join(' · ') : 'Showing every product across all categories.');
+  }
+
+  function onFilterCatChange() {
+    var category_id = $('#filterCat').val();
+    var $sub = $('#filterSub');
+
+    if (category_id === 'All') {
+      $sub.html('<option value="All" selected>--SELECT--</option>');
+      $sub.prop('disabled', true);
+      loadProducts();
+      return;
+    }
+
+    $.ajax({
+      url: "{% url 'pos_get_subcategories_url' %}",
+      data: { category_id: category_id },
+      success: function (data) {
+        var options = '<option value="All" selected>--SELECT--</option>';
+        data.sub_categories.forEach(function (s) {
+          options += '<option value="' + s.id + '">' + s.name + '</option>';
+        });
+        $sub.html(options);
+        $sub.prop('disabled', false);
+        loadProducts();
+      }
+    });
+  }
+
+  function clearFilters() {
+    $('#searchInput').val('');
+    $('#filterCat').val('All');
+    $('#filterSub').html('<option value="All" selected>All Sub-categories</option>');
+    $('#filterSub').prop('disabled', true);
+    loadProducts();
+  }
+
+  $(document).ready(function () {
+    $("#filterCat, #filterSub").select2({
+      width: '100%',
+      theme: 'bootstrap-5'
+    });
+
+    $('#searchInput').on('input', function () {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(loadProducts, 350);
+    });
+  });
+</script>
+{% endblock %}

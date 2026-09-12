@@ -1,0 +1,93 @@
+{% extends "pos_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Eplex Master — Product Update{% endblock %}
+{% block active_nav_id %}product-master{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'assets/css/vendor/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/pos/master_setup/branch_create.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
+<style>
+    .select2-container{ width: 100% !important; }
+    .select2-container .select2-selection--single{ height: 44px; padding-top: 6px; }
+    .select2-container--bootstrap-5 .select2-selection:focus,
+    .select2-container--bootstrap-5 .select2-selection--single:focus,
+    .select2-selection:focus,
+    .select2-container .select2-search--dropdown .select2-search__field:focus {
+      outline: none !important;
+      box-shadow: none !important;
+      border-color: var(--line-strong, #ccc) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-inner">
+  <div class="wrap">
+
+    <div class="page-topbar">
+      <div>
+        <div class="page-brand">
+          <span class="page-brand-mark">Eplex Master</span>
+          <span class="page-brand-sub">Product Update</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-outer py-3" id="branchPanel">
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-4">
+              {{ form.attribute|as_crispy_field }}
+            </div>
+            <div class="col-md-4">
+              {{ form.branch|as_crispy_field }}
+            </div>
+            <div class="col-md-4">
+              {{ form.stock|as_crispy_field }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <button class="btn btn-primary mt-3" type="submit">Update</button>
+            </div>
+          </div>
+
+        </form>
+    </div>
+
+
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+
+<script>
+  {% for message in messages %}
+    {% if forloop.first %}
+      window.SERVER_TOAST = "{{ message|escapejs }}";
+    {% endif %}
+  {% endfor %}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'assets/js/pos/master_setup/branch_create.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        $("#id_attribute").select2({
+            width: '100%',
+            theme: 'bootstrap-5'
+        });
+        $("#id_branch").select2({
+            width: '100%',
+            theme: 'bootstrap-5'
+        });
+    })
+</script>
+{% endblock %}
