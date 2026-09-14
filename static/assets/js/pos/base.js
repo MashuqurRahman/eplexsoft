@@ -29,6 +29,7 @@ const NAV = [
       { id:"branch-setup", label:"Branch / Counter Setup", href:"#", improvised:true },
       { id:"user-management", label:"User Management", href:"#", improvised:true },
       { id:"permission-management", label:"Permission Management", href:"#", improvised:true },
+      
     ]},
     { key:"reports", label:"Reports", items:[
       { id:"reports", label:"All Reports", href:"#" },

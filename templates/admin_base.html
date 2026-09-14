@@ -430,10 +430,12 @@
                                         </ul>
                                     </li>
                                 {% endif %}
-
+                                
+                                {% if request.user.is_superuser %}
                                 <li>
                                     <a href="{% url 'pos_dashboard_url' %}"><i class="bi bi-postcard"></i> <span class="hide-item"> POS Management</span></a>
                                 </li>
+                                {% endif %}
 
                                 {% comment %} <li><a href="{% url 'admin_contact_url' %}"><i class="bi bi-chat-left-dots"></i> <span class="hide-item"> Conversations </span></a> </li> {% endcomment %}
 

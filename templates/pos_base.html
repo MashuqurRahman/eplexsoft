@@ -18,7 +18,11 @@
   <div class="topbar">
     <div class="brand">
       <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <a href="{% url 'admin_dashboard_url' %}" style="text-decoration: none; color: white;"><div class="mark" style="color: white;">EX</div></a>
+        {% if request.user.is_superuser %}
+        <a href="{% url 'admin_dashboard_url' %}" style="text-decoration: none; color: white;"><div class="mark" style="color: white;">EX</div></a>
+        {% else %}
+        <a href="{% url 'home_page_url' %}" style="text-decoration: none; color: white;"><div class="mark" style="color: white;">EX</div></a>
+        {% endif %}
       <div>
         <h1>Eplex—POS</h1>
       </div>
@@ -31,6 +35,9 @@
           <option>Mirpur Benarasi Palli</option>
         </select>
       </div> {% endcomment %}
+      <div class="branch-pill">
+        <div>{{ request.user.pos_branch }}</div>
+      </div>
       <div class="avatar-chip">{{request.user.name|slice:":1"|upper|default:""}}</div>
     </div>
   </div>
@@ -62,6 +69,9 @@
             </a>
             <a class="navitem" data-id="supplier-due-payment" href="{% url 'supplier_due_index_url' %}">
               <span>Supplier Due</span>
+            </a>
+            <a class="navitem" data-id="stock-transfer" href="{% url 'pull_request_list_url' %}">
+              <span>Stock Transfer</span>
             </a>
           </div>
         </div>

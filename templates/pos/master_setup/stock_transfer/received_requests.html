@@ -1,0 +1,256 @@
+{% extends "pos_base.html" %}
+{% load static %}
+{% block title %}Eplex Master — Stock Pull Requests (Received){% endblock %}
+{% block active_nav_id %}stock-transfer{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #10243E;
+    --navy-soft: #4A5C74;
+    --teal: #1A6F5C;
+    --teal-bg: #E4F3EE;
+    --gold: #8A6512;
+    --gold-bg: #FBF3E1;
+    --wine: #8B2E3F;
+    --wine-bg: #F8E9EC;
+    --line: #E2E6EC;
+    --bg: #F7F8FA;
+  }
+
+  .rpr-page { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--navy); background: var(--bg); }
+
+  /* header */
+  .rpr-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 0 20px; margin-bottom: 22px; border-bottom: 1px solid var(--line);
+    flex-wrap: wrap; gap: 14px;
+  }
+  .rpr-header h1 { margin: 0 0 4px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  .rpr-header p { margin: 0; font-size: 13px; color: var(--navy-soft); }
+  .rpr-count {
+    font-size: 12px; font-weight: 600; color: var(--gold); background: var(--gold-bg);
+    padding: 5px 12px; border-radius: 20px; display: inline-block; margin-top: 8px;
+  }
+  .rpr-links { display: flex; gap: 10px; }
+  .rpr-link {
+    font-size: 13px; font-weight: 600; color: var(--navy); text-decoration: none;
+    border: 1px solid var(--line); padding: 9px 16px; border-radius: 8px;
+    background: #fff; transition: border-color .15s ease, color .15s ease;
+  }
+  .rpr-link:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* table panel */
+  .rpr-panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .rpr-table-wrap { width: 100%; overflow-x: auto; }
+  .rpr-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  .rpr-table thead th {
+    text-align: left; font-size: 11.5px; font-weight: 600; color: var(--navy-soft);
+    padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  .rpr-table thead th.num { text-align: right; }
+  .rpr-table thead th.actions-col { text-align: right; }
+  .rpr-table tbody td {
+    padding: 13px 16px; font-size: 13px; border-bottom: 1px solid var(--line);
+    vertical-align: middle; font-variant-numeric: tabular-nums;
+  }
+  .rpr-table tbody tr:last-child td { border-bottom: none; }
+  .rpr-table tbody tr:hover { background: #FAFBFC; }
+  .rpr-table td.num { text-align: right; }
+  .rpr-product { font-weight: 500; color: var(--navy); }
+  .rpr-branch { color: var(--navy-soft); }
+  .rpr-time { color: #9AA6B4; }
+
+  /* action buttons */
+  .rpr-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn-approve, .btn-reject {
+    font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600;
+    border: none; padding: 8px 14px; border-radius: 7px; cursor: pointer;
+    transition: opacity .15s ease;
+  }
+  .btn-approve { background: var(--teal); color: #fff; }
+  .btn-approve:hover { opacity: .88; }
+  .btn-reject { background: var(--wine-bg); color: var(--wine); }
+  .btn-reject:hover { background: #F2DADF; }
+
+  /* empty state */
+  .rpr-empty { padding: 56px 20px; text-align: center; }
+  .rpr-empty p { margin: 0; font-size: 14px; color: var(--navy-soft); }
+  .rpr-empty span { display: block; font-size: 13px; color: #AEB8C4; margin-top: 4px; }
+
+  /* modal */
+  .rpr-modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(16, 36, 62, .45);
+    z-index: 1000; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif;
+  }
+  .rpr-modal-box {
+    background: #fff; width: 400px; max-width: 92vw; border-radius: 12px;
+    padding: 24px 26px; box-shadow: 0 16px 40px rgba(16, 36, 62, .18);
+  }
+  .rpr-modal-box h3 { margin: 0 0 4px; font-size: 17px; font-weight: 700; color: var(--navy); }
+  .rpr-modal-box .rpr-modal-sub { margin: 0 0 18px; font-size: 12.5px; color: var(--navy-soft); }
+  .rpr-modal-field label {
+    display: block; font-size: 11.5px; font-weight: 600; color: var(--navy-soft); margin-bottom: 6px;
+  }
+  .rpr-modal-field textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px;
+    font-size: 13px; font-family: 'DM Sans', sans-serif; resize: vertical;
+  }
+  .rpr-modal-field textarea:focus { outline: none; border-color: var(--wine); }
+  .rpr-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+  .btn-ghost {
+    background: var(--bg); color: var(--navy); border: 1px solid var(--line);
+    font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600;
+    padding: 9px 16px; border-radius: 7px; cursor: pointer;
+  }
+  .btn-ghost:hover { border-color: var(--navy-soft); }
+
+  /* toast */
+  .toast {
+    position: fixed; bottom: 26px; right: 26px; background: var(--navy); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 12px 18px; border-radius: 8px; display: flex; align-items: center; gap: 10px;
+    opacity: 0; transform: translateY(8px); pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease; z-index: 1100;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+
+  @media (max-width: 640px) {
+    .rpr-header { align-items: flex-start; }
+    .rpr-links { width: 100%; }
+    .rpr-link { flex: 1; text-align: center; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-inner rpr-page" style="padding: 24px 28px 64px;">
+  <div class="wrap">
+
+    <div class="rpr-header">
+      <div>
+        <h1>Stock Pull Requests</h1>
+        <p>Requests waiting on your branch to release stock.</p>
+        <span class="rpr-count">{{ requests|length }} pending</span>
+      </div>
+      <div class="rpr-links">
+        <a href="{% url 'pull_request_list_url' %}" class="rpr-link">Sent Requests</a>
+        <a href="{% url 'stock_transfer_history_url' %}" class="rpr-link">Transfer History</a>
+      </div>
+    </div>
+
+    <div class="rpr-panel">
+      <div class="rpr-table-wrap">
+        <table class="rpr-table">
+          <thead>
+            <tr>
+              <th>SL</th>
+              <th>Product Name</th>
+              <th>Requesting Branch</th>
+              <th class="num">Qty</th>
+              <th>Requested At</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in requests %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="rpr-product">{{ r.attribute }}</td>
+              <td class="rpr-branch">{{ r.requesting_branch.name }}</td>
+              <td class="num">{{ r.requested_qty }}</td>
+              <td class="rpr-time">{{ r.created_at|date:"d M Y, h:i A" }}</td>
+              <td>
+                <div class="rpr-actions">
+                  <form method="post" action="{% url 'approve_pull_request_url' r.id %}" class="approve-form">
+                    {% csrf_token %}
+                    <button type="button" class="btn-approve" onclick="confirmApprove(this)">Approve</button>
+                  </form>
+                  <button type="button" class="btn-reject" onclick="openRejectModal({{ r.id }})">Reject</button>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">
+              <div class="rpr-empty">
+                <p>No pending requests.</p>
+                <span>Requests from other branches will show up here for approval.</span>
+              </div>
+            </td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="rpr-modal-overlay" id="rejectModal">
+  <div class="rpr-modal-box">
+    <h3>Reject pull request</h3>
+    <p class="rpr-modal-sub">Let the requesting branch know why.</p>
+    <form method="post" id="rejectForm">
+      {% csrf_token %}
+      <div class="rpr-modal-field">
+        <label>Reason (optional)</label>
+        <textarea name="reject_reason" rows="3" placeholder="e.g. Stock reserved for another order"></textarea>
+      </div>
+      <div class="rpr-modal-actions">
+        <button type="button" class="btn-ghost" onclick="closeRejectModal()">Cancel</button>
+        <button type="submit" class="btn-reject">Confirm reject</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  {% for message in messages %}
+    {% if forloop.first %}window.SERVER_TOAST = "{{ message|escapejs }}";{% endif %}
+  {% endfor %}
+
+  function confirmApprove(btn) {
+    Swal.fire({
+      title: 'Approve this request?',
+      text: 'Stock will be transferred immediately from the source branch.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Approve',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#1A6F5C',
+      cancelButtonColor: '#4A5C74',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) $(btn).closest('form').submit();
+    });
+  }
+
+  function openRejectModal(id) {
+    const urlTemplate = "{% url 'reject_pull_request_url' 0 %}";
+    const url = urlTemplate.replace('/0/', '/' + id + '/');
+
+    document.getElementById('rejectForm').action = url;
+    document.getElementById('rejectModal').style.display = 'flex';
+  }
+
+  function closeRejectModal() {
+    document.getElementById('rejectModal').style.display = 'none';
+  }
+
+  $(document).ready(function () {
+    if (window.SERVER_TOAST) {
+      $('#toastMsg').text(window.SERVER_TOAST);
+      $('#toast').addClass('show');
+      setTimeout(function () { $('#toast').removeClass('show'); }, 2500);
+    }
+  });
+</script>
+{% endblock %}
