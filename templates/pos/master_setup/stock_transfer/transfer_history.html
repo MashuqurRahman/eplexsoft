@@ -1,0 +1,210 @@
+{% extends "pos_base.html" %}
+{% load static %}
+{% block title %}Eplex Master — Stock Transfer History{% endblock %}
+{% block active_nav_id %}stock-transfer{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
+<style>
+  :root {
+    --navy: #10243E;
+    --navy-soft: #4A5C74;
+    --teal: #1A6F5C;
+    --teal-bg: #E4F3EE;
+    --gold: #8A6512;
+    --gold-bg: #FBF3E1;
+    --wine: #8B2E3F;
+    --wine-bg: #F8E9EC;
+    --line: #E2E6EC;
+    --bg: #F7F8FA;
+  }
+
+  .sth-page { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--navy); background: var(--bg); }
+
+  /* header */
+  .sth-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 0 20px; margin-bottom: 22px; border-bottom: 1px solid var(--line);
+    flex-wrap: wrap; gap: 14px;
+  }
+  .sth-header h1 { margin: 0 0 4px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  .sth-header p { margin: 0; font-size: 13px; color: var(--navy-soft); }
+  .sth-count {
+    font-size: 12px; font-weight: 600; color: var(--teal); background: var(--teal-bg);
+    padding: 5px 12px; border-radius: 20px; display: inline-block; margin-top: 8px;
+  }
+  .sth-link {
+    font-size: 13px; font-weight: 600; color: var(--navy); text-decoration: none;
+    border: 1px solid var(--line); padding: 9px 16px; border-radius: 8px;
+    background: #fff; transition: border-color .15s ease, color .15s ease;
+  }
+  .sth-link:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* filter toolbar */
+  .sth-filters {
+    display: flex; align-items: flex-end; gap: 16px; margin-bottom: 20px;
+    padding: 16px 18px; background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    flex-wrap: wrap;
+  }
+  .sth-field { display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
+  .sth-field label { font-size: 11.5px; font-weight: 600; color: var(--navy-soft); }
+  .sth-clear {
+    font-size: 13px; font-weight: 600; color: var(--navy-soft); background: none;
+    border: none; cursor: pointer; padding: 10px 4px; text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .sth-clear:hover { color: var(--wine); }
+
+  .select2-container { width: 100% !important; }
+  .select2-container--bootstrap-5 .select2-selection--single {
+    height: 40px !important; border-color: var(--line) !important; border-radius: 8px !important;
+  }
+  .select2-container--bootstrap-5 .select2-selection__rendered { line-height: 38px !important; font-size: 13px; }
+  .select2-container--bootstrap-5 .select2-selection__arrow { height: 38px !important; }
+
+  /* table panel */
+  .sth-panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .sth-table-wrap { width: 100%; overflow-x: auto; }
+  .sth-table { width: 100%; border-collapse: collapse; min-width: 920px; }
+  .sth-table thead th {
+    text-align: left; font-size: 11.5px; font-weight: 600; color: var(--navy-soft);
+    text-transform: none; padding: 12px 16px; background: var(--bg);
+    border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  .sth-table thead th.num, .sth-table td.num { text-align: right; }
+  .sth-table tbody td {
+    padding: 13px 16px; font-size: 13px; border-bottom: 1px solid var(--line);
+    font-variant-numeric: tabular-nums; vertical-align: middle;
+  }
+  .sth-table tbody tr:last-child td { border-bottom: none; }
+  .sth-table tbody tr:hover { background: #FAFBFC; }
+  .sth-product { font-weight: 500; color: var(--navy); }
+  .sth-branch { color: var(--navy-soft); }
+  .sth-muted { color: #9AA6B4; }
+
+  .status-pill {
+    display: inline-block; padding: 4px 11px; border-radius: 6px;
+    font-size: 11.5px; font-weight: 600;
+  }
+  .status-requested { background: var(--gold-bg); color: var(--gold); }
+  .status-approved  { background: var(--teal-bg); color: var(--teal); }
+  .status-rejected  { background: var(--wine-bg); color: var(--wine); }
+
+  /* empty state */
+  .sth-empty { padding: 56px 20px; text-align: center; }
+  .sth-empty p { margin: 0; font-size: 14px; color: var(--navy-soft); }
+  .sth-empty span { display: block; font-size: 13px; color: #AEB8C4; margin-top: 4px; }
+
+  @media (max-width: 640px) {
+    .sth-header { align-items: flex-start; }
+    .sth-filters { flex-direction: column; align-items: stretch; }
+    .sth-field { min-width: 0; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-inner sth-page" style="padding: 24px 28px 64px;">
+  <div class="wrap">
+
+    <div class="sth-header">
+      <div>
+        <h1>Stock Transfer History</h1>
+        <p>Every request, approval, and rejection across branches.</p>
+        <span class="sth-count">{{ logs|length }} entr{{ logs|length|pluralize:"y,ies" }}</span>
+      </div>
+      <a href="{% url 'received_pull_requests_url' %}" class="sth-link">Received Requests</a>
+    </div>
+
+    <div class="sth-filters">
+      <div class="sth-field">
+        <label>Branch</label>
+        <select id="filterBranch" onchange="applyFilters()">
+          <option value="All" selected>All branches</option>
+          {% for b in branches %}
+          <option value="{{ b.id }}">{{ b.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="sth-field">
+        <label>Event</label>
+        <select id="filterEvent" onchange="applyFilters()">
+          <option value="All" selected>All events</option>
+          <option value="requested">Requested</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <button type="button" class="sth-clear" onclick="clearFilters()">Clear filters</button>
+    </div>
+
+    <div class="sth-panel">
+      <div class="sth-table-wrap">
+        <table class="sth-table">
+          <thead>
+            <tr>
+              <th>SL</th>
+              <th>Event</th>
+              <th>Product / Attribute</th>
+              <th>Requesting Branch</th>
+              <th>Source Branch</th>
+              <th class="num">Qty</th>
+              <th class="num">Source Stock After</th>
+              <th class="num">Dest Stock After</th>
+              <th>Acted By</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td><span class="status-pill status-{{ log.event }}">{{ log.get_event_display }}</span></td>
+              <td class="sth-product">{{ log.attribute }}</td>
+              <td class="sth-branch">{{ log.requesting_branch.name }}</td>
+              <td class="sth-branch">{{ log.source_branch.name }}</td>
+              <td class="num">{{ log.qty }}</td>
+              <td class="num">{{ log.source_stock_after|default:"—" }}</td>
+              <td class="num">{{ log.dest_stock_after|default:"—" }}</td>
+              <td>{{ log.acted_by|default:"—" }}</td>
+              <td class="sth-muted">{{ log.created_at|date:"d M Y, h:i A" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9">
+              <div class="sth-empty">
+                <p>No transfers yet.</p>
+                <span>Requests and approvals will appear here as branches move stock.</span>
+              </div>
+            </td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  function applyFilters() {
+    var branch_id = $('#filterBranch').val();
+    var event = $('#filterEvent').val();
+    var url = "{% url 'stock_transfer_history_url' %}?";
+    if (branch_id !== 'All') url += 'branch_id=' + branch_id + '&';
+    if (event !== 'All') url += 'event=' + event;
+    window.location.href = url;
+  }
+  function clearFilters() {
+    window.location.href = "{% url 'stock_transfer_history_url' %}";
+  }
+  $(document).ready(function () {
+    $('#filterBranch, #filterEvent').select2({ width: '100%', theme: 'bootstrap-5' });
+  });
+</script>
+{% endblock %}

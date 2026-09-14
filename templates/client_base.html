@@ -533,11 +533,12 @@
                                                     <li><a class="dropdown-item" href="{% url 'user_dashboard_url' %}">Dashboard</a></li>
                                                     {% if request.user.role != 'customer' %}
                                                         <li><a class="dropdown-item" href="{% url 'admin_dashboard_url' %}">Admin Dashboard</a></li>
-
-                                                    
                                                     {% endif %}
-                                                    {% comment %} <li><a class="dropdown-item" href="">My Profile</a></li>
-                                                    <li><a class="dropdown-item" href="">Change Password</a></li> {% endcomment %}
+
+                                                    {% if request.user.is_superuser or request.user.user_type == 'pos' %}
+                                                    <li><a class="dropdown-item" href="{% url 'pos_dashboard_url' %}">POS Dashboard</a></li>
+                                                    {% endif %}
+
                                                     <li>
                                                         <form method="POST" action="{% url 'logout_url' %}">
                                                             {% csrf_token %}

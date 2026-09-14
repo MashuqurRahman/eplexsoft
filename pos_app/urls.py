@@ -32,6 +32,13 @@ master_patterns = [
     path('product/search/', master_setup_data_views.pos_product_search_view, name='pos_product_search_url'),
     path('product/subcategories/', master_setup_data_views.pos_get_subcategories_view, name='pos_get_subcategories_url'),
 
+    path('stock-pull/history/', master_setup_data_views.pos_stock_transfer_history, name='stock_transfer_history_url'),
+    path('stock-pull/create/', master_setup_data_views.pos_create_pull_request, name='create_pull_request_url'),
+    path('stock-pull/sent/', master_setup_data_views.pos_pull_request_list, name='pull_request_list_url'),
+    path('stock-pull/received/', master_setup_data_views.pos_received_pull_requests, name='received_pull_requests_url'),
+    path('stock-pull/<int:pk>/approve/', master_setup_data_views.pos_approve_pull_request, name='approve_pull_request_url'),
+    path('stock-pull/<int:pk>/reject/', master_setup_data_views.pos_reject_pull_request, name='reject_pull_request_url'),
+
 ]
 
 inventory_patterns = [

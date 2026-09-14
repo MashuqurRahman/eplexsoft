@@ -99,10 +99,14 @@ def user_authentication_view(request):
             else:
                 user = authenticate(request, email=email, password=password)
                 if user is not None:
-                    login(request, user)
-                    if next_url:
-                        return redirect(next_url)
-                    return redirect(f"{current_url}?login_success=1")
+                    if user.user_type == 'pos':
+                        login(request, user)
+                        return redirect('pos_dashboard_url')
+                    else:
+                        login(request, user)
+                        if next_url:
+                            return redirect(next_url)
+                        return redirect(f"{current_url}?login_success=1")
                 else:
                     errors["password"] = "Password did not match"
 
