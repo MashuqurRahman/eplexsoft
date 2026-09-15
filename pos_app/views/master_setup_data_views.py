@@ -501,18 +501,24 @@ def pos_reject_pull_request(request, pk):
 
 @login_required
 def pos_stock_transfer_history(request):
-    branch_id = request.GET.get('branch_id')
-    event = request.GET.get('event')
-
     branches = pos_models.BrachName.objects.all()
     qs = pos_models.StockTransferLog.objects.select_related('attribute', 'requesting_branch', 'source_branch', 'acted_by')
-    if branch_id:
-        qs = qs.filter(models.Q(requesting_branch_id=branch_id) | models.Q(source_branch_id=branch_id))
-    if event:
-        qs = qs.filter(event=event)
+
+    form = master_setup_forms.TransferHistoryFilterForm()
+    if request.method == "POST":
+        form = master_setup_forms.TransferHistoryFilterForm(request.POST)
+        if form.is_valid():
+            branch_id = form.cleaned_data.get('branch_id')
+            event = form.cleaned_data.get('event')
+
+            if branch_id:
+                qs = qs.filter(models.Q(requesting_branch_id=branch_id) | models.Q(source_branch_id=branch_id))
+            if event:
+                qs = qs.filter(event=event)
 
     context = {
         'branches': branches,
-        'logs': qs
+        'logs': qs,
+        'form': form
     }
     return render(request, 'pos/master_setup/stock_transfer/transfer_history.html', context)
