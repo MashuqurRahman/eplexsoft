@@ -6,6 +6,7 @@ STATUS_CHOICES = (
 )
 
 EVENT_CHOICES = [
+    ('', '--SELECT--'),
     ('requested', 'Requested'),
     ('approved', 'Approved'),
     ('rejected', 'Rejected'),

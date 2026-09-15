@@ -1,7 +1,7 @@
 import re
 from django import forms
 from django.core.exceptions import ValidationError
-from pos_app.models import pos_models
+from pos_app.models import pos_models, choices
 from accounts_app.models import User
 
 class BranchForm(forms.ModelForm):
@@ -189,3 +189,7 @@ class PosProductFrom(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['attribute'].empty_label = "--SELECT--"
         self.fields['branch'].empty_label = "--SELECT--"
+
+class TransferHistoryFilterForm(forms.Form):
+    branch = forms.ModelChoiceField(queryset=pos_models.BrachName.objects.all(), required=False, empty_label='--SELECT--')
+    event = forms.ChoiceField(choices=choices.EVENT_CHOICES, required=False)
