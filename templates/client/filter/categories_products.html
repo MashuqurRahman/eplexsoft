@@ -27,7 +27,8 @@ Products
 
 <div class="accordion" id="filterAccordion">
 
-{% comment %} <!-- Categories -->
+{% if not category %}
+<!-- Categories: only on the all-products page; category pages are already scoped -->
 <div class="accordion-item">
 <h2 class="accordion-header">
 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#categoriesCollapse">
@@ -43,7 +44,7 @@ Categories
     <input class="form-check-input filter-input"
            type="checkbox"
            name="category"
-           value="{{cat.id}}">
+           value="{{cat.id}}" {% if cat.id|stringformat:"s" in selected_categories %}checked{% endif %}>
     <label class="form-check-label">
         {{cat.name|capfirst}}
     </label>
@@ -52,13 +53,14 @@ Categories
 
 </div>
 </div>
-</div> {% endcomment %}
+</div>
+{% endif %}
 
 
 <!-- Sub Categories -->
 <div class="accordion-item">
 <h2 class="accordion-header">
-<button class="accordion-button collapsed"
+<button class="accordion-button{% if not category %} collapsed{% endif %}"
         type="button"
         data-bs-toggle="collapse"
         data-bs-target="#subCategoriesCollapse">
@@ -66,7 +68,7 @@ Sub Categories
 </button>
 </h2>
 
-<div id="subCategoriesCollapse" class="accordion-collapse collapse show">
+<div id="subCategoriesCollapse" class="accordion-collapse collapse{% if category %} show{% endif %}">
 <div class="accordion-body">
 
 <div id="subcategory-container">
@@ -317,6 +319,19 @@ Price
 $(document).ready(function(){
     let currentRequest = null;
 
+    // Categories that scope the filter AJAX calls. Returns [] on /products/ with
+    // nothing ticked, so jQuery omits the param and the endpoints return all options.
+    const pageCategory = "{{ category|default_if_none:'' }}";
+    function activeCategories() {
+        const checked = $('input[name="category"]:checked').map(function(){
+            return this.value;
+        }).get();
+        if (checked.length) {
+            return checked;
+        }
+        return pageCategory ? [pageCategory] : [];
+    }
+
     $('#filterForm')[0].reset();
     $('.filter-input[type="checkbox"]').prop('checked', false);
     $('input[name="min_price"], input[name="max_price"]').val('');
@@ -516,7 +531,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-subsubcategories/",
-            data: { 'sub_categories[]': sub_categories, 'categories[]': "{{ category }}", 'sub_category_id': "{{ sub_category.id }}" },
+            data: { 'sub_categories[]': sub_categories, 'categories[]': activeCategories(), 'sub_category_id': "{{ sub_category.id }}" },
             success: function(data){
                 let html = "";
                 data.forEach(function(subsub){
@@ -537,7 +552,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-brands-from-sub-category/",
-            data: { 'sub_categories[]': sub_categories, 'categories[]': "{{ category }}" },
+            data: { 'sub_categories[]': sub_categories, 'categories[]': activeCategories() },
             success: function(data){
                 let html = "";
                 data.forEach(function(brand){
@@ -558,7 +573,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-colors-from-sub-category/",
-            data: { 'sub_categories[]': sub_categories, 'categories[]': "{{ category }}" },
+            data: { 'sub_categories[]': sub_categories, 'categories[]': activeCategories() },
             success: function(data){
                 let html = "";
                 data.forEach(function(color){
@@ -579,7 +594,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-sizes-from-sub-category/",
-            data: { 'sub_categories[]': sub_categories, 'categories[]': "{{ category }}" },
+            data: { 'sub_categories[]': sub_categories, 'categories[]': activeCategories() },
             success: function(data){
                 let html = "";
                 data.forEach(function(size){
@@ -630,7 +645,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-brands-from-sub-sub-category/",
-            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': "{{ category }}" },
+            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': activeCategories() },
             success: function(data){
                 let html = "";
                 data.forEach(function(brand){
@@ -651,7 +666,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-colors-from-sub-sub-category/",
-            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': "{{ category }}" },
+            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': activeCategories() },
             success: function(data){
                 let html = "";
                 data.forEach(function(color){
@@ -672,7 +687,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-sizes-from-sub-sub-category/",
-            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': "{{ category }}" },
+            data: { 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories, 'categories[]': activeCategories() },
             success: function(data){
                 let html = "";
                 data.forEach(function(size){
@@ -711,7 +726,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-sizes-from-brand/",
-            data: { 'brand_ids[]': brands, 'categories[]': "{{ category }}", 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
+            data: { 'brand_ids[]': brands, 'categories[]': activeCategories(), 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
             success: function(data){
                 let html = "";
                 data.forEach(function(size){
@@ -732,7 +747,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-colors-from-brand/",
-            data: { 'brand_ids[]': brands, 'categories[]': "{{ category }}", 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
+            data: { 'brand_ids[]': brands, 'categories[]': activeCategories(), 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
             success: function(data){
                 let html = "";
                 data.forEach(function(color){
@@ -779,7 +794,7 @@ $(document).ready(function(){
 
         $.ajax({
             url: "/ajax/get-sizes-from-color/",
-            data: { 'color_ids[]': colors, 'brand_ids[]': brands, 'categories[]': "{{ category }}", 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
+            data: { 'color_ids[]': colors, 'brand_ids[]': brands, 'categories[]': activeCategories(), 'sub_categories[]': sub_categories, 'sub_sub_categories[]': sub_sub_categories },
             success: function(data){
                 let html = "";
                 data.forEach(function(size){

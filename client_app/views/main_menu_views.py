@@ -629,7 +629,7 @@ def products_details_page_view(request, pk):
     distinct_sizes = attribute_list.values('size__id', 'size__value').distinct()
     breadcrumbs = [
         {'name': "Home", 'url': reverse('home_page_url')},
-        {'name': "Products", 'url': reverse('products_page_url', args=[product_obj.product.sub_categories.id])},
+        {'name': "Products", 'url': reverse('sub_category_products_shows_url', args=[product_obj.product.sub_categories_id])},
         {'name': product_obj.product.product_name, 'url': None},
     ]
     context = {
@@ -731,12 +731,18 @@ def category_products(request, category_id=None):
     categories_obj = list(categories_obj)
     _build_column_buckets(categories_obj)
 
-    # categories_obj = admin_dashboard_models.Categories.objects.all()
-    sub_categories_obj = admin_dashboard_models.SubCategories.objects.filter(categories_id=category_id)
-    sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.filter(sub_categories__categories_id=category_id)
-    brands_obj = admin_dashboard_models.Brand.objects.filter(product_brand__product__categories_id=category_id).distinct()
-    colors_obj = admin_dashboard_models.Color.objects.filter(product_color__product__categories_id=category_id).distinct()
-    sizes_obj = admin_dashboard_models.Size.objects.filter(product_size__product__categories_id=category_id).distinct()
+    sub_categories_obj = admin_dashboard_models.SubCategories.objects.all()
+    sub_sub_categories_obj = admin_dashboard_models.SubSubCategories.objects.all()
+    brands_obj = admin_dashboard_models.Brand.objects.all()
+    colors_obj = admin_dashboard_models.Color.objects.all()
+    sizes_obj = admin_dashboard_models.Size.objects.all()
+
+    if category_id:
+        sub_categories_obj = sub_categories_obj.filter(categories_id=category_id)
+        sub_sub_categories_obj = sub_sub_categories_obj.filter(sub_categories__categories_id=category_id)
+        brands_obj = brands_obj.filter(product_brand__product__categories_id=category_id).distinct()
+        colors_obj = colors_obj.filter(product_color__product__categories_id=category_id).distinct()
+        sizes_obj = sizes_obj.filter(product_size__product__categories_id=category_id).distinct()
 
     if categories:
         products = products.filter(categories_id__in=categories)
@@ -834,7 +840,7 @@ def category_products(request, category_id=None):
         "category_obj": category,
         "sub_category": sub_category,
         "is_category": True,
-        'page_title': 'Category Products',
+        'page_title': 'Category Products' if category else 'All Products',
 
         "query_params": query_params.urlencode(),
         "selected_categories": categories,
@@ -854,11 +860,7 @@ def category_products(request, category_id=None):
             context
         )
 
-    return render(
-        request,
-        'client/filter/categories_products.html',
-        context
-    )
+    return render(request,'client/filter/categories_products.html', context)
 
 
 

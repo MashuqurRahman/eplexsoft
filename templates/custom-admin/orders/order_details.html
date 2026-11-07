@@ -84,8 +84,10 @@
                     <div class="d-flex flex-wrap align-items-center justify-content-between">
                         <p class="subtitle">Order Details</p>
                         <div class="bumns">
-                            <button><a href="{% url 'download_order_details' order.id %}"><i class="bi bi-cloud-arrow-down"></i> Payment Slip</a></button>
-                            <button class="invoice active"><a href="{% url 'order_invoice_download_url' order.id %}"><i class="bi bi-cloud-arrow-down"></i> Download Invoice</a></button>
+                            {% url 'download_order_details' order.id as payment_slip_url %}
+                            {% url 'order_invoice_download_url' order.id as invoice_url %}
+                            <button type="button" onclick="window.location.href='{{ payment_slip_url }}'"><i class="bi bi-cloud-arrow-down"></i> Payment Slip</button>
+                            <button type="button" class="invoice active" onclick="window.location.href='{{ invoice_url }}'"><i class="bi bi-cloud-arrow-down"></i> Download Invoice</button>
                         </div>
                     </div>
                     <div class="card-body border-top pt-3 mt-2">
