@@ -1,6 +1,6 @@
 {% load static %}
 {% if is_category %}
-<h4 class="mb-3 fw-bold">{{ category_obj.name }}</h4>
+<h4 class="mb-3 fw-bold">{% if category_obj %}{{ category_obj.name }}{% else %}All Products{% endif %}</h4>
 {% elif is_brand %}
     <h4 class="mb-3 fw-bold">{{ brand.name}}</h4>
 {% elif is_subcategory %}
