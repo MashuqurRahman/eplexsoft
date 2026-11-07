@@ -19,42 +19,43 @@
     </div>
 
     <div class="card-body">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>SL</th>
-                    <th>Flat Delivery</th>
-                    <th>Discount Price</th>
-                    <th>Minimum Price</th>                
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for obj in obj_list %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ obj.flat_delivery|default:"N/A" }}</td>
-                    <td>{{ obj.discount_price|default:"N/A" }}</td>
-                    <td>{{ obj.min_price|default:"N/A" }}</td>               
-                    <td>
-                        <a href="{% url 'delivery_discount_update_url' obj.id %}" class="edit_btn" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Flat Delivery</th>
+                        <th>Discount Price</th>
+                        <th>Minimum Price</th>                
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in obj_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ obj.flat_delivery|default:"N/A" }}</td>
+                        <td>{{ obj.discount_price|default:"N/A" }}</td>
+                        <td>{{ obj.min_price|default:"N/A" }}</td>               
+                        <td>
+                            <a href="{% url 'delivery_discount_update_url' obj.id %}" class="edit_btn" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
 
-                        <a href="{% url 'delivery_discount_delete_url' obj.id %}" class="delete_btn" title="Delete" 
-                            onclick="SweetDelete(event, this.href)">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="12" class="text-center">Data is not found</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                            <a href="{% url 'delivery_discount_delete_url' obj.id %}" class="delete_btn" title="Delete" 
+                                onclick="SweetDelete(event, this.href)">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="12" class="text-center">Data is not found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-                <div class="table-footer">
+            <div class="table-footer">
                 {% if obj_list.has_other_pages %}
                     <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-end">
@@ -108,6 +109,7 @@
                 </nav> 
                 {% endif %}  
             </div>
+        </div>
     </div>
 </div>
 {% endblock %}

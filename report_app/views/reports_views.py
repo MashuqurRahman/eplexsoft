@@ -131,7 +131,8 @@ def order_report_views(request):
 
             for order in order_obj:
                 total_buying_price += order.order_wise_buying_price
-                total_selling_price += order.order_wise_selling_price
+                total_selling_price += order.sub_total_after_discount
+                # total_selling_price += order.order_wise_selling_price
                 total_profit += order.order_wise_profit
                 total_vat_gst += order.total_vat_gst_amount or 0
                 total_delivery_charge += order.shipping_charge or 0
