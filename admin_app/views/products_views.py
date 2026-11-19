@@ -36,15 +36,15 @@ def product_list_index_view(request):
     approval_filter = request.GET.get('approval')
     if approval_filter in ('approved', 'not_approved'):
         obj_list = obj_list.filter(approval=approval_filter)
-
-    page = request.GET.get('page')
-    paginator = Paginator(obj_list, 30)
-    try:
-        obj_list = paginator.page(page)
-    except PageNotAnInteger:
-        obj_list = paginator.page(1)
-    except EmptyPage:
-        obj_list = paginator.page(paginator.num_pages)
+    else:
+        page = request.GET.get('page')
+        paginator = Paginator(obj_list, 30)
+        try:
+            obj_list = paginator.page(page)
+        except PageNotAnInteger:
+            obj_list = paginator.page(1)
+        except EmptyPage:
+            obj_list = paginator.page(paginator.num_pages)
 
     context = {
         'obj_list': obj_list,
