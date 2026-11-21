@@ -109,9 +109,9 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.mysql',
 
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'ecom_nov_db'),
-        'USER': os.environ.get('DJANGO_DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'cantamart_ecommerce_new_db'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'cantamart_cantamart'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'eplex@cantamart'),
         'HOST': os.environ.get('DJANGO_DB_HOST','127.0.0.1'),
 
         'PORT': os.environ.get('PORT', '3306'),
